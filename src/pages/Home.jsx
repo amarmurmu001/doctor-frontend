@@ -1,14 +1,12 @@
 import DoctorsList from "../components/DoctorList";
 import QueryList from "../components/QueryList";
 import SearchBar from "../components/ui/SearchBar";
-import LocationDetector from "../components/LocationDetector";
-
-
+import WhyChooseUs from "../components/WhyChooseUs.jsx";
+import { doctarFeatures } from "../data/featuredData.js";
 
 export default function Home() {
-  return (
   
-
+  return (
     <div className="min-h-screen bg-gray-100 relative">
       {/* Purple Header Background - Compact */}
       <div className="bg-[#7551B2] w-full h-32 md:h-42 "></div>
@@ -36,74 +34,10 @@ export default function Home() {
         <DoctorsList />
       </div>
 
-      <div>
-        <h3 className="text-center text-black text-xl">Why choose us</h3>
-        <div className="bg-[#7551B2] w-full h-75 md:h-42 pt-4 px-2 ">
-          <h2 className="text-center text-white text-xl">Consultant</h2>
-          <div className="flex flex-col items-center justify-center p-4 border-2 border-white rounded-xl ">
-            <h2 className="text-center text-white text-xl">
-              Why <span className="text-[#4D9FF1]">DOCTAR</span> for doctors
-            </h2>
-            <div className="flex overflow-x-auto">
-              <div
-                className="flex p-4
-              "
-              >
-                <div className="w-16 h-16  inline-flex items-center justify-center text-7xl font-bold text-white">
-                  1
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    Free Verified Badge for your listings
-                  </p>
-                  <p className="text-sm text-white">
-                    boost customer trust and increase chances of quicker,
-                    reliable sales.
-                  </p>
-                </div>
-              </div>
-              {/* <div
-                className="flex
-              "
-              >
-                <div className="w-10 h-10  inline-flex items-center justify-center text-7xl font-bold text-white">
-                  2
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    5 Free Listings for first 3 months
-                  </p>
-                  <p className="text-sm text-white">
-                    showcase your listing to more buyers and grow your sales
-                  </p>
-                </div>
-              </div>
-              <div
-                className="flex
-              "
-              >
-                <div className="w-10 h-10  inline-flex items-center justify-center text-7xl font-bold text-white">
-                  3
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">
-                    Free Dealer Page
-                  </p>
-                  <p className="text-sm text-white">
-                    showcase your inventory, business details, contact and build
-                    trust with potential buyers!
-                  </p>
-                </div>
-              </div> */}
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <button className="bg-[#5154B5] text-white px-4 py-2 rounded-md flex items-center justify-center">
-              <p>apply now</p>
-            </button>
-          </div>
-        </div>
-      </div>
+      <WhyChooseUs 
+        features={doctarFeatures}
+      />
+
       <div className="flex flex-col items-center justify-center">
         <h2 className="text-center text-black text-xl">why Doctar?</h2>
         <div className="flex items-center justify-between gap-4 p-4 text-sm text-black bg-[#F2F2F2] mt-16">
