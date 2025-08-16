@@ -1,9 +1,14 @@
 import DoctorsList from "../components/DoctorList";
 import QueryList from "../components/QueryList";
 import SearchBar from "../components/ui/SearchBar";
+import LocationDetector from "../components/LocationDetector";
+
+
 
 export default function Home() {
   return (
+  
+
     <div className="min-h-screen bg-gray-100 relative">
       {/* Purple Header Background - Compact */}
       <div className="bg-[#7551B2] w-full h-32 md:h-42 "></div>
