@@ -74,6 +74,19 @@ export default function Home() {
       <Blogs />
       <Trendingshorts />
       <TrendingVideo />
+      <div className="min-w-[431] flex-col bg-[#f2f1f9] rounded-2xl mt-[32px]"> 
+        <div className="rounded-2xl"> <img src="/icons/expert.webp" alt="" /></div>
+         <div className="text-center gap-2 p-2 items-center justify-center" > 
+          <h2 className="text-[#7551b3] text-bold text-2xl">Talk With Expert</h2>
+          <p>Engage in genuine, confident discussions
+              with experts, fostering trust, sharing 
+               insights, and encouraging collaborative
+                problem-solving.</p>
+          <button className="bg-black rounded-lg text-white py-2 px-4 flex text-xl items-center ">ask a question</button>
+          <h2> trending categories</h2>
+         </div>
+
+      </div>
       
     </div>
   );
