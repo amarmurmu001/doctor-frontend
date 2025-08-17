@@ -1,6 +1,6 @@
 export default function VisionMission() {
   return (
-    <div className="flex w-[424px] h-[212px] gap-1 text-white p-1">
+    <div className="flex  h-[212px] gap-1 text-white p-1">
         <div className="flex-col flex-1 bg-[#7551b3] rounded-xl p-[8px]">
           <h2 className="text-2xl font-bold">Vision</h2>
           <p>

@@ -10,10 +10,11 @@ import NewsGuide from "../components/ui/news&guide.jsx";
 import Blogs from "../components/ui/blogs.jsx";
 import Trendingshorts from "../components/Trendingshorts.jsx";
 import TrendingVideo from "../components/ui/TrendingVideos.jsx";
+import TalkWithExpert from "../components/TalkWithExpert.jsx";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gray-100 relative px-2">
+    <div className="min-h-screen bg-gray-100 relative ">
       {/* Purple Header Background - Compact */}
       <div className="bg-[#7551B2] w-full h-32 md:h-42 "></div>
       <div className="absolute left-1/2 transform -translate-x-1/2 top-8 -translate-y-1/2 w-full max-w-md px-4">
@@ -74,19 +75,7 @@ export default function Home() {
       <Blogs />
       <Trendingshorts />
       <TrendingVideo />
-      <div className="min-w-[431] flex-col bg-[#f2f1f9] rounded-2xl mt-[32px]"> 
-        <div className="rounded-2xl"> <img src="/icons/expert.webp" alt="" /></div>
-         <div className="text-center gap-2 p-2 items-center justify-center" > 
-          <h2 className="text-[#7551b3] text-bold text-2xl">Talk With Expert</h2>
-          <p>Engage in genuine, confident discussions
-              with experts, fostering trust, sharing 
-               insights, and encouraging collaborative
-                problem-solving.</p>
-          <button className="bg-black rounded-lg text-white py-2 px-4 flex text-xl items-center ">ask a question</button>
-          <h2> trending categories</h2>
-         </div>
-
-      </div>
+      <TalkWithExpert/>
       
     </div>
   );

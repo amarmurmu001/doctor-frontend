@@ -1,9 +1,9 @@
 export default function WhyChooseDoctorPhoto() {
   return (
-    <div>
-        <h2 className="">
+    <div className="p-2 text-2xl">
+        <h2 className="font-bold">
           
-          Why choose <span className="font-bold">DOCTAR</span>?
+          Why choose <span className="font-extrabold">DOCTAR</span>?
         </h2>
         <div>
           <img
