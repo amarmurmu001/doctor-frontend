@@ -8,7 +8,7 @@ import VisionMission from "../components/ui/vision_mission.jsx";
 import { doctarFeatures } from "../data/featuredData.js";
 import NewsGuide from "../components/ui/news&guide.jsx";
 import Blogs from "../components/ui/blogs.jsx";
-import Trendingshorts from "../components/trendingshorts.jsx";
+import Trendingshorts from "../components/Trendingshorts.jsx";
 import TrendingVideo from "../components/ui/TrendingVideos.jsx";
 
 export default function Home() {
