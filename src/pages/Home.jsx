@@ -3,8 +3,13 @@ import QueryList from "../components/QueryList";
 import SearchBar from "../components/ui/SearchBar";
 import WhyChooseUs from "../components/WhyChooseUs.jsx";
 import WhyChooseDoctar from "../components/ui/why_choose_doctar.jsx";
-
+import WhyChooseDoctorPhoto from "../components/ui/why_choose_dotor_photo.jsx";
+import VisionMission from "../components/ui/vision_mission.jsx";
 import { doctarFeatures } from "../data/featuredData.js";
+import NewsGuide from "../components/ui/news&guide.jsx";
+import Blogs from "../components/ui/blogs.jsx";
+import Trendingshorts from "../components/trendingshorts.jsx";
+import TrendingVideo from "../components/ui/TrendingVideos.jsx";
 
 export default function Home() {
   return (
@@ -62,20 +67,13 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div>
-        <h2 className="">
-          {" "}
-          Why choose <span className="font-bold">DOCTAR</span>?
-        </h2>
-        <div>
-          <img
-            className=" mt-2 h-[477px] w-full rounded-xl"
-            src="docphoto.webp"
-            alt=""
-          />
-        </div>
-      </div>
+      <WhyChooseDoctorPhoto />
       <WhyChooseDoctar />
+      <VisionMission />
+      <NewsGuide />
+      <Blogs />
+      <Trendingshorts />
+      <TrendingVideo />
       
     </div>
   );
