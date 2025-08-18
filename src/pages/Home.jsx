@@ -13,6 +13,7 @@ import TrendingVideo from "../components/ui/TrendingVideos.jsx";
 import TalkWithExpert from "../components/TalkWithExpert.jsx";
 import Doctorreview from "../components/ui/Doctorreview.jsx";
 import Buyerreview from "../components/ui/Buyerreview.jsx";
+import HowItWorks from "../components/ui/howitworks.jsx";
 
 export default function Home() {
   return (
@@ -72,6 +73,8 @@ export default function Home() {
       </div>
       <WhyChooseDoctorPhoto />
       <WhyChooseDoctar />
+      <HowItWorks/>
+
       <VisionMission />
       <NewsGuide />
       <Blogs />
@@ -80,6 +83,7 @@ export default function Home() {
       <TalkWithExpert/>
       <Doctorreview/>
       <Buyerreview/>
+      
      
 
       
