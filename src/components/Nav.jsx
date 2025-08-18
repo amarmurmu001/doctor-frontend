@@ -43,13 +43,9 @@ function Nav() {
             disabled={locationLoading}
             className="appearance-none bg-transparent text-white font-medium outline-none px-4 py-1 pr-8 rounded-md cursor-pointer transition-all duration-300 ease-in-out disabled:opacity-50"
           >
-            <option value="">Select Location</option>
-            {selectedLocation === 'Current Location' && (
-              <option value="Current Location" className="bg-white text-black">
-                Near me (GPS)
-              </option>
-            )}
-            {availableLocations.map((location) => (
+            <option value="" className='text-black'>Select Location</option>
+
+            {availableLocations.map( (location) => (
               <option key={location} value={location} className="bg-white text-black">
                 {location}
               </option>
