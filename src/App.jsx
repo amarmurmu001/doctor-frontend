@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import useLocationStore from './stores/locationStore';
 import Nav from './components/Nav';
 import DoctorType from './pages/DoctorType';
+import Page4 from './pages/page_4';
 
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/x" element={<DoctorType />} />
+          <Route path="/doctor-mapped" element={<Page4 />} />
           </Routes>
       </div>
     </Router>
