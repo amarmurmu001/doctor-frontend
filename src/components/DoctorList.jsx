@@ -16,9 +16,9 @@ export default function DoctorsList() {
         coordinates.lat &&
         coordinates.lng
       ) {
-        url = `http://localhost:10000/api/doctor/search?lat=${coordinates.lat}&lng=${coordinates.lng}`;
+        url = `${process.env.BACKEND_URL}/doctor/search?lat=${coordinates.lat}&lng=${coordinates.lng}`;
       } else if (selectedLocation) {
-        url = `http://localhost:10000/api/doctor/search?location=${encodeURIComponent(
+        url = `${process.env.BACKEND_URL}/doctor/search?location=${encodeURIComponent(
           selectedLocation
         )}`;
       } else {
