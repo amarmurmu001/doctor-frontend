@@ -2,8 +2,8 @@ export default function WhyChooseDoctar() {
   return (
     <div className="p-2">
         <h2 className="text-center text-black font-bold text-xl mt-2 mb-2 ">why choose DOCTAR ?</h2>
-        <div className="flex text-[10px] gap-2.5 rounded-xl mb-20 ">
-          <div className="flex-col w-[200px] flex rounded-xl overflow-hidden bg-white h-[225px] flex-1 ">
+        <div className="flex text-[10px] gap-2.5 rounded-xl mb-2 ">
+          <div className="flex-col w-[200px] flex shadow-lg rounded-xl overflow-hidden bg-white h-[225px] flex-1 ">
             <div className="flex justify-center ">
               <img
                 className="w-[96px] h-[31px"
@@ -30,7 +30,7 @@ export default function WhyChooseDoctar() {
               <p>One click you can connect with seller</p>
             </div>
           </div>
-          <div className="flex-col w-[200px] rounded-xl overflow-hidden bg-white h-[225px] flex flex-1">
+          <div className="flex-col w-[200px] shadow-lg rounded-xl overflow-hidden bg-white h-[225px] flex flex-1">
             <div className="flex justify-center flex-1    ">
               <p className="text-[20px]">Others</p>
             </div>

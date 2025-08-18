@@ -2,46 +2,116 @@
 import { create } from 'zustand';
 
 const useLocationStore = create((set, get) => ({
-  // State
+  // State - Updated with your actual database locations
   selectedLocation: '',
   coordinates: { lat: null, lng: null },
   locationLoading: true,
   locationError: null,
-  availableLocations: ['Deoghar', 'Delhi', 'Mumbai', 'Kolkata', 'Bangalore'],
+  availableLocations: [],
 
-  // Simple reverse geocoding without Google API (for testing)
+  // Enhanced reverse geocoding with your database locations
   getLocationName: (lat, lng) => {
     console.log('🔍 Mapping coordinates to location:', { lat, lng });
     
-    // Mock location mapping based on approximate coordinates
+    // Updated location mapping with your seeded locations
     const locationMap = [
+      // Your seeded locations from database
+      { name: 'Dhanbad', lat: 23.8000, lng: 86.4500, range: 0.5 },
+      { name: 'Deoghar', lat: 24.4844, lng: 86.6947, range: 0.5 },
+      { name: 'Howrah', lat: 22.5958, lng: 88.2636, range: 0.5 },
+      { name: 'Sahjahanpur', lat: 27.8833, lng: 79.9667, range: 0.5 },
+      
+      // Major cities
       { name: 'Mumbai', lat: 19.0760, lng: 72.8777, range: 1 },
       { name: 'Delhi', lat: 28.6139, lng: 77.2090, range: 1 },
       { name: 'Bangalore', lat: 12.9716, lng: 77.5946, range: 1 },
       { name: 'Kolkata', lat: 22.5726, lng: 88.3639, range: 1 },
-      { name: 'Deoghar', lat: 24.4844, lng: 86.6947, range: 1 },
     ];
 
-    // Find closest city
+    // Find closest city with improved distance calculation
+    let closestLocation = null;
+    let minDistance = Infinity;
+
     for (const location of locationMap) {
-      const distance = Math.sqrt(
-        Math.pow(lat - location.lat, 2) + Math.pow(lng - location.lng, 2)
-      );
-      if (distance <= location.range) {
-        console.log('🏙️ Found exact match:', location.name);
-        return location.name;
+      // Haversine distance formula for better accuracy
+      const R = 6371; // Earth's radius in km
+      const dLat = (lat - location.lat) * Math.PI / 180;
+      const dLng = (lng - location.lng) * Math.PI / 180;
+      const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(location.lat * Math.PI / 180) * Math.cos(lat * Math.PI / 180) * 
+        Math.sin(dLng/2) * Math.sin(dLng/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c; // Distance in km
+
+      if (distance <= location.range * 50 && distance < minDistance) { // 50km range
+        minDistance = distance;
+        closestLocation = location.name;
       }
     }
 
-    // If no exact match, return a generic location based on coordinates
+    if (closestLocation) {
+      console.log('🏙️ Found closest match:', closestLocation, `(${minDistance.toFixed(1)}km away)`);
+      return closestLocation;
+    }
+
+    // Enhanced regional mapping for India
     let regionName;
-    if (lat > 25) regionName = 'Northern India';
-    else if (lat < 15) regionName = 'Southern India';
-    else if (lng > 80) regionName = 'Eastern India';
-    else regionName = 'Western India';
+    // Jharkhand region (your main locations)
+    if (lat >= 23 && lat <= 25 && lng >= 85 && lng <= 88) {
+      regionName = 'Jharkhand';
+    }
+    // West Bengal region
+    else if (lat >= 21.5 && lat <= 27.5 && lng >= 85.5 && lng <= 89.5) {
+      regionName = 'West Bengal';
+    }
+    // Uttar Pradesh region
+    else if (lat >= 23.5 && lat <= 30.5 && lng >= 77 && lng <= 84) {
+      regionName = 'Uttar Pradesh';
+    }
+    // Northern India
+    else if (lat > 25) {
+      regionName = 'Northern India';
+    }
+    // Southern India
+    else if (lat < 15) {
+      regionName = 'Southern India';
+    }
+    // Eastern India
+    else if (lng > 80) {
+      regionName = 'Eastern India';
+    }
+    // Western India
+    else {
+      regionName = 'Western India';
+    }
 
     console.log('📍 Using region-based location:', regionName);
     return regionName;
+  },
+
+  // Fetch available locations from backend
+  fetchAvailableLocations: async () => {
+    try {
+      console.log('🌍 Fetching available locations from backend...');
+      const response = await fetch('http://localhost:10000/api/doctor/locations');
+      if (response.ok) {
+        const data = await response.json();
+        const locations = data.locations || [];
+        console.log('📍 Locations from backend:', locations);
+        
+        // Merge with default locations
+        const allLocations = [...new Set([
+          ...locations
+        ])];
+        
+        set({ availableLocations: allLocations });
+        return allLocations;
+      }
+    } catch (error) {
+      console.warn('⚠️ Could not fetch locations from backend, using defaults');
+    }
+    return get().availableLocations;
   },
 
   // Actions
@@ -55,7 +125,7 @@ const useLocationStore = create((set, get) => ({
       set({ 
         locationError: error,
         locationLoading: false,
-        selectedLocation: 'Deoghar' // Default fallback
+        selectedLocation: 'Deoghar' // Default to your seeded location
       });
       return;
     }
@@ -82,7 +152,7 @@ const useLocationStore = create((set, get) => ({
           set({
             locationError: 'Failed to process location',
             locationLoading: false,
-            selectedLocation: 'Deoghar'
+            selectedLocation: 'Deoghar' // Your default location
           });
         }
       },
@@ -112,12 +182,12 @@ const useLocationStore = create((set, get) => ({
         set({
           locationError: errorMessage,
           locationLoading: false,
-          selectedLocation: 'Deoghar' // Default fallback
+          selectedLocation: 'Deoghar' // Your default location
         });
       },
       {
         enableHighAccuracy: true,
-        timeout: 10000, // 10 seconds
+        timeout: 15000, // Increased to 15 seconds
         maximumAge: 300000 // 5 minutes cache
       }
     );
@@ -125,7 +195,18 @@ const useLocationStore = create((set, get) => ({
 
   updateLocation: (location) => {
     console.log('🔄 Location manually changed to:', location);
-    set({ selectedLocation: location });
+    
+    // If "Current Location" is selected, trigger GPS
+    if (location === 'Current Location' || location === 'Near me') {
+      get().getCurrentLocation();
+    } else {
+      set({ selectedLocation: location });
+    }
+  },
+
+  setCoordinates: (coords) => {
+    console.log('📍 Setting coordinates:', coords);
+    set({ coordinates: coords });
   },
 
   refreshLocation: () => {
@@ -133,9 +214,14 @@ const useLocationStore = create((set, get) => ({
     get().getCurrentLocation();
   },
 
-  // Initialize location (call this once when app starts)
-  initializeLocation: () => {
+  // Initialize location and fetch available locations
+  initializeLocation: async () => {
     console.log('🚀 Initializing location store...');
+    
+    // Fetch available locations from backend first
+    await get().fetchAvailableLocations();
+    
+    // Then get current location
     get().getCurrentLocation();
   }
 }));

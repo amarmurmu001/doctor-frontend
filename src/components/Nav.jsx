@@ -1,15 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import useLocationStore from '../stores/locationStore';
 
 function Nav() {
-  const { 
+  const {
     selectedLocation,
     availableLocations,
     updateLocation,
+    setCoordinates,
     locationLoading,
-    refreshLocation,
-    coordinates
   } = useLocationStore();
+
+  // Prompt for GPS at component mount or when explicitly triggered
+  useEffect(() => {
+    if (!selectedLocation && window.navigator.geolocation) {
+      window.navigator.geolocation.getCurrentPosition(
+        pos => {
+          setCoordinates({
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          });
+          updateLocation('Current Location');
+        },
+        err => {
+          // If denied, fallback to manual entry
+        }
+      );
+    }
+  }, [selectedLocation, setCoordinates, updateLocation]);
 
   const handleLocationChange = (e) => {
     updateLocation(e.target.value);
@@ -20,15 +37,16 @@ function Nav() {
       {/* Left: Location Dropdown */}
       <div className="flex items-center space-x-2">
         <div className="relative">
-          <select 
-            value={selectedLocation}
+          <select
+            value={selectedLocation || ''}
             onChange={handleLocationChange}
             disabled={locationLoading}
             className="appearance-none bg-transparent text-white font-medium outline-none px-4 py-1 pr-8 rounded-md cursor-pointer transition-all duration-300 ease-in-out disabled:opacity-50"
           >
-            {selectedLocation && !availableLocations.includes(selectedLocation) && (
-              <option value={selectedLocation} className="bg-white text-black">
-                {selectedLocation} (GPS)
+            <option value="">Select Location</option>
+            {selectedLocation === 'Current Location' && (
+              <option value="Current Location" className="bg-white text-black">
+                Near me (GPS)
               </option>
             )}
             {availableLocations.map((location) => (
@@ -37,7 +55,6 @@ function Nav() {
               </option>
             ))}
           </select>
-
           <svg
             className="w-4 h-4 text-white absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none"
             fill="none"
@@ -48,10 +65,6 @@ function Nav() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
           </svg>
         </div>
-
-        
-
-        
       </div>
 
       {/* Center: Logo */}
@@ -61,11 +74,7 @@ function Nav() {
 
       {/* Right: Profile Image */}
       <div className="w-8 h-10 rounded-full overflow-hidden">
-        <img
-          src="profile.png"
-          alt="Profile"
-          className="w-full h-full object-cover"
-        />
+        <img src="profile.png" alt="Profile" className="w-full h-full object-cover" />
       </div>
     </div>
   );

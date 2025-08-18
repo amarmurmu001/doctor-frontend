@@ -7,9 +7,10 @@ export default function WhyChooseDoctorPhoto() {
         </h2>
         <div>
           <img
-            className=" mt-2 h-[477px] w-full rounded-xl"
+            className=" mt-2 h-[477px] w-full rounded-xl object-cover"
             src="docphoto.webp"
             alt=""
+            
           />
         </div>
       </div>

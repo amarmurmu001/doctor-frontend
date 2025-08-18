@@ -11,11 +11,11 @@ const WhyChooseUs = ({
 }) => {
   return (
     <div>
-      <h3 className="text-center text-black text-xl mb-4">{title}</h3>
-      <div className={`${backgroundColor} w-full px-4 py-6`}>
-        <h2 className="text-center text-white text-2xl mb-6">{subtitle}</h2>
+      <h3 className="text-center text-black font-bold text-xl mb-4">{title}</h3>
+      <div className={`${backgroundColor} w-full p-1`}>
+        <h2 className="text-center text-white text-2xl mb-2">{subtitle}</h2>
         
-        <div className="flex flex-col items-center justify-center p-1 border-2 border-white rounded-xl  mb-6">
+        <div className="flex flex-col items-center justify-center p-1 border-1 border-white rounded-3xl  mb-2">
           <h2 className="text-center text-white font text-lg sm:text-xl mb-4">
             Why <span className='font-extrabold text-[#4D9FF1]' >DOCTAR</span> for Doctors
           </h2>
@@ -24,10 +24,10 @@ const WhyChooseUs = ({
         </div>
         
         {/* Apply Now Button */}
-        <div className="flex justify-center">
+        <div className="flex justify-end mb-1">
           <button 
             onClick={""}
-            className={`${buttonColor} text-white px-6 py-2 sm:px-8 sm:py-3 rounded-lg font-semibold hover:opacity-90 transition-colors text-sm sm:text-base`}
+            className={`${buttonColor} text-white px-6 border py-2 sm:px-8 sm:py-3 rounded-2xl font-semibold hover:opacity-90 transition-colors text-sm sm:text-base`}
           >
             {buttonText}
           </button>

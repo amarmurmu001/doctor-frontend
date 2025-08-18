@@ -1,6 +1,6 @@
 export default function(){
     return(
-        <div className="bg-[#F2F1F9] rounded-[20px] p-4 w-[431px] mt-4">
+        <div className="bg-[#F2F1F9] rounded-[20px] p-4 m-2 mt-4">
         <h2 className="text-[#9B51E0] text-center font-semibold text-lg mb-4">Doctor Experience</h2>
       
         {[
@@ -32,7 +32,7 @@ export default function(){
         <div className="flex justify-center mt-2 mb-1">
           <button className="bg-black text-white text-xs py-2 px-4 rounded-xl">Post a review</button>
         </div>
-        <div className="text-center text-sm text-[#9B51E0] font-medium underline cursor-pointer">View All &gt;</div>
+        <div className="text-center text-sm text-[#9B51E0] font-medium  cursor-pointer">View All &gt;</div>
       </div>
     );
 }
