@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Home from './pages/Home';
 import useLocationStore from './stores/locationStore';
 import Nav from './components/Nav';
+import DoctorType from './pages/DoctorType';
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
       <div className="App">
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/x" element={<DoctorType />} />
           </Routes>
       </div>
     </Router>
