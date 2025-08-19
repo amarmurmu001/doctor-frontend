@@ -45,6 +45,34 @@ const gridSvg = encodeURIComponent(
   '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><path d="M20 0H0v20" fill="none"/><path d="M0 0.5H20M0.5 0V20" stroke="#E5E7EB" stroke-width="1"/></svg>'
 );
 
+// Category data for the grid cards
+const categories = [
+  {
+    id: 1,
+    name: "Allopathic",
+    icon: "/icons/allopathic.png",
+    color: "#744db8"
+  },
+  {
+    id: 2,
+    name: "Ayurveda",
+    icon: "/icons/ayurveda.png",
+    color: "#744db8"
+  },
+  {
+    id: 3,
+    name: "Homeopathic",
+    icon: "/icons/homeopathic.png",
+    color: "#744db8"
+  },
+  {
+    id: 4,
+    name: "Dentist",
+    icon: "/icons/dentist.png",
+    color: "#744db8"
+  }
+];
+
 export default function Page3() {
   const slides = useMemo(
     () => medicineCards.filter((card) => card.name && card.prescribedBy),
@@ -124,7 +152,28 @@ export default function Page3() {
           backgroundRepeat: "repeat",
           backgroundColor: "#ffffff"
         }}
-      />
+      >
+        {/* Category Cards */}
+        <div className="grid grid-cols-2 gap-10 px-4 pt-4 mt-8">
+          {categories.map((category) => (
+            <div
+              key={category.id}
+              className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-[#f2f1f9] border border-[#eee7fb]"
+              style={{ boxShadow: '0px 4px 4px 0px #7551b3' }}
+            >
+              <div 
+                className="w-16 h-16 rounded-full bg-white flex items-center justify-center"
+                style={{ boxShadow: '0px 2px 4px 0px #7551b3' }}
+              >
+                <img src={category.icon} alt={category.name} className="w-8 h-8 object-contain" />
+              </div>
+              <div className="text-center">
+                <h3 className="text-sm font-semibold text-gray-800">{category.name}</h3>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }
