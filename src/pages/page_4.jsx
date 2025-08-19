@@ -8,7 +8,7 @@ const doctors = [
     languages: ["Hindi", "English", "Bengali"],
     experienceYears: 7,
     rating: 4.4,
-    image: "/profile.png"
+    image: "/icons/doctor.png"
   },
   {
     id: 2,
@@ -17,7 +17,7 @@ const doctors = [
     languages: ["Hindi", "English", "Bhojpuri"],
     experienceYears: 7,
     rating: 4.5,
-    image: "/profile.png"
+    image: "/icons/doctor.png"
   },
   {
     id: 3,
@@ -26,7 +26,7 @@ const doctors = [
     languages: ["Hindi", "English", "Bengali"],
     experienceYears: 6,
     rating: 4.3,
-    image: "/profile.png"
+    image: "/icons/doctor.png"
   },
   {
     id: 4,
@@ -35,13 +35,31 @@ const doctors = [
     languages: ["Hindi", "English", "Bengali"],
     experienceYears: 8,
     rating: 4.4,
-    image: "/profile.png"
+    image: "/icons/doctor.png"
+  }, 
+  {
+    id: 5,
+    name: "Dr. Riya Jaiswal",
+    specialty: "Cardiologist",
+    languages: ["Hindi", "English", "Bengali"],
+    experienceYears: 6,
+    rating: 4.3,
+    image: "/icons/doctor.png"
+  }, 
+  {
+    id: 6,
+    name: "Dr. Riya Jaiswal",
+    specialty: "Cardiologist",
+    languages: ["Hindi", "English", "Bengali"],
+    experienceYears: 6,
+    rating: 4.3,
+    image: "/icons/doctor.png"
   }
 ];
 
 export default function Page4() {
   return (
-    <div className="w-full">
+    <div className="w-full bg-[#f4f4ff]">
       {/* Header with search */}
       <div className="w-full bg-[#7551b3] px-4 py-4">
         <SearchBar />
@@ -70,22 +88,22 @@ export default function Page4() {
 
                 {/* Specialty row */}
                 <div className="mt-2 flex items-center gap-2 text-gray-700">
-                  <img src="/icons/heart.png" alt="specialty" className="w-5 h-5" />
+                  <img src="/icons/real-icon.png" alt="specialty" className="w-5 h-5" />
                   <span className="text-[15px]">{doc.specialty}</span>
                 </div>
 
                 {/* Languages row */}
                 <div className="mt-2 flex items-center gap-2 text-gray-600">
-                  <span className="text-base">🌐</span>
+                  <img src="/icons/language.png" alt="language" className="w-5 h-5" />
                   <span className="text-sm">{doc.languages.join(" ,")}</span>
                 </div>
 
                 {/* Badges (70x30) below language and close to image */}
                 <div className="mt-2 flex gap-2">
-                  <span className="inline-flex items-center justify-center rounded-lg w-[70px] h-[30px] text-[10px] font-semibold text-white bg-gradient-to-r from-[#8f66d6] to-[#5e39a5]">
+                  <span className="inline-flex items-center justify-center rounded-lg w-[70px] h-[30px] text-[10px] font-semibold text-white bg-[#744db8]">
                     {`${doc.experienceYears}+ yrs`}
                   </span>
-                  <span className="inline-flex items-center justify-center rounded-lg w-[70px] h-[30px] text-[10px] font-semibold text-white bg-gradient-to-r from-[#8f66d6] to-[#5e39a5]">
+                  <span className="inline-flex items-center justify-center rounded-lg w-[70px] h-[30px] text-[10px] font-semibold text-white bg-[#744db8]">
                     {`${doc.rating}/5`}
                   </span>
                 </div>
