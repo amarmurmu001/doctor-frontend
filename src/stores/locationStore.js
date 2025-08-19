@@ -94,7 +94,7 @@ const useLocationStore = create((set, get) => ({
   fetchAvailableLocations: async () => {
     try {
       console.log('🌍 Fetching available locations from backend...');
-      const response = await fetch('http://localhost:10000/api/doctor/locations');
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/doctor/locations`);
       if (response.ok) {
         const data = await response.json();
         const locations = data.locations || [];
