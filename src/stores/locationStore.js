@@ -1,4 +1,3 @@
-// stores/locationStore.js
 import { create } from 'zustand';
 
 const useLocationStore = create((set, get) => ({
