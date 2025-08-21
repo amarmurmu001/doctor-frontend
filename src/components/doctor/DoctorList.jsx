@@ -11,26 +11,18 @@ export default function DoctorsList() {
     async function fetchDoctors() {
       setLoading(true);
       let url = "";
-      if (
-        selectedLocation === "Current Location" &&
-        coordinates.lat &&
-        coordinates.lng
-      ) {
-        url = `${import.meta.env.VITE_BACKEND_URL}/doctor/search?lat=${coordinates.lat}&lng=${coordinates.lng}`;
-      } else if (selectedLocation) {
-        url = `${import.meta.env.VITE_BACKEND_URL}/doctor/search?location=${encodeURIComponent(
-          selectedLocation
-        )}`;
-      } else {
+      if (!selectedLocation) {
         setDoctors([]);
         setLoading(false);
         return;
       }
+      // New backend supports filtering via query on /api/doctors
+      const params = new URLSearchParams({ city: selectedLocation.toLowerCase() });
+      url = `${import.meta.env.VITE_BACKEND_URL}/api/doctors?${params}`;
       try {
         const response = await fetch(url);
         const data = await response.json();
-        console.log(data);
-        setDoctors(data.doctors || []);
+        setDoctors(Array.isArray(data) ? data : []);
       } catch {
         setDoctors([]);
       } finally {
@@ -42,19 +34,11 @@ export default function DoctorsList() {
 
   function mapDoctorToCardProps(doctor) {
     return {
-      name: `${doctor.title || "Dr."} ${doctor.firstName} ${doctor.lastName}`,
-      specialty: Array.isArray(doctor.specialization)
-        ? doctor.specialization.join(", ")
-        : doctor.specialization,
-      price: doctor.fees
-        ? `₹${doctor.fees.consultationFee}/Consultation`
-        : "N/A",
-      image:
-        doctor.clinicInfo &&
-        doctor.clinicInfo.images &&
-        doctor.clinicInfo.images[0]
-          ? doctor.clinicInfo.images
-          : "/doctor1.png",
+      name: doctor.user && doctor.user.name ? doctor.user.name : 'Doctor',
+      specialty: doctor.specialty || 'General',
+      price: typeof doctor.consultationFee === 'number' ? `₹${doctor.consultationFee}/Consultation` : 'N/A',
+      image: '/icons/doctor.png',
+      doctorId: doctor._id || doctor.id,
     };
   }
 

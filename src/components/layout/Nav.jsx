@@ -1,7 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import useLocationStore from '../../stores/locationStore';
+import useAuthStore from '../../stores/authStore';
 
 function Nav() {
+  const navigate = useNavigate();
   const {
     selectedLocation,
     availableLocations,
@@ -10,6 +13,9 @@ function Nav() {
     refreshLocation,
     locationLoading,
   } = useLocationStore();
+
+  const user = useAuthStore(s => s.user);
+  const token = useAuthStore(s => s.token);
 
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
@@ -104,13 +110,26 @@ function Nav() {
 
       {/* Center: Logo */}
       <div className="absolute left-1/2 transform -translate-x-1/2">
-        <img src="/icons/logo.png" alt="Doctar" className="w-24 h-auto" />
+        <img src="/icons/logo.png" alt="Doctar" className="w-24 h-auto cursor-pointer" onClick={() => navigate('/')} />
       </div>
 
-      {/* Right: Profile Image */}
-      <div className="w-8 h-10 rounded-full overflow-hidden">
-        <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
-      </div>
+      {/* Right: Profile / Auth */}
+      {token && user ? (
+        <button
+          onClick={() => navigate(user.role === 'doctor' ? '/Doctor-profile' : '/user-profile')}
+          title={user.name || 'Profile'}
+          className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white text-[#7551B2] flex items-center justify-center font-semibold"
+        >
+          {(user.name || 'U').charAt(0).toUpperCase()}
+        </button>
+      ) : (
+        <button
+          onClick={() => navigate('/login')}
+          className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-md"
+        >
+          Login
+        </button>
+      )}
     </div>
   );
 }

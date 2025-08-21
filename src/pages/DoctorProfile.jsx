@@ -1,7 +1,54 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import useAuthStore from '../stores/authStore';
 
 const DoctorProfile = () => {
+  const navigate = useNavigate();
+  const { doctorId } = useParams();
+  const user = useAuthStore(s => s.user);
+  const logout = useAuthStore(s => s.logout);
   const [activeTab, setActiveTab] = useState('About');
+  const [doctor, setDoctor] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    async function loadDoctor() {
+      try {
+        setLoading(true);
+        const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+        
+        if (doctorId) {
+          // Viewing another doctor's profile
+          const res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId}`);
+          if (!res.ok) throw new Error('Doctor not found');
+          const doctorData = await res.json();
+          setDoctor(doctorData);
+        } else if (user && user.role === 'doctor') {
+          // Viewing own profile
+          const res = await fetch(`${API_BASE_URL}/api/doctors`);
+          if (!res.ok) throw new Error('Failed to load doctor');
+          const list = await res.json();
+          const mine = Array.isArray(list) ? list.find(d => (d.user && (d.user._id === user?.id || d.user === user?.id))) : null;
+          if (!mine) {
+            setDoctor(null);
+            setError('Profile not found. Please create your profile.');
+          } else {
+            const det = await fetch(`${API_BASE_URL}/api/doctors/${mine._id}`);
+            const detData = det.ok ? await det.json() : mine;
+            setDoctor(detData);
+          }
+        } else {
+          setError('No doctor profile to display');
+        }
+      } catch (e) {
+        setError(e.message || 'Failed to load');
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDoctor();
+  }, [user, doctorId]);
 
   return (
     <div className="min-h-screen bg-white">
@@ -9,13 +56,27 @@ const DoctorProfile = () => {
       <div className="bg-[#7551b3] relative h-96">
         {/* Top Navigation */}
         <div className="flex items-center justify-between p-4">
-          <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-xl font-bold">
+          <button
+            onClick={() => navigate("/")}
+            className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-xl font-bold"
+            title="Back"
+          >
             ←
           </button>
           <h1 className="text-white text-lg font-semibold">Doctor Profile</h1>
-          <button className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-xl font-bold">
-            ↗
-          </button>
+          {user && user.role === 'doctor' && !doctorId ? (
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => navigate('/doctor/edit')}
+                className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-sm font-semibold"
+                title="Edit Profile"
+              >
+                ✎
+              </button>
+            </div>
+          ) : (
+            <span className="w-10 h-10" />
+          )}
         </div>
 
         {/* Profile Information */}
@@ -27,8 +88,8 @@ const DoctorProfile = () => {
               className="w-full h-full object-cover"
             />
           </div>
-          <h2 className="text-white text-xl font-semibold mb-1">Dr. Akash Roy</h2>
-          <p className="text-white text-lg">General Physician</p>
+          <h2 className="text-white text-xl font-semibold mb-1">{doctor?.user?.name || 'Doctor'}</h2>
+          <p className="text-white text-lg">{doctor?.specialty || 'General'}</p>
         </div>
       </div>
 
@@ -36,7 +97,7 @@ const DoctorProfile = () => {
       <div className="bg-white">
         <div className="flex justify-center pt-5 pb-6">
           <div className="bg-gray-100 rounded-full p-1 flex relative">
-            {['About', 'Review', 'Contact'].map((tab, index) => (
+            {['About', 'Review', 'Contact'].map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -63,7 +124,10 @@ const DoctorProfile = () => {
 
       {/* Tab Content */}
       <div className="p-4">
-        {activeTab === 'About' && (
+        {error && (
+          <div className="mb-4 text-sm text-red-600">{error}</div>
+        )}
+        {activeTab === 'About' && !loading && (
           <div className="space-y-6">
             {/* Hospital Images Gallery */}
             <div className="overflow-x-auto">
@@ -96,32 +160,32 @@ const DoctorProfile = () => {
             <div>
               <h3 className="text-lg font-semibold mb-2">About</h3>
               <p className="text-gray-600">
-                Dr. Akash Roy is a cardiologist with extensive experience in treating heart-related conditions.
+                {doctor?.about || 'No description provided yet.'}
               </p>
             </div>
 
             {/* Key Specialization */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Key Specialization</h3>
-                            <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-black rounded-full"></div>
-                    <span className="text-gray-600 text-base">Interventional Cardiology</span>
+                    <span className="text-gray-600 text-base">{doctor?.specialty || 'General'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-black rounded-full"></div>
-                    <span className="text-gray-600 text-base">Preventive Cardiology</span>
+                    <span className="text-gray-600 text-base">{doctor?.clinicName ? `Clinic: ${doctor.clinicName}` : '—'}</span>
                   </div>
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-black rounded-full"></div>
-                    <span className="text-gray-600 text-base">Heart Failure Management</span>
+                    <span className="text-gray-600 text-base">{typeof doctor?.consultationFee === 'number' ? `Fee: ₹${doctor.consultationFee}` : 'Fee: —'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-black rounded-full"></div>
-                    <span className="text-gray-600 text-base">Cardiac Rehabilitation</span>
+                    <span className="text-gray-600 text-base">{doctor?.city || '—'}</span>
                   </div>
                 </div>
               </div>
@@ -131,14 +195,11 @@ const DoctorProfile = () => {
             <div>
               <h3 className="text-lg font-semibold mb-2">Education</h3>
               <div className="space-y-2 text-gray-600">
-                <div>
-                  <p className="font-medium">MD in Cardiology</p>
-                  <p className="text-sm">ABC Medical School • 2008</p>
-                </div>
-                <div>
-                  <p className="font-medium">Residency in Internal Medicine</p>
-                  <p className="text-sm">ABC Hospital • 2011</p>
-                </div>
+                {(doctor?.education && doctor.education.length) ? doctor.education.map((ed, i) => (
+                  <div key={i}>
+                    <p className="font-medium">{ed}</p>
+                  </div>
+                )) : <p>No education details provided.</p>}
               </div>
             </div>
 
@@ -165,7 +226,7 @@ const DoctorProfile = () => {
             {/* Languages */}
             <div>
               <h3 className="text-lg font-semibold mb-2">Languages</h3>
-              <p className="text-gray-600">English, Hindi, Bhojpuri, Bengali</p>
+              <p className="text-gray-600">{(doctor?.languages && doctor.languages.length) ? doctor.languages.join(', ') : '—'}</p>
             </div>
           </div>
         )}
@@ -322,6 +383,17 @@ const DoctorProfile = () => {
           </div>
         )}
       </div>
+
+      {user && user.role === 'doctor' && !doctorId && (
+        <div className="p-4">
+          <button
+            onClick={() => { logout(); navigate('/login'); }}
+            className="w-full bg-black text-white py-2 rounded-md"
+          >
+            Logout
+          </button>
+        </div>
+      )}
     </div>
   );
 };

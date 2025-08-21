@@ -93,10 +93,10 @@ const useLocationStore = create((set, get) => ({
   fetchAvailableLocations: async () => {
     try {
       console.log('🌍 Fetching available locations from backend...');
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/doctor/locations`);
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/doctors`);
       if (response.ok) {
         const data = await response.json();
-        const locations = data.locations || [];
+        const locations = Array.isArray(data) ? Array.from(new Set(data.map(d => (d.city || '').toString().trim()).filter(Boolean))) : [];
         console.log('📍 Locations from backend:', locations);
         
         // Merge with default locations

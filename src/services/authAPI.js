@@ -1,47 +1,54 @@
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export async function sendOtp({ email }) {
-	const response = await fetch(`${API_BASE_URL}/auth/send-verification-otp`, {
+	const response = await fetch(`${API_BASE_URL}/api/otp/request`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email })
+		body: JSON.stringify({ channel: 'email', destination: email })
 	});
 	if (!response.ok) throw new Error('Failed to send verification OTP');
 	return response.json();
 }
 
 export async function verifyOtp({ email, otp }) {
-	const response = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+	const response = await fetch(`${API_BASE_URL}/api/otp/verify`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email, otp })
+		body: JSON.stringify({ channel: 'email', destination: email, code: otp })
 	});
 	if (!response.ok) throw new Error('Invalid OTP');
 	return response.json();
 }
 
 export async function resendOtp({ email }) {
-	const response = await fetch(`${API_BASE_URL}/auth/resend-verification-otp`, {
+	const response = await fetch(`${API_BASE_URL}/api/otp/request`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email })
+		body: JSON.stringify({ channel: 'email', destination: email })
 	});
 	if (!response.ok) throw new Error('Please wait before requesting a new OTP');
 	return response.json();
 }
 
 export async function registerUser(payload) {
-	const response = await fetch(`${API_BASE_URL}/auth/register`, {
+	const body = {
+		name: payload.name || payload.fullName,
+		email: payload.email,
+		password: payload.password,
+		role: payload.role,
+		phone: payload.phone,
+	};
+	const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(payload)
+		body: JSON.stringify(body)
 	});
 	if (!response.ok) throw new Error('Registration failed');
 	return response.json();
 }
 
 export async function registerDoctor(payload) {
-	const response = await fetch(`${API_BASE_URL}/doctor/register`, {
+	const response = await fetch(`${API_BASE_URL}/api/doctors/me`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(payload)
@@ -51,7 +58,7 @@ export async function registerDoctor(payload) {
 }
 
 export async function loginUser({ email, password }) {
-	const response = await fetch(`${API_BASE_URL}/auth/login`, {
+	const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify({ email, password })

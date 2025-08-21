@@ -1,6 +1,6 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { verifyOtp, resendOtp } from '../../services/authAPI'
+import { verifyOtp, resendOtp, sendOtp } from '../../services/authAPI'
 import useAuthStore from '../../stores/authStore'
 
 export default function Otp(){
@@ -12,6 +12,27 @@ export default function Otp(){
   const [submitting, setSubmitting] = useState(false)
   const [cooldown, setCooldown] = useState(0)
   const inputsRef = useRef([])
+
+  function startCooldown(){
+    setCooldown(60)
+    const t = setInterval(()=>{
+      setCooldown(c => {
+        if (c <= 1) { clearInterval(t); return 0 }
+        return c - 1
+      })
+    }, 1000)
+  }
+
+  useEffect(() => {
+    // trigger initial OTP send
+    if (!email) return
+    const key = `otpSent:${email}`
+    if (sessionStorage.getItem(key) === '1') return
+    sendOtp({ email }).then(() => {
+      sessionStorage.setItem(key, '1')
+      startCooldown()
+    }).catch(()=>{})
+  }, [email])
 
   function handleChange(index, value){
     const digit = value.replace(/\D/g,'').slice(0,1)
@@ -67,13 +88,7 @@ export default function Otp(){
     setError('')
     try{
       await resendOtp({ email, role: persona === 'doctor' ? 'doctor' : 'user' })
-      setCooldown(60)
-      const t = setInterval(()=>{
-        setCooldown(c => {
-          if (c <= 1) { clearInterval(t); return 0 }
-          return c - 1
-        })
-      }, 1000)
+      startCooldown()
     }catch(err){
       setError(err.message || 'Please wait before requesting a new OTP')
     }

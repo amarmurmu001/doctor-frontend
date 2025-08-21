@@ -2,14 +2,14 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const fetchDoctorsByLocation = async (location) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/doctor/search?location=${encodeURIComponent(location.toLowerCase())}`);
-    
+    const params = new URLSearchParams({ city: String(location || '').toLowerCase() });
+    const response = await fetch(`${API_BASE_URL}/api/doctors?${params}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
     const data = await response.json();
-    return data.doctors || [];
+    // Backend returns an array of doctors
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error('Error fetching doctors:', error);
     throw error;
@@ -19,19 +19,16 @@ export const fetchDoctorsByLocation = async (location) => {
 export const searchDoctors = async (location, specialty = '', name = '') => {
   try {
     const params = new URLSearchParams({
-      location: location.toLowerCase(),
+      ...(location && { city: String(location).toLowerCase() }),
       ...(specialty && { specialty }),
-      ...(name && { name })
+      ...(name && { q: name })
     });
-    
-    const response = await fetch(`${API_BASE_URL}/doctor/search?${params}`);
-    
+    const response = await fetch(`${API_BASE_URL}/api/doctors?${params}`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
-    
     const data = await response.json();
-    return data.doctors || [];
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error('Error searching doctors:', error);
     throw error;

@@ -9,17 +9,20 @@ import DoctorType from './pages/DoctorType';
 import Page4 from './pages/page_4';
 import Page3 from './pages/Page3'
 import DoctorProfile from './pages/DoctorProfile'
+import UserProfile from './pages/UserProfile'
+import DoctorEdit from './pages/DoctorEdit'
 import Signup from './pages/auth/Signup'
 import Otp from './pages/auth/Otp'
 import AboutPersona from './pages/auth/AboutPersona'
 import LocationInfo from './pages/auth/LocationInfo'
 import PersonalDetails from './pages/auth/PersonalDetails'
 import Login from './pages/auth/Login'
+import ForgotPassword from './pages/auth/ForgotPassword'
 
 
 function AppShell() {
   const location = useLocation();
-  const hideNav = location.pathname.toLowerCase() === '/doctor-profile';
+  const hideNav = location.pathname.toLowerCase().includes('profile');
   
   const initializeLocation = useLocationStore((state) => state.initializeLocation);
 
@@ -39,12 +42,16 @@ function AppShell() {
             <Route path="/doctor-mapped" element={<Page4 />} />
             <Route path='/page-3' element={<Page3/>}/>
             <Route path='/Doctor-profile' element={<DoctorProfile/>}/>
+            <Route path='/Doctor-profile/:doctorId' element={<DoctorProfile/>}/>
+            <Route path='/doctor/edit' element={<DoctorEdit/>}/>
+            <Route path='/user-profile' element={<UserProfile/>}/>
             <Route path='/auth/signup' element={<Signup/>}/>
             <Route path='/auth/otp' element={<Otp/>}/>
             <Route path='/auth/about' element={<AboutPersona/>}/>
             <Route path='/auth/location' element={<LocationInfo/>}/>
             <Route path='/auth/personal' element={<PersonalDetails/>}/>
             <Route path='/login' element={<Login/>}/>
+            <Route path='/auth/forgot-password' element={<ForgotPassword/>}/>
           </Routes>
         </Suspense>
       </div>

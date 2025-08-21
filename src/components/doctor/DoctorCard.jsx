@@ -1,6 +1,19 @@
-export default function DoctorCard({ name, specialty, price, image }) {
+import { useNavigate } from 'react-router-dom';
+
+export default function DoctorCard({ name, specialty, price, image, doctorId }) {
+  const navigate = useNavigate();
+
+  function handleClick() {
+    if (doctorId) {
+      navigate(`/Doctor-profile/${doctorId}`);
+    }
+  }
+
   return (
-    <div className="min-w-[300px] flex items-center border-2 border-blue-500 rounded-xl bg-white overflow-hidden hover:shadow-lg transition">
+    <div 
+      onClick={handleClick}
+      className="min-w-[300px] flex items-center border-2 border-blue-500 rounded-xl bg-white overflow-hidden hover:shadow-lg transition cursor-pointer"
+    >
       {/* Left: Text */}
       <div className="flex-1 p-4">
         <h3 className="font-semibold text-gray-800">{name}</h3>
