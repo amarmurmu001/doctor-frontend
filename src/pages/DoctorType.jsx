@@ -1,6 +1,6 @@
-import PageHeader from "../components/PageHeader";
-import ResultCount from "../components/ResultCount";
-import DoctorTypeGrid from "../components/DoctorTypeGrid";
+import PageHeader from "../components/layout/PageHeader";
+import ResultCount from "../components/doctor/ResultCount";
+import DoctorTypeGrid from "../components/doctor/DoctorTypeGrid";
 
 const arr = [
   { category: "heart", number: 25 },

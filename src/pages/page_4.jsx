@@ -1,5 +1,5 @@
-import PageHeader from "../components/PageHeader";
-import DoctorList from "../components/DoctorList";
+import PageHeader from "../components/layout/PageHeader";
+import DoctorList from "../components/doctor/DoctorList";
 
 const doctors = [
   {

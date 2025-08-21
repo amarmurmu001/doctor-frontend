@@ -1,15 +1,26 @@
-import React, { useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Home from './pages/Home';
+import React, { useEffect, lazy, Suspense } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import Loader from './components/layout/Loader';
+import ErrorBoundary from './components/layout/ErrorBoundary';
+const Home = lazy(() => import('./pages/Home'));
 import useLocationStore from './stores/locationStore';
-import Nav from './components/Nav';
+import Nav from './components/layout/Nav';
 import DoctorType from './pages/DoctorType';
 import Page4 from './pages/page_4';
 import Page3 from './pages/Page3'
 import DoctorProfile from './pages/DoctorProfile'
+import Signup from './pages/auth/Signup'
+import Otp from './pages/auth/Otp'
+import AboutPersona from './pages/auth/AboutPersona'
+import LocationInfo from './pages/auth/LocationInfo'
+import PersonalDetails from './pages/auth/PersonalDetails'
+import Login from './pages/auth/Login'
 
 
-function App() {
+function AppShell() {
+  const location = useLocation();
+  const hideNav = location.pathname.toLowerCase() === '/doctor-profile';
+  
   const initializeLocation = useLocationStore((state) => state.initializeLocation);
 
   useEffect(() => {
@@ -18,17 +29,33 @@ function App() {
   }, [initializeLocation]);
 
   return (
-    <Router>
-      <Nav/>
+    <ErrorBoundary>
+      {!hideNav && <Nav/>}
       <div className="App">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/x" element={<DoctorType />} />
-          <Route path="/doctor-mapped" element={<Page4 />} />
-          <Route path='/page-3' element={<Page3/>}/>
-          <Route path='/Doctor-profile' element={<DoctorProfile/>}/>
+        <Suspense fallback={<Loader />}> 
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/x" element={<DoctorType />} />
+            <Route path="/doctor-mapped" element={<Page4 />} />
+            <Route path='/page-3' element={<Page3/>}/>
+            <Route path='/Doctor-profile' element={<DoctorProfile/>}/>
+            <Route path='/auth/signup' element={<Signup/>}/>
+            <Route path='/auth/otp' element={<Otp/>}/>
+            <Route path='/auth/about' element={<AboutPersona/>}/>
+            <Route path='/auth/location' element={<LocationInfo/>}/>
+            <Route path='/auth/personal' element={<PersonalDetails/>}/>
+            <Route path='/login' element={<Login/>}/>
           </Routes>
+        </Suspense>
       </div>
+    </ErrorBoundary>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <AppShell />
     </Router>
   );
 }

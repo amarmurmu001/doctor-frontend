@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
-import SearchBar from "../components/ui/SearchBar";
-import MedicineCarousel from "../components/MedicineCarousel";
-import CategoryGrid from "../components/CategoryGrid";
+import SearchBar from "../components/search/SearchBar";
+import MedicineCarousel from "../components/content/MedicineCarousel";
+import CategoryGrid from "../components/home/CategoryGrid";
 
 // SVG grid background (light grey grid) with 20px spacing
 const gridSvg = encodeURIComponent(

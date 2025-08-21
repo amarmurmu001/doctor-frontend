@@ -1,19 +1,19 @@
-import DoctorsList from "../components/DoctorList";
-import QueryList from "../components/QueryList";
-import SearchBar from "../components/ui/SearchBar";
-import WhyChooseUs from "../components/WhyChooseUs.jsx";
-import WhyChooseDoctar from "../components/ui/why_choose_doctar.jsx";
-import WhyChooseDoctorPhoto from "../components/ui/why_choose_dotor_photo.jsx";
-import VisionMission from "../components/ui/vision_mission.jsx";
+import DoctorsList from "../components/doctor/DoctorList";
+import QueryList from "../components/home/QueryList";
+import SearchBar from "../components/search/SearchBar";
+import WhyChooseUs from "../components/home/WhyChooseUs/WhyChooseUs.jsx";
+import WhyChooseDoctar from "../components/marketing/WhyChooseDoctar.jsx";
+import WhyChooseDoctorPhoto from "../components/marketing/WhyChooseDoctorPhoto.jsx";
+import VisionMission from "../components/content/VisionMission.jsx";
 import { doctarFeatures } from "../data/featuredData.js";
-import NewsGuide from "../components/ui/news&guide.jsx";
-import Blogs from "../components/ui/blogs.jsx";
-import Trendingshorts from "../components/Trendingshorts.jsx";
-import TrendingVideo from "../components/ui/TrendingVideos.jsx";
-import TalkWithExpert from "../components/TalkWithExpert.jsx";
-import Doctorreview from "../components/ui/Doctorreview.jsx";
-import Buyerreview from "../components/ui/Buyerreview.jsx";
-import HowItWorks from "../components/ui/howitworks.jsx";
+import NewsGuide from "../components/content/NewsGuide.jsx";
+import Blogs from "../components/content/Blogs.jsx";
+import Trendingshorts from "../components/content/Trendingshorts.jsx";
+import TrendingVideo from "../components/content/TrendingVideos.jsx";
+import TalkWithExpert from "../components/marketing/TalkWithExpert.jsx";
+import Doctorreview from "../components/reviews/Doctorreview.jsx";
+import Buyerreview from "../components/reviews/Buyerreview.jsx";
+import HowItWorks from "../components/content/HowItWorks.jsx";
 
 export default function Home() {
   return (
