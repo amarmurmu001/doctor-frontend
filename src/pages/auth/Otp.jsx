@@ -7,7 +7,7 @@ export default function Otp(){
   const navigate = useNavigate()
   const { email, persona } = useAuthStore(s => s.onboarding)
   const setOnboarding = useAuthStore(s => s.setOnboarding)
-  const [code, setCode] = useState(['', '', '', '', '', ''])
+  const [code, setCode] = useState(['', '', '', ''])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [cooldown, setCooldown] = useState(0)
