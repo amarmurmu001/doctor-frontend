@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { sendOtp } from '../../services/authAPI'
+import { registerUser } from '../../services/authAPI'
 import useAuthStore from '../../stores/authStore'
 
 export default function Signup() {
@@ -15,7 +15,10 @@ export default function Signup() {
     setError('')
     setSubmitting(true)
     try {
-      await sendOtp({ phone: form.phone, email: form.email })
+      // Read persona from onboarding state and send as role
+      const persona = JSON.parse(localStorage.getItem('auth-store'))?.state?.onboarding?.persona || 'patient'
+      const role = persona === 'doctor' ? 'doctor' : 'user'
+      await registerUser({ fullName: form.fullName, email: form.email, phone: form.phone, password: form.password, role })
       setOnboarding({ email: form.email, phone: form.phone })
       navigate('/auth/otp')
     } catch(err){
@@ -35,7 +38,7 @@ export default function Signup() {
         <input className="w-full border rounded-md px-3 py-2 mb-2" placeholder="Phone" value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})} />
         <input className="w-full border rounded-md px-3 py-2 mb-4" type="password" placeholder="Password" value={form.password} onChange={e=>setForm({...form, password:e.target.value})} />
         {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-        <button disabled={submitting} className="w-full bg-black text-white py-2 rounded-md disabled:opacity-50">{submitting ? 'Sending OTP…' : 'Next'}</button>
+        <button disabled={submitting} className="w-full bg-black text-white py-2 rounded-md disabled:opacity-50">{submitting ? 'Registering…' : 'Next'}</button>
       </form>
     </div>
   )

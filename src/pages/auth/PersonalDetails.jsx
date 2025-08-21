@@ -1,5 +1,4 @@
 import useAuthStore from '../../stores/authStore'
-import { registerUser } from '../../services/authAPI'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 
@@ -14,8 +13,6 @@ export default function PersonalDetails(){
   async function handleFinish(){
     setLoading(true); setError('')
     try{
-      const res = await registerUser({ ...onboarding })
-      setAuth({ user: res.user, token: res.token })
       navigate('/login')
     }catch(err){
       setError(err.message || 'Failed to save details')

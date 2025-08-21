@@ -108,7 +108,7 @@ const useLocationStore = create((set, get) => ({
         return allLocations;
       }
     } catch (error) {
-      console.warn('⚠️ Could not fetch locations from backend, using defaults');
+      console.warn(error,'⚠️ Could not fetch locations from backend, using defaults');
     }
     return get().availableLocations;
   },

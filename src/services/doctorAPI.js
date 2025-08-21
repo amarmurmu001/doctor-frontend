@@ -2,7 +2,7 @@ const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
 export const fetchDoctorsByLocation = async (location) => {
   try {
-    const response = await fetch(`${API_BASE_URL}/doctors?location=${encodeURIComponent(location.toLowerCase())}`);
+    const response = await fetch(`${API_BASE_URL}/doctor/search?location=${encodeURIComponent(location.toLowerCase())}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -24,7 +24,7 @@ export const searchDoctors = async (location, specialty = '', name = '') => {
       ...(name && { name })
     });
     
-    const response = await fetch(`${API_BASE_URL}/doctors?${params}`);
+    const response = await fetch(`${API_BASE_URL}/doctor/search?${params}`);
     
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);

@@ -104,12 +104,12 @@ function Nav() {
 
       {/* Center: Logo */}
       <div className="absolute left-1/2 transform -translate-x-1/2">
-        <img src="icons/logo.png" alt="Doctar" className="w-24 h-auto" />
+        <img src="/icons/logo.png" alt="Doctar" className="w-24 h-auto" />
       </div>
 
       {/* Right: Profile Image */}
       <div className="w-8 h-10 rounded-full overflow-hidden">
-        <img src="profile.png" alt="Profile" className="w-full h-full object-cover" />
+        <img src="/profile.png" alt="Profile" className="w-full h-full object-cover" />
       </div>
     </div>
   );
