@@ -6,6 +6,7 @@ import Nav from './components/Nav';
 import DoctorType from './pages/DoctorType';
 import Page4 from './pages/page_4';
 import Page3 from './pages/Page3'
+import DoctorProfile from './pages/DoctorProfile'
 
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
           <Route path="/x" element={<DoctorType />} />
           <Route path="/doctor-mapped" element={<Page4 />} />
           <Route path='/page-3' element={<Page3/>}/>
+          <Route path='/Doctor-profile' element={<DoctorProfile/>}/>
           </Routes>
       </div>
     </Router>
