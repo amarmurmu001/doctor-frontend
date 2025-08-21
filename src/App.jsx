@@ -22,7 +22,8 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 
 function AppShell() {
   const location = useLocation();
-  const hideNav = location.pathname.toLowerCase().includes('profile');
+  const hideNav = location.pathname.toLowerCase().includes('profile') || 
+                  location.pathname.toLowerCase().includes('doctor/edit');
   
   const initializeLocation = useLocationStore((state) => state.initializeLocation);
 
