@@ -26,42 +26,109 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4ff] flex items-center justify-center px-4 py-10">
-      <form onSubmit={handleLogin} className="w-full max-w-sm bg-white rounded-2xl shadow p-5">
-        <h1 className="text-xl font-bold">Welcome back</h1>
-        <p className="text-xs text-gray-500 mb-4">Please enter your credentials to continue</p>
+    <div className="min-h-screen bg-white" style={{
+      backgroundImage: `
+        linear-gradient(to right, #f3f4f6 1px, transparent 1px),
+        linear-gradient(to bottom, #f3f4f6 1px, transparent 1px)
+      `,
+      backgroundSize: '20px 20px'
+    }}>
+      {/* Purple header bar */}
+      <div className="w-full h-2 bg-purple-500"></div>
+      
+      {/* Logo section */}
+      <div className="px-6 py-6 bg-white">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
+            <span className="text-white text-xs font-bold">D</span>
+          </div>
+          <span className="text-black font-semibold text-lg">octar</span>
+        </div>
+      </div>
 
-        <input
-          className="w-full border rounded-md px-3 py-2 mb-2"
-          type="email"
-          placeholder="Email"
-          autoComplete="email"
-          value={form.email}
-          onChange={e=>setForm({...form, email:e.target.value})}
-        />
-        <input
-          className="w-full border rounded-md px-3 py-2 mb-3"
-          type="password"
-          placeholder="Password"
-          autoComplete="current-password"
-          value={form.password}
-          onChange={e=>setForm({...form, password:e.target.value})}
-        />
+      {/* Content section */}
+      <div className="px-6">
+        <div className="w-full bg-white rounded-t-3xl p-6 -mt-4">
+          <h1 className="text-2xl font-bold text-gray-900 mb-8">Welcome Back</h1>
+          
+          <form onSubmit={handleLogin} className="space-y-6">
+            {/* Email field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Email or Phone*</label>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white"
+                type="email"
+                placeholder="Example@domain"
+                autoComplete="email"
+                value={form.email}
+                onChange={e=>setForm({...form, email:e.target.value})}
+                required
+              />
+            </div>
 
-        {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
+            {/* Password field */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-gray-900">Password*</label>
+                <button 
+                  type="button" 
+                  onClick={()=>navigate('/auth/forgot-password')} 
+                  className="text-sm text-purple-600 hover:text-purple-700"
+                >
+                  Forgot ?
+                </button>
+              </div>
+              <input
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white"
+                type="password"
+                placeholder="Password"
+                autoComplete="current-password"
+                value={form.password}
+                onChange={e=>setForm({...form, password:e.target.value})}
+                required
+              />
+            </div>
 
-        <button disabled={loading} className="w-full bg-black text-white py-2 rounded-md disabled:opacity-50">
-          {loading?'Logging in…':'Login'}
-        </button>
+            {/* Error message */}
+            {error && <div className="text-red-600 text-sm px-1">{error}</div>}
 
-        <div className="mt-3 flex items-center justify-between text-sm">
-          <button type="button" onClick={()=>navigate('/auth/forgot-password')} className="text-blue-600">Forgot password?</button>
-          <div>
-            <span className="text-gray-600">New here? </span>
-            <button type="button" onClick={()=>navigate('/auth/signup')} className="text-blue-600">Register</button>
+            {/* Login button */}
+            <button 
+              disabled={loading} 
+              className="w-full bg-black text-white py-4 rounded-full font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors"
+            >
+              {loading ? 'Logging in…' : 'Login'}
+            </button>
+
+            {/* Register link */}
+            <div className="text-center">
+              <span className="text-gray-600 text-sm">New here ? </span>
+              <button 
+                type="button" 
+                onClick={()=>navigate('/auth/signup')} 
+                className="text-purple-600 text-sm font-medium hover:text-purple-700"
+              >
+                Get Started
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      {/* Doctor illustration */}
+      <div className="fixed bottom-0 right-0 w-full flex justify-end pointer-events-none">
+        <div className="relative">
+          {/* Purple circle background */}
+          <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-200 rounded-full transform translate-x-20 translate-y-20"></div>
+          {/* Doctor image placeholder */}
+          <div className="relative w-48 h-56 mb-0 mr-8">
+            <div className="w-full h-full bg-gradient-to-t from-purple-100 to-transparent rounded-t-full flex items-end justify-center">
+              {/* Doctor illustration placeholder - you can replace this with actual image */}
+              <div className="text-6xl mb-4">👨‍⚕️</div>
+            </div>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   )
 }

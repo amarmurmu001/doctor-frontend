@@ -29,19 +29,92 @@ export default function Signup() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4ff] flex items-start pt-8 justify-center px-4">
-      <form onSubmit={handleSubmit} className="w-full max-w-sm bg-white rounded-2xl shadow p-4">
-        <h1 className="text-lg font-bold mb-2">Registration</h1>
-        <p className="text-xs text-gray-500 mb-4">Please enter your details</p>
-        <input className="w-full border rounded-md px-3 py-2 mb-2" placeholder="Full name" value={form.fullName} onChange={e=>setForm({...form, fullName:e.target.value})} />
-        <input className="w-full border rounded-md px-3 py-2 mb-2" type="email" placeholder="Email" value={form.email} onChange={e=>setForm({...form, email:e.target.value})} />
-        <input className="w-full border rounded-md px-3 py-2 mb-2" placeholder="Phone" value={form.phone} onChange={e=>setForm({...form, phone:e.target.value})} />
-        <input className="w-full border rounded-md px-3 py-2 mb-4" type="password" placeholder="Password" value={form.password} onChange={e=>setForm({...form, password:e.target.value})} />
-        {error && <div className="text-red-600 text-sm mb-2">{error}</div>}
-        <button disabled={submitting} className="w-full bg-black text-white py-2 rounded-md disabled:opacity-50">{submitting ? 'Registering…' : 'Next'}</button>
-      </form>
+    <div className="min-h-screen bg-white">
+      {/* Purple header bar */}
+      <div className="w-full h-2 bg-purple-500"></div>
+      
+      {/* Logo section */}
+      <div className="px-6 py-6">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
+            <span className="text-white text-xs font-bold">D</span>
+          </div>
+          <span className="text-black font-semibold text-lg">octar</span>
+        </div>
+      </div>
+
+      {/* Form section */}
+      <div className="px-6">
+        <form onSubmit={handleSubmit} className="w-full">
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">Registration</h1>
+          <p className="text-sm text-gray-600 mb-8">Please enter your registration details name, email and phone</p>
+          
+          <div className="space-y-6">
+            {/* Name field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Name*</label>
+              <input 
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none" 
+                placeholder="Full name" 
+                value={form.fullName} 
+                onChange={e=>setForm({...form, fullName:e.target.value})}
+                required
+              />
+            </div>
+
+            {/* Email field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Email*</label>
+              <input 
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none" 
+                type="email" 
+                placeholder="Example@domain" 
+                value={form.email} 
+                onChange={e=>setForm({...form, email:e.target.value})}
+                required
+              />
+            </div>
+
+            {/* Phone field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Phone no.*</label>
+              <input 
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none" 
+                placeholder="+91 xxxxx xxxxx" 
+                value={form.phone} 
+                onChange={e=>setForm({...form, phone:e.target.value})}
+                required
+              />
+            </div>
+
+            {/* Password field */}
+            <div>
+              <label className="block text-sm font-medium text-gray-900 mb-2">Password*</label>
+              <input 
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none" 
+                type="password" 
+                placeholder="••••••••" 
+                value={form.password} 
+                onChange={e=>setForm({...form, password:e.target.value})}
+                required
+              />
+            </div>
+          </div>
+
+          {/* Error message */}
+          {error && <div className="text-red-600 text-sm mt-4 px-1">{error}</div>}
+          
+          {/* Submit button */}
+          <div className="mt-8 mb-8">
+            <button 
+              disabled={submitting} 
+              className="w-full bg-black text-white py-4 rounded-full font-medium text-base disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-800 transition-colors"
+            >
+              {submitting ? 'Registering…' : 'Next'}
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   )
 }
-
-

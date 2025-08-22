@@ -46,28 +46,31 @@ function Nav() {
     return () => document.removeEventListener('mousedown', onClickAway);
   }, []);
 
-  const popularCities = ['Patna', 'Delhi', 'Mumbai', 'Bengaluru', 'Kolkata', 'Hyderabad', 'Chennai', 'Pune'];
+  const popularCities = ['Dhanbad','Deoghar','Kolkata','Sahjahanpur','Patna', 'Delhi', 'Mumbai', 'Bengaluru', 'Pune'];
 
   return (
-    <div className="relative flex items-center justify-between p-2 px-4 md:p-4 md:px-10 bg-[#7551B2]">
+    <div className="relative  flex items-center justify-between p-2 px-4 md:p-4 md:px-10 bg-[#7551B2]">
       {/* Left: Dynamic Location with dropdown */}
       <div className="flex items-center space-x-2" ref={panelRef}>
-        <button
-          onClick={() => setOpen((v) => !v)}
-          className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium px-3 py-1 rounded-md transition"
-          title="Select location"
-        >
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
-            <path fillRule="evenodd" d="M11.54 22.35a.75.75 0 0 0 .92 0c1.14-.87 2.67-2.2 4.04-3.78C18.92 16.82 21 14.2 21 11.25 21 6.7 17.52 3 12.75 3S4.5 6.7 4.5 11.25c0 2.95 2.08 5.57 4.5 7.32 1.37 1.58 2.9 2.9 4.04 3.78Zm1.21-9.6a3 3 0 1 0-4.5-3.9 3 3 0 0 0 4.5 3.9Z" clipRule="evenodd" />
-          </svg>
-          <span>{selectedLocation || (locationLoading ? 'Detecting location…' : 'Select location')}</span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`}>
-            <path fillRule="evenodd" d="M12 14.25a.75.75 0 0 1-.53-.22l-4.5-4.5a.75.75 0 0 1 1.06-1.06L12 12.44l3.97-3.97a.75.75 0 0 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-.53.22Z" clipRule="evenodd" />
-          </svg>
-        </button>
+      <button
+  onClick={() => setOpen((v) => !v)}
+  className="flex w-[120px] items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-medium px-3 py-1 rounded-md transition"
+  title="Select location"
+>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="flex-shrink-0 w-4 h-4">
+    <path fillRule="evenodd" d="M11.54 22.35a.75.75 0 0 0 .92 0c1.14-.87 2.67-2.2 4.04-3.78C18.92 16.82 21 14.2 21 11.25 21 6.7 17.52 3 12.75 3S4.5 6.7 4.5 11.25c0 2.95 2.08 5.57 4.5 7.32 1.37 1.58 2.9 2.9 4.04 3.78Zm1.21-9.6a3 3 0 1 0-4.5-3.9 3 3 0 0 0 4.5 3.9Z" clipRule="evenodd" />
+  </svg>
+  <span className="overflow-hidden whitespace-nowrap truncate">
+    {selectedLocation || (locationLoading ? 'Detecting location…' : 'Select location')}
+  </span>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className={`flex-shrink-0 w-4 h-4 transition-transform ${open ? 'rotate-180' : ''}`}>
+    <path fillRule="evenodd" d="M12 14.25a.75.75 0 0 1-.53-.22l-4.5-4.5a.75.75 0 0 1 1.06-1.06L12 12.44l3.97-3.97a.75.75 0 0 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-.53.22Z" clipRule="evenodd" />
+  </svg>
+</button>
+
 
         {open && (
-          <div className="absolute left-4 top-full mt-2 w-72 sm:w-80 max-h-[70vh] overflow-auto bg-white shadow-xl rounded-2xl z-50 p-3">
+          <div className="absolute transition-all duration-300 left-4 top-full mt-2 w-72 sm:w-80 max-h-[70vh] overflow-auto bg-white shadow-xl rounded-2xl z-50 p-3">
             <button
               onClick={() => { if (!locationLoading) refreshLocation(); setOpen(false); }}
               className="w-full flex items-center gap-2 text-[#7551B2] hover:bg-[#f4f4ff] px-3 py-2 rounded-lg"
@@ -85,7 +88,7 @@ function Nav() {
                 {popularCities.map((name) => (
                   <button key={name} onClick={() => { updateLocation(name); setOpen(false); }} className="rounded-lg overflow-hidden border hover:shadow-sm transition">
                     <div className="w-full h-12 bg-gray-100 flex items-center justify-center">
-                      <img src="/icons/real-icon.png" alt="city" className="w-6 h-6 opacity-70" />
+                      <img src="" alt="city" className="w-6 h-6 opacity-70" />
                     </div>
                     <div className="text-[10px] px-1 py-1 truncate">{name}</div>
                   </button>
