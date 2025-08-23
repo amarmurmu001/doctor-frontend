@@ -5,7 +5,7 @@ function TalkWithExpert() {
           <img
             src="/icons/expert.webp"
             alt="Doctor consultation"
-            className="w-full h-auto rounded-t-2xl object-cover"
+            className="w-full md:w-2xl md:h-80 h-auto mx-auto md:mt-10 rounded-2xl object-cover"
           />
         </div>
 
@@ -14,10 +14,10 @@ function TalkWithExpert() {
             Talk With Expert
           </h2>
 
-          <p className="text-gray-700 text-base leading-relaxed  px-2">
-            Engage in genuine, confident discussions with experts, fostering
-            trust, sharing insights, and encouraging collaborative
-            problem-solving.
+          <p className="text-black text-base font-bold leading-relaxed  px-2">
+           Engage in genuine and confident discussions with industry-leading experts, fostering
+ mutual trust, openly sharing valuable insights, and actively encouraging collaborative
+, innovative problem-solving approaches for achieving shared, impactful, and sustainable .
           </p>
 
           <button className="bg-black rounded-lg text-white py-3 px-6 text-lg font-medium  hover:bg-gray-800 transition-colors">
