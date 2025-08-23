@@ -15,6 +15,7 @@ import Doctorreview from "../components/reviews/Doctorreview.jsx";
 import Buyerreview from "../components/reviews/Buyerreview.jsx";
 import HowItWorks from "../components/content/HowItWorks.jsx";
 import WhyDoctar from "../components/home/WhyDoctar.jsx";
+import FAQ from "../components/FAQ.jsx";
 
 export default function Home() {
   return (
@@ -27,11 +28,11 @@ export default function Home() {
         <SearchBar />
       </div>
 
-      {/* Main Content Container with 80vw width on desktop */}
-      <div className="md:w-[80vw] mx-auto">
+      {/* Main Content Container with responsive width */}
+      <div className="w-full md:w-[90vw] lg:w-[80vw] mx-auto">
         {/* Banner Section - Overlapping the split */}
-        <div className="px-4 -mt-16 md:-mt-[12vw] z-10">
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden mx-auto w-full min-w-xsm ">
+        <div className="px-2 sm:px-4 -mt-16 md:-mt-[12vw] z-10">
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden mx-auto w-full min-w-xsm">
             <img
               src="banner.png"
               alt="banner"
@@ -41,11 +42,11 @@ export default function Home() {
         </div>
 
         {/* Query List Section - Compact spacing */}
-        <div className="mt-4">
+        <div className="mt-4 px-2 sm:px-0">
           <QueryList />
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 px-2 sm:px-0">
           <DoctorsList />
         </div>
 
@@ -61,8 +62,20 @@ export default function Home() {
         <Trendingshorts />
         <TrendingVideo />
         <TalkWithExpert/>
-        <Doctorreview/>
-        <Buyerreview/>
+        
+        {/* Reviews Section - Responsive Layout with proper spacing */}
+        <div className="px-2 sm:px-4 md:px-6 lg:px-8 mt-6 sm:mt-8 md:mt-12 lg:mt-16">
+          {/* Mobile: Stacked vertically, Tablet: Side by side with smaller gap, Desktop: Side by side with larger gap */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:gap-8 items-stretch">
+            <Doctorreview/>
+            <Buyerreview/>
+          </div>
+        </div>
+      </div>
+
+      {/* FAQ Section - Desktop Only with proper margin from reviews */}
+      <div className="hidden lg:block mt-24">
+        <FAQ />
       </div>
     </div>
   );
