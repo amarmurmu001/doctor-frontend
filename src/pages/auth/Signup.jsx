@@ -15,7 +15,7 @@ export default function Signup() {
     setError('')
     setSubmitting(true)
     try {
-      // Read persona from onboarding state and send as role
+      
       const persona = JSON.parse(localStorage.getItem('auth-store'))?.state?.onboarding?.persona || 'patient'
       const role = persona === 'doctor' ? 'doctor' : 'patient'
       await registerUser({ fullName: form.fullName, email: form.email, phone: form.phone, password: form.password, role })
