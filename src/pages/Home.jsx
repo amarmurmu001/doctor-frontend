@@ -30,7 +30,7 @@ export default function Home() {
       <div className="md:w-[80vw] mx-auto">
         {/* Banner Section - Overlapping the split */}
         <div className="px-4 -mt-16 md:-mt-[12vw] z-10">
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden mx-auto w-full min-w-xsm max-w-6xl">
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden mx-auto w-full min-w-xsm ">
             <img
               src="banner.png"
               alt="banner"
