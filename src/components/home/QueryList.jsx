@@ -6,6 +6,14 @@ export default function QueryList() {
     { image: "/icons/liver.png", label: "Liver" },
     { image: "/icons/lungs.png", label: "Lungs" },
     { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
+    { image: "/icons/kidney.png", label: "Kidney" },
   ];
 
   return (
@@ -17,7 +25,7 @@ export default function QueryList() {
       </div>
 
       {/* Query Items */}
-      <div className="flex gap-5 overflow-x-auto pb-2">
+      <div className="flex gap-5 overflow-x-hidden pb-2">
         {queries.map((item, index) => (
           <QueryItem key={index} image={item.image} label={item.label} />
         ))}

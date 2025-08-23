@@ -57,7 +57,7 @@ function Nav() {
   ];
 
   return (
-    <div className="fix top-0 relative flex items-center justify-between p-2 px-4 md:p-4 md:px-10 bg-[#7551B2] ">
+    <div className="sticky top-0 z-10  shadow-2xl flex items-center justify-between p-2 px-4 md:p-4 md:px-10 bg-[#7551B2] ">
       
       {/* LEFT CLUSTER: On desktop, show logo then location; on mobile, only location */}
       <div className="flex items-center gap-3">
@@ -233,12 +233,12 @@ function Nav() {
           </button>
         )}
 
-        {/* Mobile menu button */}
+        {/* Mobile menu button
         <button className="md:hidden ml-2 p-1">
           <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
             <path d="M4 18h16v-2H4v2zm0-5h16v-2H4v2zm0-7v2h16V6H4z"/>
           </svg>
-        </button>
+        </button> */}
       </div>
     </div>
   );

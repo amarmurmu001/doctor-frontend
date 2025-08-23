@@ -14,6 +14,7 @@ import TalkWithExpert from "../components/marketing/TalkWithExpert.jsx";
 import Doctorreview from "../components/reviews/Doctorreview.jsx";
 import Buyerreview from "../components/reviews/Buyerreview.jsx";
 import HowItWorks from "../components/content/HowItWorks.jsx";
+import WhyDoctar from "../components/home/WhyDoctar.jsx";
 
 export default function Home() {
   return (
@@ -49,32 +50,7 @@ export default function Home() {
         </div>
 
         <WhyChooseUs features={doctarFeatures} />
-
-        <div className="flex flex-col items-center justify-center">
-          <h2 className="text-center text-black font-bold py-2 text-xl">Why Doctar?</h2>
-          <div className="flex bg-[#F2F2F2] justify-between rounded-3xl mx-2 text-sm text-black p-2">
-            <div className="relative p-1 rounded-md flex-1">
-              <p className="text-black text-[11px] leading-tight font-poppins">
-                SIX offers a trusted, user-friendly platform tailored for used car
-                dealers and individual seller.
-              </p>
-            </div>
-            <div className="left-0 mt-1 h-8 w-1 bg-purple-600 rounded mr-2"></div>
-            <div className="relative p-1 rounded-md flex-1 pl-[6px]">
-              <p className="text-black text-[11px] leading-tight">
-                Connect Directly Owners option to Skip middlemen, negotiate
-                freely, and buy what you want within budget at your best price!
-              </p>
-            </div>
-            <div className="left-0 mt-1 h-8 w-1 bg-purple-600 rounded mr-2"></div>
-            <div className="relative p-1 rounded-md flex-1">
-              <p className="text-black text-[11px] leading-tight">
-                Connect with Real Buyers and Sellers Verified listings, genuine
-                leads, and direct deals to ensure a faster & trusted experience.
-              </p>
-            </div>
-          </div>
-        </div>
+        <WhyDoctar/>
         
         <WhyChooseDoctorPhoto />
         <WhyChooseDoctar />
