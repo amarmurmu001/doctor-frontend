@@ -1,27 +1,69 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { submitReview } from '../../services/reviewAPI';
 
-const ReviewModal = ({ isOpen, onClose, doctorId, onReviewSubmitted }) => {
+const ReviewModal = ({ isOpen, onClose, doctorId, onReviewSubmitted, onError }) => {
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+  const [validationErrors, setValidationErrors] = useState({});
+  
+  // Reset form state when modal opens/closes
+  useEffect(() => {
+    if (isOpen) {
+      setError('');
+      setValidationErrors({});
+    }
+  }, [isOpen]);
   
   // Get auth token from localStorage
   const getToken = () => {
-    const authStore = JSON.parse(localStorage.getItem('auth-store'));
-    return authStore?.state?.token;
+    try {
+      const authStore = JSON.parse(localStorage.getItem('auth-store'));
+      return authStore?.state?.token;
+    } catch (err) {
+      console.error('Error parsing auth data:', err);
+      return null;
+    }
+  };
+
+  // Validate form inputs
+  const validateForm = () => {
+    const errors = {};
+    
+    if (!comment.trim()) {
+      errors.comment = 'Please provide a review comment';
+    } else if (comment.trim().length < 5) {
+      errors.comment = 'Comment must be at least 5 characters';
+    }
+    
+    if (!rating || rating < 1 || rating > 5) {
+      errors.rating = 'Please select a rating between 1 and 5';
+    }
+    
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+    
     setSubmitting(true);
     
     try {
       const token = getToken();
       if (!token) {
-        throw new Error('Please log in to submit a review');
+        throw new Error('Authentication required. Please log in to submit a review.');
+      }
+      
+      if (!doctorId) {
+        throw new Error('Doctor information is missing. Please try again.');
       }
       
       await submitReview({ doctorId, rating, comment }, token);
@@ -32,7 +74,29 @@ const ReviewModal = ({ isOpen, onClose, doctorId, onReviewSubmitted }) => {
       }
       onClose();
     } catch (err) {
-      setError(err.message || 'Failed to submit review');
+      // Prepare error message
+      let errorMessage;
+      if (err.message.includes('401') || err.message.includes('auth')) {
+        errorMessage = 'Your session has expired. Please log in again.';
+      } else if (err.message.includes('404')) {
+        errorMessage = 'Doctor not found. Please try again later.';
+      } else if (err.message.includes('429')) {
+        errorMessage = 'Too many requests. Please try again later.';
+      } else if (err.message.includes('network') || err.message.includes('connection')) {
+        errorMessage = 'Network error. Please check your internet connection.';
+      } else {
+        errorMessage = err.message || 'Failed to submit review. Please try again later.';
+      }
+      
+      // Set local error state
+      setError(errorMessage);
+      
+      // If parent component provided onError callback, use it
+      if (onError && typeof onError === 'function') {
+        onError(errorMessage);
+      }
+      
+      console.error('Review submission error:', err);
     } finally {
       setSubmitting(false);
     }
@@ -80,6 +144,9 @@ const ReviewModal = ({ isOpen, onClose, doctorId, onReviewSubmitted }) => {
                 </button>
               ))}
             </div>
+            {validationErrors.rating && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.rating}</p>
+            )}
           </div>
           
           <div className="mb-4">
@@ -89,12 +156,20 @@ const ReviewModal = ({ isOpen, onClose, doctorId, onReviewSubmitted }) => {
             <textarea
               id="comment"
               value={comment}
-              onChange={(e) => setComment(e.target.value)}
+              onChange={(e) => {
+                setComment(e.target.value);
+                // Clear validation error when user starts typing
+                if (validationErrors.comment && e.target.value.trim().length >= 5) {
+                  setValidationErrors(prev => ({ ...prev, comment: null }));
+                }
+              }}
               rows="4"
-              className="w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-2 focus:ring-[#7551B2] focus:border-transparent transition-all"
+              className={`w-full border ${validationErrors.comment ? 'border-red-500' : 'border-gray-300'} rounded-md px-3 py-2 focus:ring-2 focus:ring-[#7551B2] focus:border-transparent transition-all`}
               placeholder="Share your experience with this doctor..."
-              required
             />
+            {validationErrors.comment && (
+              <p className="text-red-500 text-xs mt-1">{validationErrors.comment}</p>
+            )}
           </div>
           
           <div className="flex justify-end gap-3">
