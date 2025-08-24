@@ -12,7 +12,7 @@ import Trendingshorts from "../components/content/Trendingshorts.jsx";
 import TrendingVideo from "../components/content/TrendingVideos.jsx";
 import TalkWithExpert from "../components/marketing/TalkWithExpert.jsx";
 import Doctorreview from "../components/reviews/Doctorreview.jsx";
-import Buyerreview from "../components/reviews/Buyerreview.jsx";
+import Buyerreview from "../components/reviews/Patientreview.jsx";
 import HowItWorks from "../components/content/HowItWorks.jsx";
 import WhyDoctar from "../components/home/WhyDoctar.jsx";
 import FAQ from "../components/FAQ.jsx";

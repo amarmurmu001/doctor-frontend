@@ -2,7 +2,7 @@ export default function(){
     return(
         <div className="bg-[#F2F1F9] rounded-[20px] p-3 sm:p-4 m-2 mt-4 h-full">
         <div className="flex justify-between items-center mb-3 sm:mb-4">
-          <h2 className="text-[#9B51E0] text-center font-semibold text-base sm:text-lg">Buyer Experience</h2>
+          <h2 className="text-[#9B51E0] text-center font-semibold text-base sm:text-lg">Patient Experience</h2>
           <div className="text-sm text-[#9B51E0] font-medium cursor-pointer hover:text-[#7C3AED] transition-colors">View All &gt;</div>
         </div>
       
