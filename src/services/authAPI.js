@@ -10,6 +10,22 @@ export async function sendOtp({ email }) {
 	return response.json();
 }
 
+export async function updateUserProfile({ name, email, phone }, token) {
+	const response = await fetch(`${API_BASE_URL}/api/auth/update`, {
+		method: 'PUT',
+		headers: { 
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: JSON.stringify({ name, email, phone })
+	});
+	if (!response.ok) {
+		const errorText = await response.text();
+		throw new Error(errorText || 'Failed to update profile');
+	}
+	return response.json();
+}
+
 export async function verifyOtp({ email, otp }) {
 	const response = await fetch(`${API_BASE_URL}/api/otp/verify`, {
 		method: 'POST',
