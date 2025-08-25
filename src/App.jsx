@@ -28,8 +28,8 @@ import Users from './pages/admin/Users'
 import Doctors from './pages/admin/Doctors'
 import Appointments from './pages/admin/Appointments'
 import AdminLogin from './pages/admin/Login'
-import NewsManagement from './pages/admin/NewsManagement'
-import BlogsManagement from './pages/admin/BlogsManagement'
+// import NewsManagement from './pages/admin/NewsManagement'
+// import BlogsManagement from './pages/admin/BlogsManagement'
 
 
 function AppShell() {
@@ -77,8 +77,8 @@ function AppShell() {
               <Route path='users' element={<Users />} />
               <Route path='doctors' element={<Doctors />} />
               <Route path='appointments' element={<Appointments />} />
-              <Route path='news' element={<NewsManagement />} />
-              <Route path='blogs' element={<BlogsManagement />} />
+              {/* <Route path='news' element={<NewsManagement />} /> */}
+              {/* <Route path='blogs' element={<BlogsManagement />} /> */}
             </Route>
           </Routes>
         </Suspense>
