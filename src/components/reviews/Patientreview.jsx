@@ -71,7 +71,7 @@ export default function() {
       )}
       
       <div className="flex justify-between items-center mb-3 sm:mb-4">
-        <h2 className="text-[#9B51E0] text-center font-semibold text-base sm:text-lg">Doctor Experience</h2>
+        <h2 className="text-[#9B51E0] text-center font-semibold text-base sm:text-lg">Patient Experience</h2>
         <div className="text-sm text-[#9B51E0] font-medium cursor-pointer hover:text-[#7C3AED] transition-colors">View All &gt;</div>
       </div>
     

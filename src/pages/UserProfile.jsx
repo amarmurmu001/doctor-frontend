@@ -58,10 +58,10 @@ function UserProfile() {
             ←
           </button>
           <h1 className="text-white text-lg font-semibold">User Profile</h1>
-          {user && user.role === 'patient' ? (
+          {user ? (
             <div className="flex items-center gap-2">
               <button
-                onClick={() => navigate('/user/edit')}
+                onClick={() => navigate('/user-edit')}
                 className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-sm font-semibold"
                 title="Edit Profile"
               >
