@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Category data for the grid cards
 const categories = [
   {
@@ -28,24 +30,27 @@ const categories = [
 
 export default function CategoryGrid() {
   return (
-    <div className="grid grid-cols-2 gap-10 px-4 pt-4 mt-8">
-      {categories.map((category) => (
-        <div
-          key={category.id}
-          className="flex flex-col items-center gap-3 p-4 rounded-2xl bg-[#f2f1f9] border border-[#eee7fb]"
-          style={{ boxShadow: '0px 4px 4px 0px #7551b3' }}
-        >
-          <div 
-            className="w-16 h-16 rounded-full bg-white flex items-center justify-center"
-            style={{ boxShadow: '0px 2px 4px 0px #7551b3' }}
+    <div className="w-full">
+      {/* 2x2 Grid Layout for all screen sizes */}
+      <div className="grid grid-cols-2 gap-8">
+        {categories.map((category) => (
+          <div
+            key={category.id}
+            className="w-[180px] h-[140px] flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-[#f2f1f9] border border-[#eee7fb] cursor-pointer"
+            style={{ boxShadow: '0px 4px 4px 0px #7551b3' }}
           >
-            <img src={category.icon} alt={category.name} className="w-8 h-8 object-contain" />
+            <div 
+              className="w-12 h-12 rounded-full bg-white flex items-center justify-center"
+              style={{ boxShadow: '0px 2px 4px 0px #7551b3' }}
+            >
+              <img src={category.icon} alt={category.name} className="w-6 h-6 object-contain" />
+            </div>
+            <div className="text-center">
+              <h3 className="text-sm font-semibold text-gray-800">{category.name}</h3>
+            </div>
           </div>
-          <div className="text-center">
-            <h3 className="text-sm font-semibold text-gray-800">{category.name}</h3>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
