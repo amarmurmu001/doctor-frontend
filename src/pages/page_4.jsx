@@ -1,6 +1,7 @@
 import PageHeader from "../components/layout/PageHeader";
 import DoctorList from "../components/doctor/DoctorList";
 
+
 const doctors = [
   {
     id: 1,
@@ -63,6 +64,8 @@ export default function Page4() {
     <div className="w-full bg-[#f4f4ff]">
       {/* Header with search */}
       <PageHeader />
+
+    
 
       {/* Doctors list with title */}
       <DoctorList 

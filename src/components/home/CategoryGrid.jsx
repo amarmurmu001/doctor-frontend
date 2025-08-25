@@ -31,12 +31,12 @@ const categories = [
 export default function CategoryGrid() {
   return (
     <div className="w-full">
-      {/* Always 2x2 Grid Layout */}
-      <div className="grid grid-cols-2 gap-8">
+      {/* Responsive Grid: 2 columns for tablet, 3 for desktop */}
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {categories.map((category) => (
           <div
             key={category.id}
-            className="w-[180px] h-[140px] flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-[#f2f1f9] border border-[#eee7fb] cursor-pointer"
+            className="w-[180px] h-[140px] flex flex-col items-center justify-center gap-3 p-4 rounded-xl bg-[#f2f1f9] border border-[#eee7fb] cursor-pointer mx-auto"
             style={{ boxShadow: '0px 4px 4px 0px #7551b3' }}
           >
             <div 
