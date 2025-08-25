@@ -5,7 +5,7 @@ import WhyChooseUs from "../components/home/WhyChooseUs/WhyChooseUs.jsx";
 import WhyChooseDoctar from "../components/marketing/WhyChooseDoctar.jsx";
 import WhyChooseDoctorPhoto from "../components/marketing/WhyChooseDoctorPhoto.jsx";
 import VisionMission from "../components/content/VisionMission.jsx";
-import { doctarFeatures } from "../data/data.js";
+import { doctarFeatures } from "../data/featuredData.js";
 import NewsGuide from "../components/content/NewsGuide.jsx";
 import Blogs from "../components/content/Blogs.jsx";
 import Trendingshorts from "../components/content/Trendingshorts.jsx";
