@@ -22,7 +22,6 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 
 // Admin imports
 import AdminRoute from './components/admin/AdminRoute'
-import Dashboard from './pages/admin/Dashboard'
 import AdminHome from './pages/admin/Home'
 import Users from './pages/admin/Users'
 import Doctors from './pages/admin/Doctors'

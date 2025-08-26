@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { registerUser } from '../../services/authAPI'
-import useAuthStore from '../../stores/authStore'
+import useAuthStore from '../../stores/useAuthStore'
 
 export default function Signup() {
   const navigate = useNavigate()

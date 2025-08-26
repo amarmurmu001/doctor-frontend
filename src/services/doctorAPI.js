@@ -34,3 +34,4 @@ export const searchDoctors = async (location, specialty = '', name = '') => {
     throw error;
   }
 };
+

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import useAuthStore from '../../stores/authStore';
+import useAuthStore from '../../stores/useAuthStore';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 

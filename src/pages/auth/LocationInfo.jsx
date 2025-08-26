@@ -1,4 +1,4 @@
-import useAuthStore from '../../stores/authStore'
+import useAuthStore from '../../stores/useAuthStore'
 import { useNavigate } from 'react-router-dom'
 
 export default function LocationInfo(){

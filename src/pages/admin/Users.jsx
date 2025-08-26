@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUsers, deleteUser } from '../../services/adminAPI';
-import useAuthStore from '../../stores/authStore';
+import useAuthStore from '../../stores/useAuthStore';
 import useAdminStore from '../../stores/adminStore';
 
 const AdminUsers = () => {

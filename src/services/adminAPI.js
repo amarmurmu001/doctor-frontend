@@ -328,6 +328,77 @@ export async function updateDoctorApproval(doctorId, status, token) {
   }
 }
 
+export async function addDoctorAward(doctorId, awardData, imageFile, token) {
+  const formData = new FormData();
+  formData.append('title', awardData.title);
+  formData.append('year', awardData.year.toString());
+  formData.append('institute', awardData.institute);
+  
+  if (imageFile) {
+    formData.append('awardImage', imageFile);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${doctorId}/awards`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to add award');
+  }
+
+  return response.json();
+}
+
+// Update award with image
+export async function updateDoctorAward(doctorId, awardIndex, awardData, imageFile, token) {
+  const formData = new FormData();
+  
+  if (awardData.title) formData.append('title', awardData.title);
+  if (awardData.year) formData.append('year', awardData.year.toString());
+  if (awardData.institute) formData.append('institute', awardData.institute);
+  
+  if (imageFile) {
+    formData.append('awardImage', imageFile);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${doctorId}/awards/${awardIndex}`, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to update award');
+  }
+
+  return response.json();
+}
+
+// Delete award
+export async function deleteDoctorAward(doctorId, awardIndex, token) {
+  const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${doctorId}/awards/${awardIndex}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to delete award');
+  }
+
+  return response.json();
+}
+
 /**
  * Create or update content item
  * @param {Object} contentData - Content data

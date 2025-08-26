@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { verifyOtp, resendOtp, sendOtp } from '../../services/authAPI'
-import useAuthStore from '../../stores/authStore'
+import useAuthStore from '../../stores/useAuthStore'
 
 export default function Otp(){
   const navigate = useNavigate()

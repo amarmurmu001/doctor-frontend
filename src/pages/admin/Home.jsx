@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getDashboardStats } from '../../services/adminAPI';
-import useAuthStore from '../../stores/authStore';
+import useAuthStore from '../../stores/useAuthStore';
 import useAdminStore from '../../stores/adminStore';
 
 const AdminHome = () => {

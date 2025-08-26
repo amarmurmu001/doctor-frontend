@@ -57,6 +57,7 @@ export const doctorList = [
     ],
     awards: [
       {
+        image:"image/url",
         title: "Gaischner Foundation International Award",
         year: 2017,
         institute: "Gaischner Institute",

@@ -1,86 +1,293 @@
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-export async function sendOtp({ email }) {
-	const response = await fetch(`${API_BASE_URL}/api/otp/request`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ channel: 'email', destination: email })
-	});
-	if (!response.ok) throw new Error('Failed to send verification OTP');
-	return response.json();
+// Helper function for API calls with better error handling
+async function apiCall(url, options = {}) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        ...options.headers,
+      },
+      ...options,
+    });
+
+    if (!response.ok) {
+      let errorMessage;
+      try {
+        const errorData = await response.json();
+        errorMessage =
+          errorData.message ||
+          `HTTP ${response.status}: ${response.statusText}`;
+      } catch {
+        errorMessage = `HTTP ${response.status}: ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("API call failed:", error);
+    throw error;
+  }
 }
 
-export async function updateUserProfile({ name, email, phone }, token) {
-	const response = await fetch(`${API_BASE_URL}/api/auth/update`, {
-		method: 'PUT',
-		headers: { 
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`
-		},
-		body: JSON.stringify({ name, email, phone })
-	});
-	if (!response.ok) {
-		const errorText = await response.text();
-		throw new Error(errorText || 'Failed to update profile');
-	}
-	return response.json();
+// OTP Functions
+export async function sendOtp({ email }) {
+  return apiCall(`${API_BASE_URL}/api/otp/request`, {
+    method: "POST",
+    body: JSON.stringify({ channel: "email", destination: email }),
+  });
 }
 
 export async function verifyOtp({ email, otp }) {
-	const response = await fetch(`${API_BASE_URL}/api/otp/verify`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ channel: 'email', destination: email, code: otp })
-	});
-	if (!response.ok) throw new Error('Invalid OTP');
-	return response.json();
+  return apiCall(`${API_BASE_URL}/api/otp/verify`, {
+    method: "POST",
+    body: JSON.stringify({ channel: "email", destination: email, code: otp }),
+  });
 }
 
 export async function resendOtp({ email }) {
-	const response = await fetch(`${API_BASE_URL}/api/otp/request`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ channel: 'email', destination: email })
-	});
-	if (!response.ok) throw new Error('Please wait before requesting a new OTP');
-	return response.json();
+  return apiCall(`${API_BASE_URL}/api/otp/request`, {
+    method: "POST",
+    body: JSON.stringify({ channel: "email", destination: email }),
+  });
+}
+
+// Authentication Functions
+export async function loginUser({ email, password }) {
+  console.log("Attempting login to:", `${API_BASE_URL}/api/auth/login`);
+
+  const response = await apiCall(`${API_BASE_URL}/api/auth/login`, {
+    method: "POST",
+    body: JSON.stringify({ email, password }),
+  });
+
+  console.log("Login response:", response);
+  return response;
 }
 
 export async function registerUser(payload) {
-	const body = {
-		name: payload.name || payload.fullName,
-		email: payload.email,
-		password: payload.password,
-		role: payload.role,
-		phone: payload.phone,
-	};
-	const response = await fetch(`${API_BASE_URL}/api/auth/register`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(body)
-	});
-	if (!response.ok) throw new Error('Registration failed');
-	return response.json();
+  const body = {
+    name: payload.name || payload.fullName,
+    email: payload.email,
+    password: payload.password,
+    role: payload.role || payload.persona, // Support both 'role' and 'persona'
+    phone: payload.phone,
+    location: payload.city,
+    appLanguage: payload.language,
+    sex: payload.gender,
+    dateOfBirth: payload.dob ? new Date(payload.dob) : undefined,
+  };
+
+  // Remove undefined values
+  Object.keys(body).forEach((key) => {
+    if (body[key] === undefined) {
+      delete body[key];
+    }
+  });
+
+  return apiCall(`${API_BASE_URL}/api/auth/register`, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
 }
 
-export async function registerDoctor(payload) {
-	const response = await fetch(`${API_BASE_URL}/api/doctors/me`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify(payload)
-	});
-	if (!response.ok) throw new Error('Doctor registration failed');
-	return response.json();
+// Profile Functions
+export async function updateUserProfile(profileData, token) {
+  console.log(profileData);
+  return apiCall(`${API_BASE_URL}/api/auth/update`, {
+    method: "PUT",
+    headers: {
+      "Authorization": `Bearer ${token}`,
+      "Content-Type": "application/json", // Make sure this is set
+    },
+    body: JSON.stringify(profileData),
+  });
 }
 
-export async function loginUser({ email, password }) {
-	const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ email, password })
-	});
-	if (!response.ok) throw new Error('Login failed');
-	return response.json();
+export async function uploadProfileImage(imageFile, token) {
+  const formData = new FormData();
+  formData.append("image", imageFile);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/profile-image`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      let errorMessage;
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || `Upload failed: ${response.status}`;
+      } catch {
+        errorMessage = `Upload failed: ${response.status}`;
+      }
+      throw new Error(errorMessage);
+    }
+
+    return response.json();
+  } catch (error) {
+    console.error("Image upload failed:", error);
+    throw error;
+  }
 }
 
+export async function getCurrentUser(token) {
+  return apiCall(`${API_BASE_URL}/api/auth/me`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
 
+// Doctor Functions
+export async function registerDoctor(payload, token) {
+  return apiCall(`${API_BASE_URL}/api/doctors/me`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+}
+
+// Search Functions
+export async function searchDoctors(query, filters = {}) {
+  const params = new URLSearchParams({
+    search: query,
+    ...filters,
+  });
+
+  return apiCall(`${API_BASE_URL}/api/doctors/search?${params}`, {
+    method: "GET",
+  });
+}
+
+export async function getDoctorById(doctorId) {
+  return apiCall(`${API_BASE_URL}/api/doctors/${doctorId}`, {
+    method: "GET",
+  });
+}
+
+export async function addDoctorAward(doctorId, awardData, imageFile, token) {
+  const formData = new FormData();
+  formData.append('title', awardData.title);
+  formData.append('year', awardData.year.toString());
+  formData.append('institute', awardData.institute);
+  
+  if (imageFile) {
+    formData.append('awardImage', imageFile);
+  }
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${doctorId}/awards`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to add award');
+  }
+
+  return response.json();
+}
+
+// Upload doctor gallery images
+export async function uploadDoctorGallery(doctorId, imageFiles, token) {
+  const formData = new FormData();
+  Array.from(imageFiles).forEach(file => formData.append('images', file));
+
+  const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${doctorId}/gallery`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
+    body: formData
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to upload gallery images');
+  }
+
+  return response.json();
+}
+
+// Appointment Functions
+export async function bookAppointment(appointmentData, token) {
+  return apiCall(`${API_BASE_URL}/api/appointments/book`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(appointmentData),
+  });
+}
+
+export async function getMyAppointments(token) {
+  return apiCall(`${API_BASE_URL}/api/appointments/mine`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+export async function updateAppointmentStatus(appointmentId, status, token) {
+  return apiCall(`${API_BASE_URL}/api/appointments/${appointmentId}/status`, {
+    method: "PUT",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ status }),
+  });
+}
+
+// Content Functions
+export async function getAllNews(params = {}) {
+  const searchParams = new URLSearchParams(params);
+  return apiCall(`${API_BASE_URL}/api/news?${searchParams}`, {
+    method: "GET",
+  });
+}
+
+export async function getNewsById(newsId) {
+  return apiCall(`${API_BASE_URL}/api/news/${newsId}`, {
+    method: "GET",
+  });
+}
+
+export async function getAllBlogs(params = {}) {
+  const searchParams = new URLSearchParams(params);
+  return apiCall(`${API_BASE_URL}/api/blogs?${searchParams}`, {
+    method: "GET",
+  });
+}
+
+export async function getBlogById(blogId) {
+  return apiCall(`${API_BASE_URL}/api/blogs/${blogId}`, {
+    method: "GET",
+  });
+}
+
+export async function searchNews(query, params = {}) {
+  const searchParams = new URLSearchParams({ q: query, ...params });
+  return apiCall(`${API_BASE_URL}/api/news/search?${searchParams}`, {
+    method: "GET",
+  });
+}
+
+export async function searchBlogs(query, params = {}) {
+  const searchParams = new URLSearchParams({ q: query, ...params });
+  return apiCall(`${API_BASE_URL}/api/blogs/search?${searchParams}`, {
+    method: "GET",
+  });
+}

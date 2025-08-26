@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import useAdminStore from '../../stores/adminStore';
-import useAuthStore from '../../stores/authStore';
+import useAuthStore from '../../stores/useAuthStore';
 
 const AdminSidebar = ({ mobileOpen, setMobileOpen }) => {
   const navigate = useNavigate();

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useLocationStore from "../../stores/locationStore";
-import useAuthStore from "../../stores/authStore";
+import useAuthStore from "../../stores/useAuthStore";
 import SearchBar from "../search/SearchBar";
 
 function Nav() {
