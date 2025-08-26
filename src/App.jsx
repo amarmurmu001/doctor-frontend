@@ -23,10 +23,13 @@ import ForgotPassword from './pages/auth/ForgotPassword'
 // Admin imports
 import AdminRoute from './components/admin/AdminRoute'
 import AdminHome from './pages/admin/Home'
-import Users from './pages/admin/Users'
-import Doctors from './pages/admin/Doctors'
-import Appointments from './pages/admin/Appointments'
+
 import AdminLogin from './pages/admin/Login'
+import AdminUsers from './pages/admin/AdminUser';
+import AdminDoctors from './pages/admin/AdminDoctor';
+import AdminAppointments from './pages/admin/AdminAppointments';
+import AdminNews from './pages/admin/AdminBlogs';
+import AdminBlogs from './pages/admin/AdminBlogs';
 // import NewsManagement from './pages/admin/NewsManagement'
 // import BlogsManagement from './pages/admin/BlogsManagement'
 
@@ -73,11 +76,11 @@ function AppShell() {
             <Route path='/admin/login' element={<AdminLogin />} />
             <Route path='/admin' element={<AdminRoute />}>
               <Route index element={<AdminHome />} />
-              <Route path='users' element={<Users />} />
-              <Route path='doctors' element={<Doctors />} />
-              <Route path='appointments' element={<Appointments />} />
-              {/* <Route path='news' element={<NewsManagement />} /> */}
-              {/* <Route path='blogs' element={<BlogsManagement />} /> */}
+              <Route path='users' element={<AdminUsers/>} />
+              <Route path='doctors' element={<AdminDoctors/>} />
+              <Route path='appointments' element={<AdminAppointments />} />
+              <Route path='news' element={<AdminNews />} /> 
+               <Route path='blogs' element={<AdminBlogs />}/>
             </Route>
           </Routes>
         </Suspense>

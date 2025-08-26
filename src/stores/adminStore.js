@@ -1,213 +1,63 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
-const useAdminStore = create(
-  persist(
-    (set, get) => ({      
-      // UI state
-      sidebarCollapsed: false,
-      
-      // Data
-      news: [],
-      selectedNews: null,
-      newsLoaded: false,
-      
-      // Set sidebar collapsed state
-      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-      // Dashboard statistics
-      stats: {
-        totalUsers: 0,
-        totalDoctors: 0,
-        totalAppointments: 0,
-        pendingApprovals: 0,
-        recentActivity: [],
-      },
-      
-      // Filters and pagination state for different sections
-      filters: {
-        users: {
-          search: '',
-          role: '',
-          status: '',  // 'verified' or 'unverified'
-          page: 1,
-          limit: 10,
-        },
-        doctors: {
-          search: '',
-          specialty: '',
-          status: '',
-          page: 1,
-          limit: 10,
-        },
-        appointments: {
-          search: '',
-          status: '',
-          date: '',
-          page: 1,
-          limit: 10,
-        },
-        news: {
-          search: '',
-          category: '',
-          status: '',
-          page: 1,
-          limit: 10,
-        },
-        blogs: {
-          search: '',
-          category: '',
-          status: '',
-          page: 1,
-          limit: 10,
-        },
-      },
-      
-      // Set dashboard statistics
-      setStats: (stats) => set({ stats }),
-      
-      // Set user filters
-      setUserFilters: (filters) => set(state => ({
-        filters: {
-          ...state.filters,
-          users: {
-            ...state.filters.users,
-            ...filters
-          }
-        }
-      })),
-      
-      // Set doctor filters
-      setDoctorFilters: (filters) => set(state => ({
-        filters: {
-          ...state.filters,
-          doctors: {
-            ...state.filters.doctors,
-            ...filters
-          }
-        }
-      })),
-      
-      // Set appointment filters
-      setAppointmentFilters: (filters) => set(state => ({
-        filters: {
-          ...state.filters,
-          appointments: {
-            ...state.filters.appointments,
-            ...filters
-          }
-        }
-      })),
-      
-      // Set news filters
-      setNewsFilters: (filters) => set(state => ({
-        filters: {
-          ...state.filters,
-          news: {
-            ...state.filters.news,
-            ...filters
-          }
-        }
-      })),
+const useAdminStore = create((set, get) => ({
+  // Sidebar state
+  sidebarCollapsed: false,
+  setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 
-      // Set blog filters
-      setBlogFilters: (filters) => set(state => ({
-        filters: {
-          ...state.filters,
-          blogs: {
-            ...state.filters.blogs,
-            ...filters
-          }
+  // Dashboard stats
+  stats: {
+    totalUsers: 0,
+    totalDoctors: 0,
+    totalAppointments: 0,
+    totalRevenue: 0
+  },
+
+  // Notifications
+  notifications: [],
+  
+  // Dashboard data
+  dashboardData: null,
+  loading: false,
+  error: null,
+
+  // Actions
+  fetchDashboardData: async () => {
+    set({ loading: true, error: null });
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/admin/dashboard`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
-      })),
+      });
       
-      // Update filters for a specific section
-      updateFilters: (section, newFilters) =>
-        set((state) => ({
-          filters: {
-            ...state.filters,
-            [section]: {
-              ...state.filters[section],
-              ...newFilters,
-            },
-          },
-        })),
+      if (!response.ok) throw new Error('Failed to fetch dashboard data');
       
-      // Reset filters for a specific section
-      resetFilters: (section) =>
-        set((state) => ({
-          filters: {
-            ...state.filters,
-            [section]: {
-              search: '',
-              role: '',
-              status: '',
-              specialty: '',
-              category: '',
-              date: '',
-              page: 1,
-              limit: 10,
-            },
-          },
-        })),
-      
-      // News Management
-      setNews: (news) => set({ news }),
-      updateNews: (updatedNews) => set(state => ({
-        news: state.news.map(item => 
-          item._id === updatedNews._id ? updatedNews : item
-        )
-      })),
-      removeNews: (newsId) => set(state => ({
-        news: state.news.filter(item => item._id !== newsId)
-      })),
-      setSelectedNews: (news) => set({ selectedNews: news }),
-      
-      // Reset all filters
-      resetAllFilters: () =>
-        set({
-          filters: {
-            users: {
-              search: '',
-              role: '',
-              emailVerified: null,
-              page: 1,
-              limit: 10,
-            },
-            doctors: {
-              search: '',
-              specialty: '',
-              status: '',
-              page: 1,
-              limit: 10,
-            },
-            appointments: {
-              search: '',
-              status: '',
-              date: '',
-              page: 1,
-              limit: 10,
-            },
-            news: {
-              search: '',
-              category: '',
-              status: '',
-              page: 1,
-              limit: 10,
-            },
-            blogs: {
-              search: '',
-              category: '',
-              status: '',
-              page: 1,
-              limit: 10,
-            },
-          },
-        }),
-    }),
-    {
-      name: 'admin-store',
+      const data = await response.json();
+      set({ 
+        dashboardData: data.data,
+        stats: data.data.stats,
+        notifications: data.data.notifications,
+        loading: false 
+      });
+    } catch (error) {
+      set({ error: error.message, loading: false });
     }
-  )
-);
+  },
+
+  markNotificationAsRead: (id) => {
+    const { notifications } = get();
+    const updatedNotifications = notifications.map(n => 
+      n.id === id ? { ...n, read: true } : n
+    );
+    set({ notifications: updatedNotifications });
+  },
+
+  updateStats: (newStats) => {
+    set({ stats: { ...get().stats, ...newStats } });
+  }
+}));
 
 export default useAdminStore;
