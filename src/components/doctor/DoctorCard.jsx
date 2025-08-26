@@ -1,11 +1,20 @@
 import { useNavigate } from 'react-router-dom';
 
-export default function DoctorCard({ name, specialty, price, image, doctorId }) {
+export default function DoctorCard({ name, specialty, price, image, doctorId, city = 'india' }) {
   const navigate = useNavigate();
+
+  // Generate SEO-friendly URL
+  const generateSeoUrl = () => {
+    if (!doctorId) return '/';
+    const location = city.toLowerCase().replace(/\s+/g, '-');
+    const doctorSlug = `${name.toLowerCase().replace(/\s+/g, '-')}-${specialty.toLowerCase().replace(/\s+/g, '-')}`;
+    return `/${location}/doctor/${doctorSlug}`;
+  };
 
   function handleClick() {
     if (doctorId) {
-      navigate(`/Doctor-profile/${doctorId}`);
+      const seoUrl = generateSeoUrl();
+      navigate(seoUrl);
     }
   }
 

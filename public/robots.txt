@@ -1,0 +1,31 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.doctar.in/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /auth/
+Disallow: /api/
+Disallow: /doctor/edit
+Disallow: /user-edit
+
+# Allow doctor profiles and search
+Allow: /*/doctor/*
+Allow: /search
+Allow: /categories
+Allow: /Doctor-profile
+
+# Crawl delay (optional)
+Crawl-delay: 1
+
+# Specific rules for major search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /

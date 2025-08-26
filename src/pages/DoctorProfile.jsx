@@ -6,12 +6,12 @@ import SeoDoctorProfile from '../components/seo/SeoDoctorProfile';
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
-  const { doctorId } = useParams(); // This will be undefined for own profile
+  const { doctorId, location, doctorSlug } = useParams(); // Add new SEO route params
   const user = useAuthStore(s => s.user);
   const logout = useAuthStore(s => s.logout);
   const [activeTab, setActiveTab] = useState('About');
   const [doctor, setDoctor] = useState(null);
-  const [actualDoctorId, setActualDoctorId] = useState(doctorId); // This will store the actual doctor ID
+  const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug); // Handle both params
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -21,15 +21,35 @@ const DoctorProfile = () => {
         setLoading(true);
         const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
         
-        if (doctorId) {
-          // Viewing another doctor's profile - use provided doctorId
-          console.log('Loading other doctor profile:', doctorId);
-          const res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId}`);
+        if (doctorId || doctorSlug) {
+          // Viewing another doctor's profile - use provided doctorId or doctorSlug
+          console.log('Loading other doctor profile:', doctorId || doctorSlug);
+          
+          let res;
+          if (doctorSlug && !doctorId) {
+            // Use slug endpoint for SEO URLs
+            res = await fetch(`${API_BASE_URL}/api/doctors/slug/${doctorSlug}`);
+          } else {
+            // Use ID endpoint for legacy URLs
+            res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`);
+          }
+          
           if (!res.ok) throw new Error('Doctor not found');
           const response = await res.json();
           const doctorData = response.success ? response.data : response;
           setDoctor(doctorData);
-          setActualDoctorId(doctorId); // Use the provided doctorId
+          setActualDoctorId(doctorData._id || doctorId || doctorSlug);
+          
+          // Update URL to SEO-friendly format if needed
+          const canonicalUrl = getCanonicalUrl(doctorData);
+          if (canonicalUrl && window.location.pathname !== canonicalUrl.replace('https://www.doctar.in', '')) {
+            window.history.replaceState({}, '', canonicalUrl.replace('https://www.doctar.in', ''));
+          }
+          
+          // Use location from URL params if available
+          if (location && doctorData.city !== location) {
+            console.log('Location mismatch - URL:', location, 'Doctor city:', doctorData.city);
+          }
         } else if (user && user.role === 'doctor') {
           // Viewing own profile - get doctor profile by user ID
           console.log('Loading own doctor profile for user:', user.id);
@@ -68,7 +88,7 @@ const DoctorProfile = () => {
     }
     
     loadDoctor();
-  }, [user, doctorId]);
+  }, [user, doctorId, doctorSlug]);
 
   // ✅ Generate disease-specific keywords based on specialization
   const generateDiseaseKeywords = (doctor) => {
@@ -86,6 +106,13 @@ const DoctorProfile = () => {
     };
     
     return specialtyKeywords[doctor?.specialty] || `${doctor?.specialty?.toLowerCase()} treatment, consultation, medical care`;
+  };
+
+  // ✅ Generate canonical URL for SEO
+  const getCanonicalUrl = (doctor) => {
+    const doctorLocation = doctor.city || 'india';
+    const slug = `${doctor.user?.name?.toLowerCase().replace(/\s+/g, '-')}-${doctor.specialty?.toLowerCase().replace(/\s+/g, '-')}`;
+    return `https://www.doctar.in/${doctorLocation.toLowerCase().replace(/\s+/g, '-')}/doctor/${slug}`;
   };
 
   console.log('Doctor Profile State:', { 
@@ -120,6 +147,7 @@ const DoctorProfile = () => {
           consultationFee={doctor.consultationFee}
           clinicName={doctor.clinicName}
           languages={doctor.languages || ['English', 'Hindi']}
+          canonicalUrl={getCanonicalUrl(doctor)}
         />
       )}
 
