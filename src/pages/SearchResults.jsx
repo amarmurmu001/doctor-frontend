@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import DoctorCard from '../components/doctor/DoctorCard';
 import SearchBar from '../components/search/SearchBar';
 import useLocationStore from '../stores/locationStore';
+import PageSeo from '../components/seo/PageSeo';
 
 const SearchResults = () => {
-  const location = useLocation();
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const { selectedLocation } = useLocationStore();
   
   const searchTerm = searchParams.get('q') || '';
@@ -22,9 +22,9 @@ const SearchResults = () => {
   useEffect(() => {
     if (!searchTerm) return;
     fetchSearchResults();
-  }, [searchTerm, searchType, searchLocation]);
+  }, [searchTerm, searchType, searchLocation, fetchSearchResults]);
 
-  async function fetchSearchResults() {
+  const fetchSearchResults = useCallback(async () => {
     setLoading(true);
     setError('');
     
@@ -61,17 +61,30 @@ const SearchResults = () => {
     } finally {
       setLoading(false);
     }
-  }
+  }, [searchTerm, searchLocation, searchType]);
 
-  function handleNewSearch(newSearchTerm) {
-    const params = new URLSearchParams();
-    if (newSearchTerm) params.set('q', newSearchTerm);
-    if (searchLocation) params.set('location', searchLocation);
-    setSearchParams(params);
-  }
+
+
+  // Generate dynamic SEO based on search
+  const searchTitle = searchTerm 
+    ? `Search Results for "${searchTerm}" | Find Doctors | Doctar`
+    : 'Search Doctors | Find Medical Specialists | Doctar';
+  
+  const searchDescription = searchTerm
+    ? `Find doctors for "${searchTerm}" ${searchLocation ? `in ${searchLocation}` : ''}. Book appointments with verified medical specialists. ${totalResults} results found.`
+    : 'Search for doctors and medical specialists. Find the right doctor for your needs and book appointments online.';
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <PageSeo 
+        title={searchTitle}
+        description={searchDescription}
+        keywords={`${searchTerm}, doctors near me, medical specialist, book appointment, ${searchLocation || 'India'}`}
+        canonicalUrl={`https://www.doctar.in/search?q=${encodeURIComponent(searchTerm)}`}
+        noIndex={!searchTerm} // Don't index empty search pages
+      />
+      
+      <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* Search Summary */}
@@ -155,7 +168,8 @@ const SearchResults = () => {
           </>
         )}
       </div>
-    </div>
+      </div>
+    </>
   );
 };
 

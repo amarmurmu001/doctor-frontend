@@ -53,8 +53,12 @@ const AdminLogin = () => {
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-md">
         <div>
           <div className="flex justify-center">
-            <div className="w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center">
-              <span className="text-white text-xl font-bold">D</span>
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-lg p-2">
+              <img 
+                src="/icons/logo.png" 
+                alt="Doctar" 
+                className="w-full h-full object-contain"
+              />
             </div>
           </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">Admin Login</h2>

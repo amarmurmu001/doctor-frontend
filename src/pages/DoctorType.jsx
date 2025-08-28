@@ -1,6 +1,7 @@
 import PageHeader from "../components/layout/PageHeader";
 import ResultCount from "../components/doctor/ResultCount";
 import DoctorTypeGrid from "../components/doctor/DoctorTypeGrid";
+import PageSeo from "../components/seo/PageSeo";
 
 const arr = [
   { category: "heart", number: 25 },
@@ -19,7 +20,15 @@ const arr = [
 
 export default function DoctorType() {
   return (
-    <div className="w-full">
+    <>
+      <PageSeo 
+        title="Doctor Types & Specialties | Browse Medical Experts | Doctar"
+        description="Find doctors by medical specialties and types. Browse through heart specialists, liver specialists, lung specialists and more medical experts near you."
+        keywords="doctor types, medical specialties, heart doctor, liver specialist, lung specialist, medical experts"
+        canonicalUrl="https://www.doctar.in/x"
+      />
+      
+      <div className="w-full">
       {/* Header with search */}
       <PageHeader />
 
@@ -37,7 +46,8 @@ export default function DoctorType() {
         categories={arr} 
         title="All Categories"
       />
-    </div>
+      </div>
+    </>
   );
 }
 

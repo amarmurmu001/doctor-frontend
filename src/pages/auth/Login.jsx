@@ -55,11 +55,13 @@ function Login() {
       
       {/* Logo section */}
       <div className="px-6 py-6 bg-white">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-black rounded flex items-center justify-center">
-            <span className="text-white text-xs font-bold">D</span>
-          </div>
-          <span className="text-black font-semibold text-lg">octar</span>
+        <div className="flex items-center justify-center">
+          <img 
+            src="/icons/logo.png" 
+            alt="Doctar" 
+            className="h-10 w-auto cursor-pointer"
+            onClick={() => navigate("/")}
+          />
         </div>
       </div>
 

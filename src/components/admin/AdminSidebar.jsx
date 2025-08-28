@@ -102,12 +102,16 @@ const AdminSidebar = ({ mobileOpen, setMobileOpen }) => {
       <div className="flex items-center justify-between p-4 border-b border-purple-600/30">
         {!sidebarCollapsed && (
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md">
-              <span className="text-[#7551b3] text-lg font-bold">D</span>
+            <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-md p-1">
+              <img 
+                src="/icons/logo.png" 
+                alt="Doctar" 
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
-              <h1 className="text-white font-bold text-lg">Doctar</h1>
-              <p className="text-purple-200 text-xs">Admin Panel</p>
+              <h1 className="text-white font-bold text-lg">Admin Panel</h1>
+              <p className="text-purple-200 text-xs">Management Dashboard</p>
             </div>
           </div>
         )}

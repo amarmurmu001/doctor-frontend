@@ -17,6 +17,7 @@ import WhyDoctar from "../components/home/WhyDoctar.jsx";
 import FAQ from "../components/FAQ.jsx";
 import CategoryGrid from "../components/home/CategoryGrid.jsx";
 import { useNavigate } from "react-router-dom";
+import DefaultSeo from "../components/seo/DefaultSeo.jsx";
 
 
 export default function Home() {
@@ -24,7 +25,11 @@ export default function Home() {
   const navigate = useNavigate();
   
   return (
-    <div className="min-h-screen relative">
+    <>
+      {/* Default SEO for Home page - resets any doctor profile meta tags */}
+      <DefaultSeo />
+      
+      <div className="min-h-screen relative">
       {/* Purple Header Background - Full Width */}
       <div className="bg-[#7551B2] w-full h-32 md:h-[15vw]"></div>
       
@@ -94,6 +99,7 @@ export default function Home() {
       <div className="hidden lg:block mt-24">
         <FAQ />
       </div>
-    </div>
+      </div>
+    </>
   );
 }

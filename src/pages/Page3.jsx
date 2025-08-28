@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import React from "react";
 import SearchBar from "../components/search/SearchBar";
 import MedicineCarousel from "../components/content/MedicineCarousel";
 import CategoryGrid from "../components/home/CategoryGrid";
+import PageSeo from "../components/seo/PageSeo";
 
 // SVG grid background (light grey grid) with 20px spacing
 const gridSvg = encodeURIComponent(
@@ -10,7 +11,15 @@ const gridSvg = encodeURIComponent(
 
 export default function Page3() {
   return (
-    <div className="relative w-full min-h-screen">
+    <>
+      <PageSeo 
+        title="Medical Specialties | Find Doctors by Category | Doctar"
+        description="Browse doctors by medical specialties. Find cardiologists, dermatologists, pediatricians, and other specialists near you. Book appointments with verified doctors."
+        keywords="medical specialties, doctor categories, cardiologist, dermatologist, pediatrician, orthopedic doctor, neurologist, gynecologist"
+        canonicalUrl="https://www.doctar.in/categories"
+      />
+      
+      <div className="relative w-full min-h-screen">
       {/* Mobile Layout */}
       <div className="lg:hidden">
         {/* Purple header on top */}
@@ -80,6 +89,7 @@ export default function Page3() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
