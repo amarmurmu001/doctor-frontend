@@ -19,11 +19,6 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!searchTerm) return;
-    fetchSearchResults();
-  }, [searchTerm, searchType, searchLocation, fetchSearchResults]);
-
   const fetchSearchResults = useCallback(async () => {
     setLoading(true);
     setError('');
@@ -62,6 +57,11 @@ const SearchResults = () => {
       setLoading(false);
     }
   }, [searchTerm, searchLocation, searchType]);
+
+  useEffect(() => {
+    if (!searchTerm) return;
+    fetchSearchResults();
+  }, [searchTerm, searchType, searchLocation, fetchSearchResults]);
 
 
 
