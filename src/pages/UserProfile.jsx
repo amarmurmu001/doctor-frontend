@@ -1,18 +1,54 @@
 import React, { useEffect, useState } from 'react';
 import useAuthStore from '../stores/useAuthStore';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from '../services/authAPI';
 
 function UserProfile() {
   const navigate = useNavigate();
-  const user = useAuthStore(s => s.user);
+  const storedUser = useAuthStore(s => s.user);
   const token = useAuthStore(s => s.token);
   const logout = useAuthStore(s => s.logout);
+  const setAuth = useAuthStore(s => s.setAuth);
+  const [user, setUser] = useState(storedUser);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(false);
   const [error, setError] = useState('');
+  const [userError, setUserError] = useState('');
+  const [hasLoadedUserData, setHasLoadedUserData] = useState(false);
 
   useEffect(() => {
-    console.log(user)
+    async function loadUserData() {
+      // Only fetch once per session unless explicitly retrying
+      if (!token || hasLoadedUserData) {
+        return;
+      }
+
+      try {
+        setUserLoading(true);
+        setUserError('');
+        
+        // Fetch fresh user data from backend
+        const freshUserData = await getCurrentUser(token);
+        console.log('Fresh user data:', freshUserData);
+        
+        // Update local state and auth store with fresh data
+        setUser(freshUserData);
+        setAuth(freshUserData, token);
+        setHasLoadedUserData(true);
+        
+      } catch (e) {
+        console.error('Error loading user data:', e);
+        setUserError(e.message || 'Failed to load user data');
+        // Keep using stored user data if fetch fails
+        if (storedUser) {
+          setUser(storedUser);
+        }
+      } finally {
+        setUserLoading(false);
+      }
+    }
+
     async function loadAppointments() {
       if (!token) { 
         setLoading(false); 
@@ -42,8 +78,12 @@ function UserProfile() {
       }
     }
     
-    if (user) loadAppointments();
-  }, [user, token]);
+    // Load user data and appointments in parallel
+    if (token) {
+      loadUserData();
+      loadAppointments();
+    }
+  }, [token, hasLoadedUserData]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!user) {
     return (
@@ -94,31 +134,44 @@ function UserProfile() {
 
         {/* Profile Information */}
         <div className="flex flex-col items-center pt-8">
-          <div className="w-[182px] h-[182px] rounded-3xl bg-white overflow-hidden mb-6 shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)]">
-            {user.image?.url ? (
-              <img 
-                src={user.image.url} 
-                alt="Profile" 
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.style.display = 'none';
-                  e.target.nextSibling.style.display = 'flex';
-                }}
-              />
-            ) : (
-              <div className="w-full h-full bg-[#7551B2] flex items-center justify-center text-white text-4xl font-semibold">
-                {getInitials(user.name)}
-              </div>
-            )}
-            {user.image?.url && (
-              <div className="w-full h-full bg-[#7551B2] flex items-center justify-center text-white text-4xl font-semibold" style={{display: 'none'}}>
-                {getInitials(user.name)}
-              </div>
-            )}
-          </div>
-          <h2 className="text-white text-xl font-semibold mb-1">{user.name || 'User'}</h2>
-          <p className="text-white text-lg capitalize">{user.role || 'patient'}</p>
+          {userLoading ? (
+            <div className="w-[182px] h-[182px] rounded-3xl bg-white/20 mb-6 flex items-center justify-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-2 border-white border-t-transparent"></div>
+            </div>
+          ) : (
+            <div className="w-[182px] h-[182px] rounded-3xl bg-white overflow-hidden mb-6 shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)]">
+              {user.image?.url ? (
+                <img 
+                  src={user.image.url} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    e.target.nextSibling.style.display = 'flex';
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full bg-[#7551B2] flex items-center justify-center text-white text-4xl font-semibold">
+                  {getInitials(user.name)}
+                </div>
+              )}
+              {user.image?.url && (
+                <div className="w-full h-full bg-[#7551B2] flex items-center justify-center text-white text-4xl font-semibold" style={{display: 'none'}}>
+                  {getInitials(user.name)}
+                </div>
+              )}
+            </div>
+          )}
+          <h2 className="text-white text-xl font-semibold mb-1">
+            {userLoading ? 'Loading...' : (user.name || 'User')}
+          </h2>
+          <p className="text-white text-lg capitalize">
+            {userLoading ? 'Loading...' : (user.role || 'patient')}
+          </p>
+          {userError && (
+            <p className="text-red-200 text-sm mt-2">Failed to load profile data</p>
+          )}
         </div>
       </div>
 
@@ -190,7 +243,27 @@ function UserProfile() {
           {/* Personal Information */}
           <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-lg font-semibold mb-3">Personal Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+            {userLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-[#7551b3]"></div>
+                <span className="ml-3 text-gray-600">Loading profile data...</span>
+              </div>
+            ) : userError ? (
+              <div className="text-center py-8">
+                <p className="text-red-600 mb-2">Failed to load profile data</p>
+                <button 
+                  onClick={() => {
+                    setUserError('');
+                    setHasLoadedUserData(false);
+                    setUserLoading(true);
+                  }} 
+                  className="text-sm text-blue-600 hover:underline"
+                >
+                  Retry
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
                   <span className="text-gray-600">Full Name</span>
@@ -223,19 +296,32 @@ function UserProfile() {
                   <span className="text-gray-900 capitalize">{user.sex || 'Not set'}</span>
                 </div>
                 <div className="flex items-center justify-between">
+                  <span className="text-gray-600">Date of Birth</span>
+                  <span className="text-gray-900">
+                    {user.dateOfBirth ? formatDate(user.dateOfBirth) : 'Not set'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
                   <span className="text-gray-600">Age</span>
                   <span className="text-gray-900">
-                    {user.age ? `${user.age} years` : user.dateOfBirth ? formatDate(user.dateOfBirth) : 'Not set'}
+                    {user.age ? `${user.age} years` : 'Not set'}
                   </span>
                 </div>
               </div>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Account Status */}
           <div className="bg-white rounded-2xl shadow p-6">
             <h2 className="text-lg font-semibold mb-3">Account Status</h2>
-            <div className="space-y-3 text-sm">
+            {userLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="animate-spin rounded-full h-6 w-6 border-2 border-gray-300 border-t-[#7551b3]"></div>
+                <span className="ml-3 text-gray-600">Loading account status...</span>
+              </div>
+            ) : (
+              <div className="space-y-3 text-sm">
               <div className="flex items-center justify-between">
                 <span className="text-gray-600">Email Verified</span>
                 <div className="flex items-center gap-2">
@@ -260,7 +346,8 @@ function UserProfile() {
                   {user.createdAt ? formatDate(user.createdAt) : 'Recently'}
                 </span>
               </div>
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Quick Actions */}

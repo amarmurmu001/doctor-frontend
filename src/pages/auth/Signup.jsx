@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { registerUser } from '../../services/authAPI'
+import { registerUser, sendOtp } from '../../services/authAPI'
 import useAuthStore from '../../stores/useAuthStore'
+import ProgressBar from '../../components/auth/ProgressBar'
 
 export default function Signup() {
   const navigate = useNavigate()
@@ -15,23 +16,50 @@ export default function Signup() {
     setError('')
     setSubmitting(true)
     try {
+      // Register user without role (will be selected after OTP)
+      await registerUser({ 
+        fullName: form.fullName, 
+        email: form.email, 
+        phone: form.phone, 
+        password: form.password,
+        role: 'pending' // Temporary role until user selects
+      })
       
-      const persona = JSON.parse(localStorage.getItem('auth-store'))?.state?.onboarding?.persona || 'patient'
-      const role = persona === 'doctor' ? 'doctor' : 'patient'
-      await registerUser({ fullName: form.fullName, email: form.email, phone: form.phone, password: form.password, role })
-      setOnboarding({ email: form.email, phone: form.phone })
+      // Immediately send OTP after successful registration
+      console.log('Sending OTP to:', form.email)
+      await sendOtp({ email: form.email })
+      console.log('OTP sent successfully')
+      
+      // Store basic info for post-OTP flow and mark that OTP was sent
+      setOnboarding({ 
+        email: form.email, 
+        phone: form.phone,
+        basicInfo: form,
+        otpSent: true
+      })
+      
+      // Set session storage to prevent duplicate OTP sends
+      const key = `otpSent:${form.email}`
+      sessionStorage.setItem(key, '1')
+      
       navigate('/auth/otp')
     } catch(err){
-      setError(err.message || 'Failed to send OTP')
+      setError(err.message || 'Failed to register user or send OTP')
     } finally {
       setSubmitting(false)
     }
   }
 
+  const steps = ['Sign Up', 'Verify OTP', 'Role Selection', 'Complete Profile']
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Purple header bar */}
-      <div className="w-full h-2 bg-purple-500"></div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Progress Bar */}
+      <ProgressBar 
+        currentStep={1} 
+        totalSteps={steps.length} 
+        steps={steps} 
+      />
       
       {/* Logo section */}
       <div className="px-6 py-6">
@@ -47,7 +75,8 @@ export default function Signup() {
 
       {/* Form section */}
       <div className="px-6">
-        <form onSubmit={handleSubmit} className="w-full">
+        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-sm p-6">
+          <form onSubmit={handleSubmit} className="w-full">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Registration</h1>
           <p className="text-sm text-gray-600 mb-8">Please enter your registration details name, email and phone</p>
           
@@ -115,7 +144,8 @@ export default function Signup() {
               {submitting ? 'Registering…' : 'Next'}
             </button>
           </div>
-        </form>
+          </form>
+        </div>
       </div>
     </div>
   )

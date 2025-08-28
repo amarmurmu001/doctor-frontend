@@ -22,6 +22,10 @@ import Otp from "./pages/auth/Otp";
 import AboutPersona from "./pages/auth/AboutPersona";
 import LocationInfo from "./pages/auth/LocationInfo";
 import PersonalDetails from "./pages/auth/PersonalDetails";
+import RoleSelection from "./pages/auth/RoleSelection";
+import PatientProfile from "./pages/auth/PatientProfile";
+import DoctorOnboarding from "./pages/auth/DoctorOnboarding";
+import DoctorVerification from "./pages/auth/DoctorVerification";
 import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import SearchResults from "./pages/SearchResults";
@@ -98,9 +102,13 @@ function AppShell() {
             <Route path="/user-edit" element={<UserEdit />} />
             <Route path="/auth/signup" element={<Signup />} />
             <Route path="/auth/otp" element={<Otp />} />
+            <Route path="/auth/role-selection" element={<RoleSelection />} />
+            <Route path="/auth/patient-profile" element={<PatientProfile />} />
             <Route path="/auth/about" element={<AboutPersona />} />
             <Route path="/auth/location" element={<LocationInfo />} />
             <Route path="/auth/personal" element={<PersonalDetails />} />
+            <Route path="/auth/doctor-onboarding" element={<DoctorOnboarding />} />
+            <Route path="/auth/doctor-verification" element={<DoctorVerification />} />
             <Route path="/login" element={<Login />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/search" element={<SearchResults />} />

@@ -147,13 +147,102 @@ export async function getCurrentUser(token) {
 
 // Doctor Functions
 export async function registerDoctor(payload, token) {
+  console.log('📤 Sending doctor registration:', payload);
   return apiCall(`${API_BASE_URL}/api/doctors/me`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
     },
     body: JSON.stringify(payload),
   });
+}
+
+// Complete patient profile (updates role and profile data)
+export async function completePatientProfile(profileData, email, password) {
+  try {
+    // First login to get token
+    const loginResponse = await loginUser({ email, password });
+    
+    if (!loginResponse.token) {
+      throw new Error('Failed to authenticate user');
+    }
+    
+    // Then update profile
+    const updatedUser = await updateUserProfile({
+      ...profileData,
+      role: 'patient'
+    }, loginResponse.token);
+    
+    return {
+      user: updatedUser.user || loginResponse.user,
+      token: loginResponse.token
+    };
+  } catch (error) {
+    console.error('Error completing patient profile:', error);
+    throw error;
+  }
+}
+
+// Submit doctor application for verification
+export async function submitDoctorApplication(doctorData, email, password) {
+  try {
+    // First login to get token
+    const loginResponse = await loginUser({ email, password });
+    
+    if (!loginResponse.token) {
+      throw new Error('Failed to authenticate user');
+    }
+    
+    // Update basic profile with doctor role
+    const basicProfile = {
+      role: 'doctor',
+      name: doctorData.fullName,
+      sex: doctorData.gender,
+      dateOfBirth: doctorData.dateOfBirth,
+      location: doctorData.city
+    };
+    
+    await updateUserProfile(basicProfile, loginResponse.token);
+    
+    // Create doctor profile with detailed information
+    const doctorProfile = {
+      specialty: doctorData.specialty,
+      yearsOfExperience: doctorData.yearsOfExperience,
+      clinicName: doctorData.clinicName,
+      city: doctorData.city,
+      about: doctorData.about,
+      education: (doctorData.education || []).filter(e => e && e.trim()),
+      experience: (doctorData.experience || []).filter(e => e && e.trim()),
+      services: (doctorData.services || []).filter(s => s && s.trim()),
+      languages: doctorData.languages || [],
+      contactPhones: (doctorData.contactPhones || []).filter(p => p && p.trim()),
+      contactEmails: (doctorData.contactEmails || []).filter(e => e && e.trim()),
+      address: {
+        line1: doctorData.addressLine1,
+        line2: doctorData.addressLine2,
+        city: doctorData.addressCity,
+        state: doctorData.addressState,
+        postalCode: doctorData.postalCode,
+        country: doctorData.country
+      },
+      consultationFee: doctorData.consultationFee,
+      keySpecialization: (doctorData.keySpecialization || []).filter(k => k && k.trim()),
+      status: 'pending'
+    };
+    
+    // Submit doctor profile for creation/verification
+    await registerDoctor(doctorProfile, loginResponse.token);
+    
+    return {
+      user: loginResponse.user,
+      token: loginResponse.token,
+      applicationSubmitted: true
+    };
+  } catch (error) {
+    console.error('Error submitting doctor application:', error);
+    throw error;
+  }
 }
 
 // Search Functions

@@ -2,15 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { verifyOtp, resendOtp, sendOtp } from '../../services/authAPI'
 import useAuthStore from '../../stores/useAuthStore'
+import ProgressBar from '../../components/auth/ProgressBar'
 
 export default function Otp(){
   const navigate = useNavigate()
-  const { email, persona } = useAuthStore(s => s.onboarding)
+  const { email, otpSent } = useAuthStore(s => s.onboarding)
   const setOnboarding = useAuthStore(s => s.setOnboarding)
   const [code, setCode] = useState(['', '', '', ''])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [cooldown, setCooldown] = useState(0)
+  const [otpSentStatus, setOtpSentStatus] = useState('')
   const inputsRef = useRef([])
 
   function startCooldown(){
@@ -24,15 +26,28 @@ export default function Otp(){
   }
 
   useEffect(() => {
-    // trigger initial OTP send
     if (!email) return
+    
     const key = `otpSent:${email}`
-    if (sessionStorage.getItem(key) === '1') return
+    
+    // If OTP was already sent from signup, just start cooldown
+    if (otpSent || sessionStorage.getItem(key) === '1') {
+      setOtpSentStatus('OTP sent successfully! Please check your email.')
+      startCooldown()
+      return
+    }
+    
+    // Otherwise, try to send OTP
+    setOtpSentStatus('Sending OTP...')
     sendOtp({ email }).then(() => {
       sessionStorage.setItem(key, '1')
+      setOtpSentStatus('OTP sent successfully! Please check your email.')
       startCooldown()
-    }).catch(()=>{})
-  }, [email])
+    }).catch((err) => {
+      setOtpSentStatus('Failed to send OTP. Please try resending.')
+      console.error('Failed to send OTP:', err)
+    })
+  }, [email, otpSent])
 
   function handleChange(index, value){
     const digit = value.replace(/\D/g,'').slice(0,1)
@@ -73,9 +88,9 @@ export default function Otp(){
     setError('')
     setSubmitting(true)
     try{
-      await verifyOtp({ email, otp: code.join(''), role: persona === 'doctor' ? 'doctor' : 'user' })
+      await verifyOtp({ email, otp: code.join(''), role: 'pending' })
       setOnboarding({ otpVerified: true })
-      navigate('/auth/about')
+      navigate('/auth/role-selection')
     }catch(err){
       setError(err.message || 'Invalid OTP')
     }finally{
@@ -86,24 +101,27 @@ export default function Otp(){
   async function handleResend(){
     if (cooldown > 0) return
     setError('')
+    setOtpSentStatus('Sending OTP...')
     try{
-      await resendOtp({ email, role: persona === 'doctor' ? 'doctor' : 'user' })
+      await resendOtp({ email, role: 'pending' })
+      setOtpSentStatus('OTP sent successfully! Please check your email.')
       startCooldown()
     }catch(err){
       setError(err.message || 'Please wait before requesting a new OTP')
+      setOtpSentStatus('Failed to send OTP. Please try again.')
     }
   }
 
+  const steps = ['Sign Up', 'Verify OTP', 'Role Selection', 'Complete Profile']
+
   return (
-    <div className="min-h-screen bg-white" style={{
-      backgroundImage: `
-        linear-gradient(to right, #f3f4f6 1px, transparent 1px),
-        linear-gradient(to bottom, #f3f4f6 1px, transparent 1px)
-      `,
-      backgroundSize: '20px 20px'
-    }}>
-      {/* Purple header bar */}
-      <div className="w-full h-2 bg-purple-500"></div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Progress Bar */}
+      <ProgressBar 
+        currentStep={2} 
+        totalSteps={steps.length} 
+        steps={steps} 
+      />
       
       {/* Logo section */}
       <div className="px-6 py-6 bg-white">
@@ -119,9 +137,29 @@ export default function Otp(){
 
       {/* Form section */}
       <div className="px-6">
-        <div className="w-full bg-white rounded-t-3xl p-6 -mt-4">
+        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Verification</h1>
-          <p className="text-sm text-gray-600 mb-8">Please enter the O.T.P. sent to the entered Mobile number i.e +91XXXXXXXXXX</p>
+          <p className="text-sm text-gray-600 mb-4">Please enter the O.T.P. sent to your email: {email}</p>
+          
+          {/* OTP Status Message */}
+          {otpSentStatus && (
+            <div className={`text-sm p-3 rounded-lg mb-4 ${
+              otpSentStatus.includes('successfully') 
+                ? 'bg-green-50 text-green-700 border border-green-200' 
+                : otpSentStatus.includes('Failed')
+                ? 'bg-red-50 text-red-700 border border-red-200'
+                : 'bg-blue-50 text-blue-700 border border-blue-200'
+            }`}>
+              {otpSentStatus}
+            </div>
+          )}
+
+          {/* Development Mode Notice */}
+          {import.meta.env.DEV && (
+            <div className="text-xs p-3 rounded-lg mb-4 bg-yellow-50 text-yellow-700 border border-yellow-200">
+              <strong>Development Mode:</strong> If you don't receive an email, check the browser console or server logs for your OTP code.
+            </div>
+          )}
           
           {/* OTP Input Section */}
           <div className="flex gap-4 justify-center mb-8" onPaste={handlePaste}>

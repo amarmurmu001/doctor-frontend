@@ -1,21 +1,22 @@
 import useAuthStore from '../../stores/useAuthStore'
 import { useNavigate } from 'react-router-dom'
+import ProgressBar from '../../components/auth/ProgressBar'
 
 export default function AboutPersona(){
   const navigate = useNavigate()
   const { persona } = useAuthStore(s=>s.onboarding)
   const setOnboarding = useAuthStore(s=>s.setOnboarding)
 
+  const steps = ['About', 'Registration', 'Location', 'Personal']
+
   return (
-    <div className="min-h-screen bg-white" style={{
-      backgroundImage: `
-        linear-gradient(to right, #f3f4f6 1px, transparent 1px),
-        linear-gradient(to bottom, #f3f4f6 1px, transparent 1px)
-      `,
-      backgroundSize: '20px 20px'
-    }}>
-      {/* Purple header bar */}
-      <div className="w-full h-2 bg-purple-500"></div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Progress Bar */}
+      <ProgressBar 
+        currentStep={1} 
+        totalSteps={steps.length} 
+        steps={steps} 
+      />
       
       {/* Logo section */}
       <div className="px-6 py-6 bg-white">
@@ -31,7 +32,7 @@ export default function AboutPersona(){
 
       {/* Content section */}
       <div className="px-6">
-        <div className="w-full bg-white rounded-t-3xl p-6 -mt-4">
+        <div className="max-w-lg mx-auto bg-white rounded-xl shadow-sm p-6">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">About me</h1>
           <p className="text-sm text-gray-600 mb-8">Please tell us know your purpose of visit, select from the options below</p>
           
