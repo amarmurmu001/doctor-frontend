@@ -18,12 +18,17 @@ function Nav() {
   const token = useAuthStore((s) => s.token);
 
   const [open, setOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const panelRef = useRef(null);
+  const mobileMenuRef = useRef(null);
 
   useEffect(() => {
     const onClickAway = (e) => {
       if (panelRef.current && !panelRef.current.contains(e.target)) {
         setOpen(false);
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(e.target)) {
+        setMobileMenuOpen(false);
       }
     };
     document.addEventListener("mousedown", onClickAway);
@@ -210,20 +215,113 @@ function Nav() {
             </button>
           </div>
         ) : (
-          <button
-            onClick={() => navigate("/login")}
-            className="bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-md"
-          >
-            Login
-          </button>
+          <>
+            {/* Desktop Auth Buttons */}
+            <div className="hidden md:flex items-center space-x-2">
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md transition-colors"
+              >
+                Login
+              </button>
+              <button
+                onClick={() => navigate("/auth/signup")}
+                className="bg-white hover:bg-white/90 text-[#7551B2] px-4 py-2 rounded-md font-medium transition-colors"
+              >
+                Sign Up
+              </button>
+            </div>
+          </>
         )}
 
-        {/* Mobile menu button
-        <button className="md:hidden ml-2 p-1">
-          <svg width="24" height="24" fill="white" viewBox="0 0 24 24">
-            <path d="M4 18h16v-2H4v2zm0-5h16v-2H4v2zm0-7v2h16V6H4z"/>
-          </svg>
-        </button> */}
+        {/* Mobile menu button */}
+        <div className="md:hidden relative" ref={mobileMenuRef}>
+          <button 
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="ml-2 p-2 text-white hover:bg-white/10 rounded-md transition-colors"
+          >
+            <svg width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M4 18h16v-2H4v2zm0-5h16v-2H4v2zm0-7v2h16V6H4z"/>
+            </svg>
+          </button>
+
+          {/* Mobile Menu Dropdown */}
+          <div className={`absolute right-0 top-full mt-2 w-72 bg-white shadow-2xl rounded-xl z-50 overflow-hidden transform transition-all duration-300 ease-out ${
+            mobileMenuOpen 
+              ? 'opacity-100 scale-100 translate-y-0' 
+              : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'
+          }`}>
+              {token && user ? (
+                <>
+                  {/* User Info Section */}
+                  <div className="bg-gradient-to-r from-[#7551B2] to-[#6441a0] text-white p-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-full bg-white/20 text-white flex items-center justify-center font-semibold text-lg">
+                        {(user.name || "U").charAt(0).toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-medium">Hi, {user.name}!</p>
+                        <p className="text-sm text-white/80 capitalize">{user.role || 'User'}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Menu Items */}
+                  <div className="p-2">
+                    <button
+                      onClick={() => {
+                        navigate(user.role === "doctor" ? "/Doctor-profile" : "/user-profile");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left p-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-all duration-200 flex items-center gap-3"
+                    >
+                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                      </svg>
+                      My Profile
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Welcome Header */}
+                  <div className="bg-gradient-to-r from-[#7551B2] to-[#6441a0] text-white p-4 text-center">
+                    <h3 className="font-semibold text-lg">Welcome to Doctar</h3>
+                    <p className="text-sm text-white/80">Join our healthcare community</p>
+                  </div>
+
+                  {/* Auth Buttons */}
+                  <div className="p-4 space-y-3">
+                    <button
+                      onClick={() => {
+                        navigate("/login");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full p-3 bg-white border-2 border-[#7551B2] text-[#7551B2] rounded-lg font-medium hover:bg-[#7551B2] hover:text-white transition-all duration-200 flex items-center justify-center gap-2"
+                    >
+                      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M11 7L9.6 8.4l2.6 2.6H2v2h10.2l-2.6 2.6L11 17l5-5-5-5zm9 12h-8v2h8c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2h-8v2h8v12z"/>
+                      </svg>
+                      Login
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        navigate("/auth/signup");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full p-3 bg-[#7551B2] text-white rounded-lg font-medium hover:bg-[#6441a0] transition-all duration-200 flex items-center justify-center gap-2 hover:shadow-lg transform hover:scale-105"
+                    >
+                      <svg width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                      </svg>
+                      Sign Up
+                    </button>
+                  </div>
+                </>
+              )}
+          </div>
+        </div>
       </div>
     </div>
   );
