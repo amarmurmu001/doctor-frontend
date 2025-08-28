@@ -12,27 +12,13 @@ function Nav() {
     updateLocation,
     refreshLocation,
     locationLoading,
-    searchLocations,
-    isValidLocation,
   } = useLocationStore();
 
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
 
   const [open, setOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [locationSuggestions, setLocationSuggestions] = useState([]);
   const panelRef = useRef(null);
-
-  // Handle location search
-  useEffect(() => {
-    if (searchQuery.length >= 2) {
-      const suggestions = searchLocations(searchQuery);
-      setLocationSuggestions(suggestions);
-    } else {
-      setLocationSuggestions([]);
-    }
-  }, [searchQuery, searchLocations]);
 
   useEffect(() => {
     const onClickAway = (e) => {
@@ -44,42 +30,18 @@ function Nav() {
     return () => document.removeEventListener("mousedown", onClickAway);
   }, []);
 
-  const handleLocationSelect = (location) => {
-    setSearchQuery('');
-    setLocationSuggestions([]);
-    setOpen(false);
-    
-    // Validate location before setting
-    if (location === 'Use current location' || location === 'Current Location') {
-      refreshLocation();
-    } else if (isValidLocation(location) || location === 'Near me') {
-      updateLocation(location);
-    } else {
-      console.warn('⚠️ Invalid location selected:', location);
-      // Fall back to first available location
-      if (availableLocations.length > 0) {
-        updateLocation(availableLocations[0]);
-      }
-    }
-  };
-
-     const popularCities = [
-     "Jharkhand", // State option for better UX
-     "Dhanbad",
-     "Deoghar", 
-     "Kolkata",
-     "Sahjahanpur",
-     "Patna",
-     "Delhi",
-     "Mumbai",
-     "Bengaluru",
-     "Pune",
-   ];
-
-  // Filter and combine locations for dropdown
-  const displayLocations = searchQuery.length >= 2 
-    ? locationSuggestions
-    : popularCities.filter(city => availableLocations.includes(city));
+  const popularCities = [
+    "Jharkhand", // State option for better UX
+    "Dhanbad",
+    "Deoghar", 
+    "Kolkata",
+    "Sahjahanpur",
+    "Patna",
+    "Delhi",
+    "Mumbai",
+    "Bengaluru",
+    "Pune",
+  ];
 
   return (
     <div className="sticky top-0 z-10  shadow-2xl flex items-center justify-between p-2 px-4 md:p-4 md:px-10 bg-[#7551B2] ">

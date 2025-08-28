@@ -70,7 +70,7 @@ export default function DoctorsList() {
     } finally {
       setLoading(false);
     }
-  }, [selectedLocation]);
+  }, [selectedLocation, expandLocationToCities]);
 
   useEffect(() => {
     fetchDoctors();
