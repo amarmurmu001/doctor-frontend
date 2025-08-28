@@ -25,6 +25,20 @@ import PersonalDetails from "./pages/auth/PersonalDetails";
 import Login from "./pages/auth/Login";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import SearchResults from "./pages/SearchResults";
+import SearchDoctors from "./pages/SearchDoctors";
+import SearchHospitals from "./pages/SearchHospitals";
+import SearchClinics from "./pages/SearchClinics";
+import TermsAndConditions from "./pages/TermsAndConditions";
+import About from "./pages/About";
+import Blog from "./pages/Blog";
+import Careers from "./pages/Careers";
+import Press from "./pages/Press";
+import Contact from "./pages/Contact";
+import Help from "./pages/Help";
+import Developers from "./pages/Developers";
+import Privacy from "./pages/Privacy";
+import PCITerms from "./pages/PCITerms";
+import Directory from "./pages/Directory";
 
 // Admin imports
 import AdminRoute from "./components/admin/AdminRoute";
@@ -90,6 +104,20 @@ function AppShell() {
             <Route path="/login" element={<Login />} />
             <Route path="/auth/forgot-password" element={<ForgotPassword />} />
             <Route path="/search" element={<SearchResults />} />
+            <Route path="/search-doctors" element={<SearchDoctors />} />
+            <Route path="/search-hospitals" element={<SearchHospitals />} />
+            <Route path="/search-clinics" element={<SearchClinics />} />
+            <Route path="/terms" element={<TermsAndConditions />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/careers" element={<Careers />} />
+            <Route path="/press" element={<Press />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/developers" element={<Developers />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/pci-terms" element={<PCITerms />} />
+            <Route path="/directory" element={<Directory />} />
 
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />

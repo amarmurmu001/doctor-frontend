@@ -46,9 +46,7 @@ export default function CategoryGrid() {
         <h2 className="text-xl font-bold text-gray-900 mb-2">
           Medical Categories
         </h2>
-        <p className="text-gray-600 text-sm">
-          Find doctors by medical specialty and treatment type
-        </p>
+        
       </div>
 
       {/* Fixed Container to Prevent Horizontal Scroll */}

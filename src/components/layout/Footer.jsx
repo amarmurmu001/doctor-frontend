@@ -8,20 +8,10 @@ const Footer = () => {
     {
       title: "For patients",
       links: [
-        { text: "Search for doctors", path: "/search" },
-        { text: "Search for clinics", path: "/clinics" },
-        { text: "Search for hospitals", path: "/hospitals" }
-      ]
-    },
-    {
-      title: "More",
-      links: [
-        { text: "Help", path: "/help" },
-        { text: "Developers", path: "/developers" },
-        { text: "Privacy Policy", path: "/privacy" },
-        { text: "Terms & Conditions", path: "/terms" },
-        { text: "PCI DSC", path: "/pci" },
-        { text: "Healthcare Directory", path: "/directory" }
+        { text: "Search Doctors", path: "/search-doctors" },
+        { text: "Search Hospitals", path: "/search-hospitals" },
+        { text: "Search Clinics", path: "/search-clinics" },
+       
       ]
     },
     {
@@ -31,8 +21,8 @@ const Footer = () => {
         { text: "Blog", path: "/blog" },
         { text: "Careers", path: "/careers" },
         { text: "Press", path: "/press" },
-        { text: "Contact Us", path: "/contact" },
-        { text: "Healthcare Directory", path: "/directory" }
+        { text: "Contact Us", path: "/contact" }
+       
       ]
     },
     {
@@ -42,7 +32,8 @@ const Footer = () => {
         { text: "Developers", path: "/developers" },
         { text: "Privacy Policy", path: "/privacy" },
         { text: "Terms & Conditions", path: "/terms" },
-        { text: "PCI T&C", path: "/pci-terms" }
+        { text: "PCI T&C", path: "/pci-terms" },
+         { text: "Healthcare Directory", path: "/directory" }
       ]
     },
     {
@@ -68,7 +59,7 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-[#2c2548] to-[#1a1a2e] text-white py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
               <h3 className="font-semibold text-lg text-white">
