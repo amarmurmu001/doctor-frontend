@@ -1,12 +1,16 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-const useLocationStore = create((set, get) => ({
-  // State - Updated with your actual database locations
-  selectedLocation: '',
-  coordinates: { lat: null, lng: null },
-  locationLoading: true,
-  locationError: null,
-  availableLocations: [],
+const useLocationStore = create(
+  persist(
+    (set, get) => ({
+      // State - Updated with your actual database locations
+      selectedLocation: '',
+      coordinates: { lat: null, lng: null },
+      locationLoading: false,
+      locationError: null,
+      availableLocations: [],
+      isInitialized: false,
 
   // Enhanced reverse geocoding with your database locations
   getLocationName: (lat, lng) => {
@@ -14,17 +18,28 @@ const useLocationStore = create((set, get) => ({
     
     // Updated location mapping with your seeded locations
     const locationMap = [
-      // Your seeded locations from database
-      { name: 'Dhanbad', lat: 23.8000, lng: 86.4500, range: 0.5 },
-      { name: 'Deoghar', lat: 24.4844, lng: 86.6947, range: 0.5 },
-      { name: 'Howrah', lat: 22.5958, lng: 88.2636, range: 0.5 },
-      { name: 'Sahjahanpur', lat: 27.8833, lng: 79.9667, range: 0.5 },
+      // Jharkhand cities
+      { name: 'Dhanbad', lat: 23.8000, lng: 86.4500, range: 0.5, state: 'Jharkhand' },
+      { name: 'Deoghar', lat: 24.4844, lng: 86.6947, range: 0.5, state: 'Jharkhand' },
+      { name: 'Ranchi', lat: 23.3441, lng: 85.3096, range: 0.5, state: 'Jharkhand' },
+      { name: 'Jamshedpur', lat: 22.8046, lng: 86.2029, range: 0.5, state: 'Jharkhand' },
+      { name: 'Bokaro', lat: 23.6693, lng: 86.1511, range: 0.5, state: 'Jharkhand' },
       
-      // Major cities
-      { name: 'Mumbai', lat: 19.0760, lng: 72.8777, range: 1 },
-      { name: 'Delhi', lat: 28.6139, lng: 77.2090, range: 1 },
-      { name: 'Bangalore', lat: 12.9716, lng: 77.5946, range: 1 },
-      { name: 'Kolkata', lat: 22.5726, lng: 88.3639, range: 1 },
+      // West Bengal cities  
+      { name: 'Howrah', lat: 22.5958, lng: 88.2636, range: 0.5, state: 'West Bengal' },
+      { name: 'Kolkata', lat: 22.5726, lng: 88.3639, range: 1, state: 'West Bengal' },
+      
+      // Uttar Pradesh cities
+      { name: 'Sahjahanpur', lat: 27.8833, lng: 79.9667, range: 0.5, state: 'Uttar Pradesh' },
+      { name: 'Lucknow', lat: 26.8467, lng: 80.9462, range: 0.5, state: 'Uttar Pradesh' },
+      
+      // Bihar cities
+      { name: 'Patna', lat: 25.5941, lng: 85.1376, range: 0.5, state: 'Bihar' },
+      
+      // Major metro cities
+      { name: 'Mumbai', lat: 19.0760, lng: 72.8777, range: 1, state: 'Maharashtra' },
+      { name: 'Delhi', lat: 28.6139, lng: 77.2090, range: 1, state: 'Delhi' },
+      { name: 'Bangalore', lat: 12.9716, lng: 77.5946, range: 1, state: 'Karnataka' },
     ];
 
     // Find closest city with improved distance calculation
@@ -93,24 +108,52 @@ const useLocationStore = create((set, get) => ({
   fetchAvailableLocations: async () => {
     try {
       console.log('🌍 Fetching available locations from backend...');
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/doctors`);
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+      
+      if (!API_BASE_URL) {
+        console.warn('⚠️ VITE_BACKEND_URL not configured, using default locations');
+        const defaultLocations = [
+          'Dhanbad', 'Deoghar', 'Howrah', 'Sahjahanpur', 
+          'Mumbai', 'Delhi', 'Bangalore', 'Kolkata', 'Patna'
+        ];
+        set({ availableLocations: defaultLocations });
+        return defaultLocations;
+      }
+      
+      const response = await fetch(`${API_BASE_URL}/api/doctors`);
       if (response.ok) {
         const data = await response.json();
-        const locations = Array.isArray(data) ? Array.from(new Set(data.map(d => (d.city || '').toString().trim()).filter(Boolean))) : [];
+        const locations = Array.isArray(data) 
+          ? Array.from(new Set(data.map(d => (d.city || '').toString().trim()).filter(Boolean))) 
+          : [];
         console.log('📍 Locations from backend:', locations);
         
-        // Merge with default locations
+        // Merge with popular cities and states for better UX
+        const popularCities = [
+          'Jharkhand', 'Dhanbad', 'Deoghar', 'Howrah', 'Sahjahanpur', 
+          'Mumbai', 'Delhi', 'Bangalore', 'Kolkata', 'Patna', 'Pune',
+          'West Bengal', 'Bihar', 'Uttar Pradesh'
+        ];
+        
         const allLocations = [...new Set([
+          ...popularCities,
           ...locations
         ])];
         
         set({ availableLocations: allLocations });
         return allLocations;
+      } else {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
       }
     } catch (error) {
-      console.warn(error,'⚠️ Could not fetch locations from backend, using defaults');
+      console.warn('⚠️ Could not fetch locations from backend:', error.message);
+      const fallbackLocations = [
+        'Jharkhand', 'Dhanbad', 'Deoghar', 'Howrah', 'Sahjahanpur', 
+        'Mumbai', 'Delhi', 'Bangalore', 'Kolkata', 'Patna'
+      ];
+      set({ availableLocations: fallbackLocations });
+      return fallbackLocations;
     }
-    return get().availableLocations;
   },
 
   // Actions
@@ -215,14 +258,112 @@ const useLocationStore = create((set, get) => ({
 
   // Initialize location and fetch available locations
   initializeLocation: async () => {
+    const state = get();
+    
+    // Prevent multiple initializations
+    if (state.isInitialized) {
+      console.log('🚀 Location store already initialized');
+      return;
+    }
+    
     console.log('🚀 Initializing location store...');
+    set({ isInitialized: true });
     
     // Fetch available locations from backend first
-    await get().fetchAvailableLocations();
+    await state.fetchAvailableLocations();
     
-    // Then get current location
-    get().getCurrentLocation();
+    // Only get current location if we don't have a stored location
+    if (!state.selectedLocation) {
+      state.getCurrentLocation();
+    } else {
+      console.log('📍 Using stored location:', state.selectedLocation);
+    }
+  },
+
+  // Search locations with autocomplete
+  searchLocations: (query) => {
+    const { availableLocations } = get();
+    if (!query || query.length < 2) return [];
+    
+    const searchTerm = query.toLowerCase();
+    return availableLocations
+      .filter(location => location.toLowerCase().includes(searchTerm))
+      .slice(0, 8); // Limit to 8 results
+  },
+
+  // Validate if location exists in available locations
+  isValidLocation: (location) => {
+    const { availableLocations } = get();
+    return availableLocations.some(loc => 
+      loc.toLowerCase() === location.toLowerCase()
+    );
+  },
+
+  // Get nearest popular cities for fallback
+  getNearestCities: (lat, lng) => {
+    const popularCities = [
+      { name: 'Dhanbad', lat: 23.8000, lng: 86.4500 },
+      { name: 'Deoghar', lat: 24.4844, lng: 86.6947 },
+      { name: 'Kolkata', lat: 22.5726, lng: 88.3639 },
+      { name: 'Mumbai', lat: 19.0760, lng: 72.8777 },
+      { name: 'Delhi', lat: 28.6139, lng: 77.2090 },
+      { name: 'Bangalore', lat: 12.9716, lng: 77.5946 }
+    ];
+
+    // Calculate distances and return nearest 3
+    return popularCities
+      .map(city => {
+        const distance = Math.sqrt(
+          Math.pow(lat - city.lat, 2) + Math.pow(lng - city.lng, 2)
+        );
+        return { ...city, distance };
+      })
+      .sort((a, b) => a.distance - b.distance)
+      .slice(0, 3)
+      .map(city => city.name);
+  },
+
+  // Map state to cities for better location filtering
+  getStateToCityMapping: () => {
+    return {
+      'Jharkhand': ['Dhanbad', 'Deoghar', 'Ranchi', 'Jamshedpur', 'Bokaro', 'Hazaribagh', 'Giridih'],
+      'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Siliguri'],
+      'Uttar Pradesh': ['Sahjahanpur', 'Lucknow', 'Kanpur', 'Agra', 'Varanasi'],
+      'Bihar': ['Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur'],
+      'Eastern India': ['Dhanbad', 'Deoghar', 'Kolkata', 'Howrah', 'Patna'],
+      'Northern India': ['Delhi', 'Sahjahanpur', 'Lucknow', 'Patna']
+    };
+  },
+
+  // Check if location is a state and expand to cities
+  expandLocationToCities: (location) => {
+    const stateMapping = get().getStateToCityMapping();
+    const locationLower = location.toLowerCase();
+    
+    // Check if it's a state name
+    for (const [state, cities] of Object.entries(stateMapping)) {
+      if (state.toLowerCase() === locationLower || 
+          state.toLowerCase().includes(locationLower) ||
+          locationLower.includes(state.toLowerCase())) {
+        console.log(`📍 Expanding ${location} to cities:`, cities);
+        return cities;
+      }
+    }
+    
+    // If not a state, return the original location
+    return [location];
   }
-}));
+    }),
+    {
+      name: 'location-store',
+      partialize: (state) => ({
+        selectedLocation: state.selectedLocation,
+        coordinates: state.coordinates,
+        availableLocations: state.availableLocations,
+        isInitialized: state.isInitialized
+      })
+    }
+  )
+);
 
 export default useLocationStore;

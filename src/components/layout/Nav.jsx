@@ -10,29 +10,29 @@ function Nav() {
     selectedLocation,
     availableLocations,
     updateLocation,
-    setCoordinates,
     refreshLocation,
     locationLoading,
+    searchLocations,
+    isValidLocation,
   } = useLocationStore();
 
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
 
   const [open, setOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
   const panelRef = useRef(null);
 
-  // Prompt for GPS at component mount or when explicitly triggered
+  // Handle location search
   useEffect(() => {
-    if (!selectedLocation && window.navigator.geolocation) {
-      window.navigator.geolocation.getCurrentPosition((pos) => {
-        setCoordinates({
-          lat: pos.coords.latitude,
-          lng: pos.coords.longitude,
-        });
-        updateLocation("Current Location");
-      });
+    if (searchQuery.length >= 2) {
+      const suggestions = searchLocations(searchQuery);
+      setLocationSuggestions(suggestions);
+    } else {
+      setLocationSuggestions([]);
     }
-  }, [selectedLocation, setCoordinates, updateLocation]);
+  }, [searchQuery, searchLocations]);
 
   useEffect(() => {
     const onClickAway = (e) => {
@@ -44,17 +44,42 @@ function Nav() {
     return () => document.removeEventListener("mousedown", onClickAway);
   }, []);
 
-  const popularCities = [
-    "Dhanbad",
-    "Deoghar",
-    "Kolkata",
-    "Sahjahanpur",
-    "Patna",
-    "Delhi",
-    "Mumbai",
-    "Bengaluru",
-    "Pune",
-  ];
+  const handleLocationSelect = (location) => {
+    setSearchQuery('');
+    setLocationSuggestions([]);
+    setOpen(false);
+    
+    // Validate location before setting
+    if (location === 'Use current location' || location === 'Current Location') {
+      refreshLocation();
+    } else if (isValidLocation(location) || location === 'Near me') {
+      updateLocation(location);
+    } else {
+      console.warn('⚠️ Invalid location selected:', location);
+      // Fall back to first available location
+      if (availableLocations.length > 0) {
+        updateLocation(availableLocations[0]);
+      }
+    }
+  };
+
+     const popularCities = [
+     "Jharkhand", // State option for better UX
+     "Dhanbad",
+     "Deoghar", 
+     "Kolkata",
+     "Sahjahanpur",
+     "Patna",
+     "Delhi",
+     "Mumbai",
+     "Bengaluru",
+     "Pune",
+   ];
+
+  // Filter and combine locations for dropdown
+  const displayLocations = searchQuery.length >= 2 
+    ? locationSuggestions
+    : popularCities.filter(city => availableLocations.includes(city));
 
   return (
     <div className="sticky top-0 z-10  shadow-2xl flex items-center justify-between p-2 px-4 md:p-4 md:px-10 bg-[#7551B2] ">
@@ -122,15 +147,13 @@ function Nav() {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
-                  fill="currentColor"
+                  fill="none"
+                  stroke="currentColor"
                   className="w-5 h-5"
                 >
-                  <path d="M12 7.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9Z" />
-                  <path
-                    fillRule="evenodd"
-                    d="M12 2.25a.75.75 0 0 1 .75.75v1.51a7.5 7.5 0 1 1-1.5 0V3a.75.75 0 0 1 .75-.75Z"
-                    clipRule="evenodd"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z" />
+                  <circle cx="12" cy="9" r="2.5" fill="currentColor" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 1v2m0 18v2M1 12h2m18 0h2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M4.22 19.78l1.42-1.42m12.72-12.72l1.42-1.42" />
                 </svg>
                 Use current location
               </button>
@@ -209,7 +232,7 @@ function Nav() {
           <div className="flex items-center space-x-2">
             {/* Desktop: Show greeting */}
             <div className="hidden md:flex items-center space-x-1">
-              <span className="text-white text-sm">Hi</span>
+              <span className="text-white font-medium">Hi,</span>
               <span className="text-white font-medium">{user.name}</span>
             </div>
             <button

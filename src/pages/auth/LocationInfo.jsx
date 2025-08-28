@@ -37,13 +37,39 @@ export default function LocationInfo(){
           <div className="space-y-6">
             {/* Location field */}
             <div>
-              <label className="block text-sm font-medium text-gray-900 mb-3">Select you location</label>
-              <input 
-                value={city} 
-                onChange={e=>setOnboarding({ city: e.target.value })} 
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white" 
-                placeholder="Eg : Lucknow, Uttar Pradesh" 
-              />
+              <label className="block text-sm font-medium text-gray-900 mb-3">Select your location</label>
+              <div className="relative">
+                <input 
+                  value={city} 
+                  onChange={e=>setOnboarding({ city: e.target.value })} 
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white" 
+                  placeholder="e.g., Mumbai, Delhi, Kolkata" 
+                  list="city-suggestions"
+                />
+                <datalist id="city-suggestions">
+                  <option value="Mumbai" />
+                  <option value="Delhi" />
+                  <option value="Bangalore" />
+                  <option value="Kolkata" />
+                  <option value="Chennai" />
+                  <option value="Hyderabad" />
+                  <option value="Pune" />
+                  <option value="Ahmedabad" />
+                  <option value="Jaipur" />
+                  <option value="Lucknow" />
+                  <option value="Dhanbad" />
+                  <option value="Deoghar" />
+                  <option value="Howrah" />
+                  <option value="Sahjahanpur" />
+                  <option value="Patna" />
+                </datalist>
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             {/* App Language field */}
