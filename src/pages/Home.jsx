@@ -15,6 +15,8 @@ import Buyerreview from "../components/reviews/Patientreview.jsx";
 import HowItWorks from "../components/content/HowItWorks.jsx";
 import WhyDoctar from "../components/home/WhyDoctar.jsx";
 import FAQ from "../components/FAQ.jsx";
+import HomeFAQ from "../components/home/HomeFAQ.jsx";
+import Footer from "../components/layout/Footer.jsx";
 import CategoryGrid from "../components/home/CategoryGrid.jsx";
 import { useNavigate } from "react-router-dom";
 import DefaultSeo from "../components/seo/DefaultSeo.jsx";
@@ -95,11 +97,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FAQ Section - Desktop Only with proper margin from reviews */}
-      <div className="hidden lg:block mt-24">
-        <FAQ />
       </div>
+
+      {/* FAQ Section - New style for all devices */}
+      <div className="mt-0">
+        <HomeFAQ />
       </div>
+
+      {/* Footer Section */}
+      <Footer />
     </>
   );
 }
