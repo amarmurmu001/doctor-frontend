@@ -66,7 +66,7 @@ function Login() {
       </div>
 
       {/* Content section */}
-      <div className="px-6">
+      <div className="px-6 ">
         <div className="w-full bg-white rounded-t-3xl p-6 -mt-4">
           <h1 className="text-2xl font-bold text-gray-900 mb-8">Welcome Back</h1>
           
@@ -130,7 +130,7 @@ function Login() {
               <button 
                 type="button" 
                 onClick={() => navigate('/auth/signup')} 
-                className="text-purple-600 text-sm font-medium hover:text-purple-700"
+                className="text-purple-600 text-sm z-20 relative font-medium  hover:text-purple-700"
               >
                 Get Started
               </button>
@@ -140,12 +140,23 @@ function Login() {
       </div>
 
       {/* Doctor illustration */}
-      <div className="fixed bottom-0 right-0 w-full flex justify-end pointer-events-none">
+      <div className="fixed  bottom-0 right-0 w-full  flex justify-end pointer-events-none">
+        <div className="absolute bottom-0 right-0 w-full ">
+<img 
+                src="/curvy-bg.png" 
+                alt="Doctor" 
+                className="w-full h-[25vh] object-stretch"
+              />
+          </div>
         <div className="relative">
-          <div className="absolute bottom-0 right-0 w-64 h-64 bg-purple-200 rounded-full transform translate-x-20 translate-y-20"></div>
-          <div className="relative w-48 h-56 mb-0 mr-8">
-            <div className="w-full h-full bg-gradient-to-t from-purple-100 to-transparent rounded-t-full flex items-end justify-center">
-              <div className="text-6xl mb-4">👨‍⚕️</div>
+          
+          <div className="relative w-48 h-56 mb-0 ">
+            <div className="w-full h-full absolute bottom-0 ">
+              <img 
+                src="/doctor-image.png" 
+                alt="Doctor" 
+                className="w- h-full bottom-0  object-contain"
+              />
             </div>
           </div>
         </div>
