@@ -58,10 +58,24 @@ export default function DoctorsList() {
       console.log('✅ Doctors data received:', data);
       
       // Handle different response formats
-      const doctorsArray = Array.isArray(data) ? data : (data.doctors || data.data || []);
-      setDoctors(doctorsArray);
+      let doctorsArray = [];
       
-      if (doctorsArray.length === 0) {
+      if (Array.isArray(data)) {
+        doctorsArray = data;
+      } else if (data && typeof data === 'object') {
+        doctorsArray = data.doctors || data.data || data.results || [];
+      }
+      
+      // Ensure we have valid doctor objects
+      const validDoctors = doctorsArray.filter(doctor => 
+        doctor && (doctor._id || doctor.id) && (doctor.user?.name || doctor.name)
+      );
+      
+      setDoctors(validDoctors);
+      
+      if (validDoctors.length === 0 && doctorsArray.length > 0) {
+        setError(`Found doctors but couldn't display them. Please try again.`);
+      } else if (validDoctors.length === 0) {
         setError(`No doctors found in ${selectedLocation}. Try selecting a different location.`);
       }
       
@@ -79,12 +93,20 @@ export default function DoctorsList() {
   }, [fetchDoctors]);
 
   function mapDoctorToCardProps(doctor) {
+    // Handle different possible data structures
+    const userName = doctor.user?.name || doctor.name || 'Doctor';
+    const userSpecialty = doctor.specialty || doctor.keySpecialization?.[0] || 'General';
+    const consultationFee = doctor.consultationFee || doctor.fee || 0;
+    const doctorImage = doctor.profileImage || doctor.user?.profileImage || '/icons/doctor.png';
+    const city = doctor.address?.city || selectedLocation || 'India';
+    
     return {
-      name: doctor.user && doctor.user.name ? doctor.user.name : 'Doctor',
-      specialty: doctor.specialty || 'General',
-      price: typeof doctor.consultationFee === 'number' ? `₹${doctor.consultationFee}/Consultation` : 'N/A',
-      image: '/icons/doctor.png',
+      name: userName,
+      specialty: userSpecialty,
+      price: consultationFee > 0 ? `₹${consultationFee}/Consultation` : 'Contact for price',
+      image: doctorImage,
       doctorId: doctor._id || doctor.id,
+      city: city,
     };
   }
 
@@ -171,14 +193,25 @@ export default function DoctorsList() {
       {/* Doctors list */}
       {doctors.length > 0 && (
         <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
-          {doctors.map((doctor) => (
+          {doctors.map((doctor, index) => (
             <DoctorCard
-              key={doctor._id || doctor.id}
+              key={doctor._id || doctor.id || `doctor-${index}`}
               {...mapDoctorToCardProps(doctor)}
             />
           ))}
         </div>
       )}
+      
+      {/* Add scrollbar hiding styles */}
+      <style jsx>{`
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
 
       {/* Empty state (when no error but no doctors) */}
       {!error && !loading && doctors.length === 0 && selectedLocation && (
