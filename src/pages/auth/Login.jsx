@@ -137,10 +137,7 @@ function Login() {
             </div>
           </form>
         </div>
-      </div>
-
-      {/* Doctor illustration */}
-      <div className="fixed  bottom-0 right-0 w-full  flex justify-end pointer-events-none">
+        <div className="fixed  bottom-0 right-0 w-full  flex justify-end pointer-events-none">
         <div className="absolute bottom-0 right-0 w-full ">
 <img 
                 src="/curvy-bg.png" 
@@ -161,6 +158,10 @@ function Login() {
           </div>
         </div>
       </div>
+      </div>
+
+      {/* Doctor illustration */}
+      
     </div>
   )
 }
