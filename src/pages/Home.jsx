@@ -17,7 +17,7 @@ import WhyDoctar from "../components/home/WhyDoctar.jsx";
 import FAQ from "../components/FAQ.jsx";
 import HomeFAQ from "../components/home/HomeFAQ.jsx";
 import Footer from "../components/layout/Footer.jsx";
-import CategoryGrid from "../components/home/CategoryGrid.jsx";
+import QueryGrid from "../components/home/QueryGrid.jsx";
 import { useNavigate } from "react-router-dom";
 import DefaultSeo from "../components/seo/DefaultSeo.jsx";
 
@@ -55,19 +55,7 @@ export default function Home() {
 
         
         <div className="mt-4 px-2 sm:px-0">
-          <CategoryGrid />
-          {/* View All Categories Link */}
-      <div className="mt-8 text-center">
-        <button
-          onClick={() => navigate('/categories')}
-          className="inline-flex items-center px-6 py-3 text-sm font-medium text-purple-600 bg-purple-50 border border-purple-200 rounded-full hover:bg-purple-100 hover:border-purple-300 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-        >
-          <span>View All Medical Specialties</span>
-          <svg className="ml-2 w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </button>
-      </div>
+          <QueryGrid />
         </div>
 
         <div className="mt-4 px-2 sm:px-0">

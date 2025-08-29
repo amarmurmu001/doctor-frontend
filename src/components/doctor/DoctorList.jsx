@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
 import DoctorCard from "./DoctorCard";
 import useLocationStore from "../../stores/locationStore";
+import { useNavigate } from "react-router-dom";
 
 export default function DoctorsList() {
   const { selectedLocation, expandLocationToCities } = useLocationStore();
+  const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -136,15 +138,17 @@ export default function DoctorsList() {
               ({doctors.length} found)
             </span>
           )}
+
         </h2>
-        {error && (
+        
           <button
-            onClick={fetchDoctors}
+            onClick={() => navigate('/doctor-mapped')}
             className="text-sm text-blue-600 hover:text-blue-800 font-medium"
           >
-            Try Again
+            All
           </button>
-        )}
+          
+      
       </div>
 
       {/* Error state */}
