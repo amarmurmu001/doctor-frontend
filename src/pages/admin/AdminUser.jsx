@@ -50,12 +50,32 @@ const AdminUsers = () => {
   const handleUserAction = async (userId, action) => {
     try {
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}/${action}`, {
-        method: 'PATCH',
+      let endpoint, method, body = {};
+      
+      if (action === 'suspend') {
+        endpoint = `${API_BASE_URL}/api/admin/users/${userId}`;
+        method = 'PUT';
+        body = { status: 'suspended' };
+      } else if (action === 'activate') {
+        endpoint = `${API_BASE_URL}/api/admin/users/${userId}`;
+        method = 'PUT';
+        body = { status: 'active' };
+      } else if (action === 'delete') {
+        endpoint = `${API_BASE_URL}/api/admin/users/${userId}`;
+        method = 'DELETE';
+      } else {
+        endpoint = `${API_BASE_URL}/api/admin/users/${userId}`;
+        method = 'PUT';
+        body = { [action]: true };
+      }
+
+      const response = await fetch(endpoint, {
+        method,
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
-        }
+        },
+        ...(method !== 'DELETE' && { body: JSON.stringify(body) })
       });
 
       if (!response.ok) throw new Error(`Failed to ${action} user`);
@@ -184,21 +204,42 @@ const AdminUsers = () => {
                     {new Date(user.createdAt).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button
-                      onClick={() => {
-                        setSelectedUser(user);
-                        setShowModal(true);
-                      }}
-                      className="text-purple-600 hover:text-purple-900 mr-4"
-                    >
-                      View
-                    </button>
-                    <button
-                      onClick={() => handleUserAction(user._id, 'suspend')}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      Suspend
-                    </button>
+                    <div className="flex justify-end space-x-2">
+                      <button
+                        onClick={() => {
+                          setSelectedUser(user);
+                          setShowModal(true);
+                        }}
+                        className="text-purple-600 hover:text-purple-900 font-medium"
+                      >
+                        View
+                      </button>
+                      {user.status === 'suspended' ? (
+                        <button
+                          onClick={() => handleUserAction(user._id, 'activate')}
+                          className="text-green-600 hover:text-green-900 font-medium"
+                        >
+                          Activate
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleUserAction(user._id, 'suspend')}
+                          className="text-yellow-600 hover:text-yellow-900 font-medium"
+                        >
+                          Suspend
+                        </button>
+                      )}
+                      <button
+                        onClick={() => {
+                          if (confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+                            handleUserAction(user._id, 'delete');
+                          }
+                        }}
+                        className="text-red-600 hover:text-red-900 font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

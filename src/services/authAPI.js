@@ -226,8 +226,13 @@ export async function submitDoctorApplication(doctorData, email, password) {
         postalCode: doctorData.postalCode,
         country: doctorData.country
       },
+      coordinates: doctorData.coordinates ? [doctorData.coordinates.lng, doctorData.coordinates.lat] : null,
       consultationFee: doctorData.consultationFee,
       keySpecialization: (doctorData.keySpecialization || []).filter(k => k && k.trim()),
+      slots: (doctorData.slots || []).map(slot => ({
+        date: new Date(slot.date),
+        times: slot.times || []
+      })),
       status: 'pending'
     };
     

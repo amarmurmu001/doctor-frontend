@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import useAuthStore from '../../stores/useAuthStore';
+import DynamicInputList from '../../components/DynamicInputList';
+import MapLocationPicker from '../../components/MapLocationPicker';
+import TimeSlotPicker from '../../components/TimeSlotPicker';
 
 const AdminDoctors = () => {
   const { token, user } = useAuthStore();
@@ -17,38 +20,46 @@ const AdminDoctors = () => {
   const [actionLoading, setActionLoading] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [newDoctor, setNewDoctor] = useState({
+    // User fields
     name: '',
     email: '',
+    phone: '',
+    sex: '',
+    dateOfBirth: '',
+    location: '',
+    appLanguage: 'English',
+    
+    // Doctor fields
     specialty: '',
-    experience: 0,
+    yearsOfExperience: 0,
+    clinicName: '',
     city: '',
-    phone: ''
+    about: '',
+    education: [],
+    experience: [],
+    services: [],
+    languages: [],
+    contactPhones: [],
+    contactEmails: [],
+    keySpecialization: [],
+    consultationFee: 0,
+    
+    // Address fields
+    addressLine1: '',
+    addressLine2: '',
+    addressCity: '',
+    addressState: '',
+    postalCode: '',
+    country: '',
+    coordinates: null,
+    
+    // Additional fields
+    slots: [],
+    clinicImages: []
   });
 
-  // ✅ Effects
-  useEffect(() => {
-    if (!token || !user) {
-      setError('Authentication required');
-      setLoading(false);
-      return;
-    }
-    fetchDoctors();
-  }, [token, user, currentPage, filterStatus]);
-
-  useEffect(() => {
-    // Debounced search
-    const delayedSearch = setTimeout(() => {
-      if (searchTerm !== undefined) {
-        setCurrentPage(1);
-        fetchDoctors();
-      }
-    }, 500);
-    
-    return () => clearTimeout(delayedSearch);
-  }, [searchTerm]);
-
   // ✅ API Functions
-  const fetchDoctors = async () => {
+  const fetchDoctors = useCallback(async () => {
     try {
       setLoading(true);
       setError('');
@@ -61,7 +72,7 @@ const AdminDoctors = () => {
         search: searchTerm || ''
       });
 
-      const response = await fetch(`${API_BASE_URL}/api/doctors?${queryParams}`, {
+      const response = await fetch(`${API_BASE_URL}/api/admin/doctors?${queryParams}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -113,7 +124,29 @@ const AdminDoctors = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token, currentPage, filterStatus, searchTerm]);
+
+  // ✅ Effects
+  useEffect(() => {
+    if (!token || !user) {
+      setError('Authentication required');
+      setLoading(false);
+      return;
+    }
+    fetchDoctors();
+  }, [token, user, currentPage, filterStatus, fetchDoctors]);
+
+  useEffect(() => {
+    // Debounced search
+    const delayedSearch = setTimeout(() => {
+      if (searchTerm !== undefined) {
+        setCurrentPage(1);
+        fetchDoctors();
+      }
+    }, 500);
+    
+    return () => clearTimeout(delayedSearch);
+  }, [searchTerm, fetchDoctors]);
 
   const handleDoctorAction = async (doctorId, action) => {
     const actionText = action === 'approve' ? 'approve' : action === 'reject' ? 'reject' : action;
@@ -125,7 +158,7 @@ const AdminDoctors = () => {
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
       
       const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${doctorId}/status`, {
-        method: 'PATCH',
+        method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -194,13 +227,25 @@ const AdminDoctors = () => {
       setActionLoading('add');
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
       
+      // First create the doctor profile
       const response = await fetch(`${API_BASE_URL}/api/admin/doctors`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify(newDoctor)
+        body: JSON.stringify({
+          ...newDoctor,
+          // Convert arrays to ensure they're properly formatted
+          education: newDoctor.education || [],
+          experience: newDoctor.experience || [],
+          services: newDoctor.services || [],
+          languages: newDoctor.languages || [],
+          contactPhones: newDoctor.contactPhones || [],
+          contactEmails: newDoctor.contactEmails || [],
+          keySpecialization: newDoctor.keySpecialization || [],
+          slots: newDoctor.slots || []
+        })
       });
 
       if (!response.ok) {
@@ -208,15 +253,69 @@ const AdminDoctors = () => {
         throw new Error(errorData || 'Failed to add doctor');
       }
       
+      const result = await response.json();
+      const doctorId = result.data._id;
+      
+      // Upload clinic images if any
+      if (newDoctor.clinicImages && newDoctor.clinicImages.length > 0) {
+        for (const image of newDoctor.clinicImages) {
+          const imageFormData = new FormData();
+          imageFormData.append('image', image);
+          
+          try {
+            await fetch(`${API_BASE_URL}/api/doctors/${doctorId}/images`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`
+              },
+              body: imageFormData
+            });
+          } catch (imageError) {
+            console.error('Error uploading image:', imageError);
+            // Continue with other operations even if image upload fails
+          }
+        }
+      }
+      
       await fetchDoctors();
       setShowAddModal(false);
       setNewDoctor({
+        // User fields
         name: '',
         email: '',
+        phone: '',
+        sex: '',
+        dateOfBirth: '',
+        location: '',
+        appLanguage: 'English',
+        
+        // Doctor fields
         specialty: '',
-        experience: 0,
+        yearsOfExperience: 0,
+        clinicName: '',
         city: '',
-        phone: ''
+        about: '',
+        education: [],
+        experience: [],
+        services: [],
+        languages: [],
+        contactPhones: [],
+        contactEmails: [],
+        keySpecialization: [],
+        consultationFee: 0,
+        
+        // Address fields
+        addressLine1: '',
+        addressLine2: '',
+        addressCity: '',
+        addressState: '',
+        postalCode: '',
+        country: '',
+        coordinates: null,
+        
+        // Additional fields
+        slots: [],
+        clinicImages: []
       });
       alert('Doctor added successfully!');
       
@@ -686,6 +785,24 @@ const AdminDoctors = () => {
                               </button>
                             </>
                           )}
+                          {doctor.status === 'approved' && (
+                            <button
+                              onClick={() => handleDoctorAction(doctor._id, 'reject')}
+                              disabled={actionLoading === doctor._id}
+                              className="text-orange-600 hover:text-orange-900 font-medium disabled:opacity-50 transition-colors"
+                            >
+                              {actionLoading === doctor._id ? 'Processing...' : 'Suspend'}
+                            </button>
+                          )}
+                          {doctor.status === 'rejected' && (
+                            <button
+                              onClick={() => handleDoctorAction(doctor._id, 'approve')}
+                              disabled={actionLoading === doctor._id}
+                              className="text-green-600 hover:text-green-900 font-medium disabled:opacity-50 transition-colors"
+                            >
+                              {actionLoading === doctor._id ? 'Processing...' : 'Re-approve'}
+                            </button>
+                          )}
                           <button
                             onClick={() => handleDeleteDoctor(doctor._id)}
                             disabled={actionLoading === doctor._id}
@@ -757,7 +874,16 @@ const AdminDoctors = () => {
               </button>
             </div>
             
-            <form onSubmit={handleAddDoctor} className="p-6 space-y-4">
+            <form onSubmit={handleAddDoctor} className="p-6 space-y-6">
+              {/* Personal Information */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Personal Information
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -785,6 +911,76 @@ const AdminDoctors = () => {
                     placeholder="john.doe@example.com"
                   />
                 </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        value={newDoctor.phone}
+                        onChange={(e) => setNewDoctor({...newDoctor, phone: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="+91 9876543210"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Gender
+                      </label>
+                      <select
+                        value={newDoctor.sex}
+                        onChange={(e) => setNewDoctor({...newDoctor, sex: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      >
+                        <option value="">Select Gender</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Date of Birth
+                      </label>
+                      <input
+                        type="date"
+                        value={newDoctor.dateOfBirth}
+                        onChange={(e) => setNewDoctor({...newDoctor, dateOfBirth: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Preferred Language
+                      </label>
+                      <select
+                        value={newDoctor.appLanguage}
+                        onChange={(e) => setNewDoctor({...newDoctor, appLanguage: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      >
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Bengali">Bengali</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Marathi">Marathi</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Gujarati">Gujarati</option>
+                        <option value="Kannada">Kannada</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Information */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6" />
+                  </svg>
+                  Professional Information
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Specialty <span className="text-red-500">*</span>
@@ -803,23 +999,156 @@ const AdminDoctors = () => {
                     <option value="Orthopedic">Orthopedic</option>
                     <option value="Pediatrician">Pediatrician</option>
                     <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="Gynecologist">Gynecologist</option>
+                        <option value="ENT Specialist">ENT Specialist</option>
+                        <option value="Ophthalmologist">Ophthalmologist</option>
+                        <option value="Urologist">Urologist</option>
+                        <option value="Oncologist">Oncologist</option>
                     <option value="Other">Other</option>
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Experience (Years)
+                        Years of Experience
                   </label>
                   <input
                     type="number"
                     min="0"
                     max="50"
-                    value={newDoctor.experience}
-                    onChange={(e) => setNewDoctor({...newDoctor, experience: parseInt(e.target.value) || 0})}
+                        value={newDoctor.yearsOfExperience}
+                        onChange={(e) => setNewDoctor({...newDoctor, yearsOfExperience: parseInt(e.target.value) || 0})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
                     placeholder="5"
                   />
                 </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Clinic Name
+                      </label>
+                      <input
+                        type="text"
+                        value={newDoctor.clinicName}
+                        onChange={(e) => setNewDoctor({...newDoctor, clinicName: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Apollo Hospital"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Consultation Fee (₹)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={newDoctor.consultationFee}
+                        onChange={(e) => setNewDoctor({...newDoctor, consultationFee: parseInt(e.target.value) || 0})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="500"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      About Doctor
+                    </label>
+                    <textarea
+                      value={newDoctor.about}
+                      onChange={(e) => setNewDoctor({...newDoctor, about: e.target.value})}
+                      rows={3}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="Brief description about the doctor's expertise and approach..."
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <DynamicInputList
+                        label="Key Specializations"
+                        values={newDoctor.keySpecialization}
+                        onChange={(values) => setNewDoctor({...newDoctor, keySpecialization: values})}
+                        placeholder="e.g., Heart Surgery, Cardiac Interventions"
+                        maxItems={10}
+                      />
+                    </div>
+                    <div>
+                      <DynamicInputList
+                        label="Languages Spoken"
+                        values={newDoctor.languages}
+                        onChange={(values) => setNewDoctor({...newDoctor, languages: values})}
+                        placeholder="e.g., English, Hindi, Telugu"
+                        maxItems={10}
+                      />
+                    </div>
+                    <div>
+                      <DynamicInputList
+                        label="Services Offered"
+                        values={newDoctor.services}
+                        onChange={(values) => setNewDoctor({...newDoctor, services: values})}
+                        placeholder="e.g., Consultation, Surgery, Emergency Care"
+                        maxItems={15}
+                      />
+                    </div>
+                    <div>
+                      <DynamicInputList
+                        label="Contact Phones"
+                        values={newDoctor.contactPhones}
+                        onChange={(values) => setNewDoctor({...newDoctor, contactPhones: values})}
+                        placeholder="+91 9876543210"
+                        maxItems={5}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Education & Experience */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                  </svg>
+                  Education & Experience
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <DynamicInputList
+                        label="Education"
+                        values={newDoctor.education}
+                        onChange={(values) => setNewDoctor({...newDoctor, education: values})}
+                        inputType="textarea"
+                        rows={2}
+                        placeholder="e.g., MBBS from AIIMS Delhi (2010-2015)"
+                        maxItems={10}
+                      />
+                    </div>
+                    <div>
+                      <DynamicInputList
+                        label="Professional Experience"
+                        values={newDoctor.experience}
+                        onChange={(values) => setNewDoctor({...newDoctor, experience: values})}
+                        inputType="textarea"
+                        rows={2}
+                        placeholder="e.g., Senior Consultant at Apollo Hospital (2018-Present)"
+                        maxItems={10}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Location & Address */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                  Location & Address
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     City <span className="text-red-500">*</span>
@@ -835,15 +1164,236 @@ const AdminDoctors = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone
+                        Location
                   </label>
                   <input
-                    type="tel"
-                    value={newDoctor.phone}
-                    onChange={(e) => setNewDoctor({...newDoctor, phone: e.target.value})}
+                        type="text"
+                        value={newDoctor.location}
+                        onChange={(e) => setNewDoctor({...newDoctor, location: e.target.value})}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                    placeholder="+91 9876543210"
+                        placeholder="Bandra West, Mumbai"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Address Line 1
+                      </label>
+                      <input
+                        type="text"
+                        value={newDoctor.addressLine1}
+                        onChange={(e) => setNewDoctor({...newDoctor, addressLine1: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Building/Street"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Address Line 2
+                      </label>
+                      <input
+                        type="text"
+                        value={newDoctor.addressLine2}
+                        onChange={(e) => setNewDoctor({...newDoctor, addressLine2: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Area/Landmark"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        State
+                      </label>
+                      <input
+                        type="text"
+                        value={newDoctor.addressState}
+                        onChange={(e) => setNewDoctor({...newDoctor, addressState: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Maharashtra"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Postal Code
+                      </label>
+                      <input
+                        type="text"
+                        value={newDoctor.postalCode}
+                        onChange={(e) => setNewDoctor({...newDoctor, postalCode: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="400050"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Country
+                      </label>
+                      <input
+                        type="text"
+                        value={newDoctor.country}
+                        onChange={(e) => setNewDoctor({...newDoctor, country: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="India"
+                      />
+                    </div>
+                    <div>
+                      <DynamicInputList
+                        label="Contact Emails"
+                        values={newDoctor.contactEmails}
+                        onChange={(values) => setNewDoctor({...newDoctor, contactEmails: values})}
+                        placeholder="doctor@clinic.com"
+                        maxItems={5}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Map Location Picker */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  Precise Location (Map)
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                 
+                  <MapLocationPicker
+                    onLocationSelect={(coords) => {
+                      setNewDoctor({
+                        ...newDoctor,
+                        coordinates: coords ? [coords.lng, coords.lat] : null
+                      });
+                    }}
+                    initialLocation={newDoctor.coordinates ? {
+                      lat: newDoctor.coordinates[1],
+                      lng: newDoctor.coordinates[0]
+                    } : null}
+                    address={{
+                      line1: newDoctor.addressLine1,
+                      line2: newDoctor.addressLine2,
+                      city: newDoctor.addressCity || newDoctor.city,
+                      state: newDoctor.addressState,
+                      postalCode: newDoctor.postalCode,
+                      country: newDoctor.country
+                    }}
+                    className="h-64"
                   />
+                  {newDoctor.coordinates && (
+                    <div className="mt-2 text-xs text-green-600">
+                      ✓ Location set: {newDoctor.coordinates[1].toFixed(4)}, {newDoctor.coordinates[0].toFixed(4)}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Time Slots */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Availability Schedule
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-3">
+                    Set the doctor's availability schedule for the next 7 days.
+                  </p>
+                  <TimeSlotPicker
+                    onSlotsChange={(slots) => {
+                      setNewDoctor({
+                        ...newDoctor,
+                        slots: slots
+                      });
+                    }}
+                    initialSlots={newDoctor.slots}
+                  />
+                  {newDoctor.slots && newDoctor.slots.length > 0 && (
+                    <div className="mt-2 text-xs text-green-600">
+                      ✓ {newDoctor.slots.length} day(s) scheduled
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Clinic Images */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  Clinic Gallery Images
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-sm text-gray-600 mb-3">
+                    Upload photos of the clinic, facilities, equipment, and interior to help patients get familiar with the environment.
+                  </p>
+                  
+                  <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+                    <input
+                      type="file"
+                      multiple
+                      accept="image/*"
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setNewDoctor({
+                          ...newDoctor,
+                          clinicImages: [...(newDoctor.clinicImages || []), ...files]
+                        });
+                      }}
+                      className="hidden"
+                      id="clinicImages"
+                    />
+                    <label
+                      htmlFor="clinicImages"
+                      className="cursor-pointer flex flex-col items-center"
+                    >
+                      <svg className="w-12 h-12 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                      </svg>
+                      <span className="text-sm text-gray-600">
+                        Click to upload clinic images or drag and drop
+                      </span>
+                      <span className="text-xs text-gray-400 mt-1">
+                        PNG, JPG, JPEG up to 5MB each
+                      </span>
+                    </label>
+                  </div>
+
+                  {/* Image Preview */}
+                  {newDoctor.clinicImages && newDoctor.clinicImages.length > 0 && (
+                    <div className="mt-4">
+                      <h5 className="text-sm font-medium text-gray-700 mb-2">
+                        Selected Images ({newDoctor.clinicImages.length})
+                      </h5>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        {newDoctor.clinicImages.map((file, index) => (
+                          <div key={index} className="relative">
+                            <img
+                              src={URL.createObjectURL(file)}
+                              alt={`Clinic ${index + 1}`}
+                              className="w-full h-20 object-cover rounded-lg border border-gray-200"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const updatedImages = newDoctor.clinicImages.filter((_, i) => i !== index);
+                                setNewDoctor({
+                                  ...newDoctor,
+                                  clinicImages: updatedImages
+                                });
+                              }}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600"
+                            >
+                              ×
+                            </button>
+                            <div className="text-xs text-gray-500 mt-1 truncate">
+                              {file.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               
@@ -1174,6 +1724,44 @@ const AdminDoctors = () => {
                       )}
                     </button>
                   </>
+                )}
+                {selectedDoctor.status === 'approved' && (
+                  <button
+                    onClick={() => handleDoctorAction(selectedDoctor._id, 'reject')}
+                    disabled={actionLoading === selectedDoctor._id}
+                    className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors disabled:opacity-50 flex items-center"
+                  >
+                    {actionLoading === selectedDoctor._id ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      'Suspend Doctor'
+                    )}
+                  </button>
+                )}
+                {selectedDoctor.status === 'rejected' && (
+                  <button
+                    onClick={() => handleDoctorAction(selectedDoctor._id, 'approve')}
+                    disabled={actionLoading === selectedDoctor._id}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 flex items-center"
+                  >
+                    {actionLoading === selectedDoctor._id ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                        </svg>
+                        Processing...
+                      </>
+                    ) : (
+                      'Re-approve Doctor'
+                    )}
+                  </button>
                 )}
                 <button
                   onClick={() => handleDeleteDoctor(selectedDoctor._id)}

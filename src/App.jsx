@@ -35,6 +35,7 @@ import SearchClinics from "./pages/SearchClinics";
 import TermsAndConditions from "./pages/TermsAndConditions";
 import About from "./pages/About";
 import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
 import Careers from "./pages/Careers";
 import Press from "./pages/Press";
 import Contact from "./pages/Contact";
@@ -52,7 +53,7 @@ import AdminLogin from "./pages/admin/Login";
 import AdminUsers from "./pages/admin/AdminUser";
 import AdminDoctors from "./pages/admin/AdminDoctor";
 import AdminAppointments from "./pages/admin/AdminAppointments";
-import AdminNews from "./pages/admin/AdminBlogs";
+import AdminNews from "./pages/admin/AdminNews";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import ScrollToTop from "./utils/scrollOnTop";
 // import NewsManagement from './pages/admin/NewsManagement'
@@ -118,6 +119,7 @@ function AppShell() {
             <Route path="/terms" element={<TermsAndConditions />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/careers" element={<Careers />} />
             <Route path="/press" element={<Press />} />
             <Route path="/contact" element={<Contact />} />

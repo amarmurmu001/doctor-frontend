@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../stores/useAuthStore';
 import ProgressBar from '../../components/auth/ProgressBar';
+import DynamicInputList from '../../components/DynamicInputList';
+import MapLocationPicker from '../../components/MapLocationPicker';
+import TimeSlotPicker from '../../components/TimeSlotPicker';
 import { submitDoctorApplication } from '../../services/authAPI';
 
 const DoctorOnboarding = () => {
   const navigate = useNavigate();
   const setOnboarding = useAuthStore(s => s.setOnboarding);
   const setAuth = useAuthStore(s => s.setAuth);
-  const completeOnboarding = useAuthStore(s => s.completeOnboarding);
   const onboarding = useAuthStore(s => s.onboarding);
   
   const [currentStep, setCurrentStep] = useState(1);
@@ -45,9 +47,15 @@ const DoctorOnboarding = () => {
     postalCode: '',
     country: 'India',
     
+    // Location coordinates
+    coordinates: null, // {lat, lng}
+    
     // Consultation Details
     consultationFee: 0, // Maps to Doctor.consultationFee
     keySpecialization: [], // Maps to Doctor.keySpecialization
+    
+    // Time Slots
+    slots: [], // Maps to Doctor.slots
     
     // Terms
     acceptTerms: false,
@@ -55,7 +63,7 @@ const DoctorOnboarding = () => {
   });
 
   const progressSteps = ['Sign Up', 'Verify OTP', 'Role Selection', 'Complete Profile'];
-  const doctorSteps = ['Personal', 'Professional', 'Consultation', 'Images', 'Terms'];
+  const doctorSteps = ['Personal', 'Professional', 'Consultation', 'Schedule', 'Images', 'Terms'];
   const totalSteps = doctorSteps.length;
 
   // Pre-populate form with basic info from signup
@@ -73,7 +81,8 @@ const DoctorOnboarding = () => {
         languages: prev.languages.length === 0 ? [] : prev.languages,
         contactPhones: prev.contactPhones.length === 0 ? [onboarding.basicInfo.phone || ''] : prev.contactPhones,
         contactEmails: prev.contactEmails.length === 0 ? [onboarding.basicInfo.email || ''] : prev.contactEmails,
-        keySpecialization: prev.keySpecialization.length === 0 ? [] : prev.keySpecialization
+        keySpecialization: prev.keySpecialization.length === 0 ? [] : prev.keySpecialization,
+        slots: prev.slots.length === 0 ? [] : prev.slots
       }));
     }
   }, [onboarding?.basicInfo]);
@@ -144,6 +153,7 @@ const DoctorOnboarding = () => {
 
   const handleSubmit = async () => {
     try {
+      setSubmitting(true);
       console.log('Submitting doctor application...');
       
       // Submit doctor application (login + update profile + store details)
@@ -152,6 +162,55 @@ const DoctorOnboarding = () => {
         onboarding.email,
         onboarding.basicInfo.password
       );
+      
+      // Upload clinic images if any are selected
+      if (clinicImages.length > 0) {
+        setUploadingImages(true);
+        try {
+          console.log('Uploading clinic images...');
+          
+          // Get doctor profile to get doctor ID
+          const doctorResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/doctors/me/doctor-profile`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${result.token}`
+            }
+          });
+          
+          if (doctorResponse.ok) {
+            const doctorData = await doctorResponse.json();
+            const doctorId = doctorData.data._id;
+            
+            // Upload images
+            const imageFormData = new FormData();
+            clinicImages.forEach(imageObj => {
+              imageFormData.append('images', imageObj.file);
+            });
+            
+            const uploadResponse = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/doctors/${doctorId}/images`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${result.token}`
+              },
+              body: imageFormData
+            });
+            
+            if (uploadResponse.ok) {
+              const uploadResult = await uploadResponse.json();
+              console.log('Clinic images uploaded successfully:', uploadResult);
+            } else {
+              const errorText = await uploadResponse.text();
+              console.error('Failed to upload clinic images:', uploadResponse.status, errorText);
+              setError(`Failed to upload clinic images: ${uploadResponse.status}`);
+            }
+          }
+        } catch (imageError) {
+          console.error('Error uploading clinic images:', imageError);
+          // Don't fail the entire process if image upload fails
+        } finally {
+          setUploadingImages(false);
+        }
+      }
       
       // Store detailed doctor information for verification process
       setOnboarding({ 
@@ -170,8 +229,9 @@ const DoctorOnboarding = () => {
       navigate('/auth/doctor-verification');
     } catch (error) {
       console.error('Error submitting doctor application:', error);
-      // Handle error appropriately
-      alert('Failed to submit application: ' + error.message);
+      setError('Failed to submit application: ' + error.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -399,6 +459,16 @@ const DoctorOnboarding = () => {
             </div>
           </div>
         </div>
+
+        {/* Map Location Picker */}
+        <div className="border-t pt-6">
+          <MapLocationPicker
+            onLocationSelect={(coords) => handleInputChange('coordinates', coords)}
+            initialLocation={formData.coordinates}
+            address={`${formData.addressLine1}, ${formData.addressCity}, ${formData.addressState}`}
+            className="w-full"
+          />
+        </div>
       </div>
     </div>
   );
@@ -443,93 +513,77 @@ const DoctorOnboarding = () => {
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-900 mb-2">Key Specializations</label>
-        <textarea 
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none" 
-          placeholder="Enter key specializations separated by commas (e.g., Heart Surgery, Cardiac Care, Emergency Medicine)" 
-          rows="3"
-          value={Array.isArray(formData.keySpecialization) ? formData.keySpecialization.join(', ') : ''}
-          onChange={(e) => {
-            const specializations = e.target.value ? e.target.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            handleInputChange('keySpecialization', specializations);
-          }}
+      <DynamicInputList
+        label="Key Specializations"
+        values={formData.keySpecialization}
+        onChange={(values) => handleInputChange('keySpecialization', values)}
+        placeholder="Enter key specialization (e.g., Heart Surgery, Cardiac Care)"
+        maxItems={5}
+      />
+
+      <DynamicInputList
+        label="Education"
+        values={formData.education}
+        onChange={(values) => handleInputChange('education', values)}
+        placeholder="Enter educational qualification (e.g., MBBS - AIIMS Delhi)"
+        inputType="textarea"
+        rows={2}
+        maxItems={8}
+      />
+
+      <DynamicInputList
+        label="Experience"
+        values={formData.experience}
+        onChange={(values) => handleInputChange('experience', values)}
+        placeholder="Enter work experience (e.g., Senior Cardiologist at AIIMS)"
+        inputType="textarea"
+        rows={2}
+        maxItems={8}
+      />
+
+      <DynamicInputList
+        label="Services Offered"
+        values={formData.services}
+        onChange={(values) => handleInputChange('services', values)}
+        placeholder="Enter service offered (e.g., General Consultation)"
+        maxItems={10}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <DynamicInputList
+          label="Contact Phone Numbers"
+          values={formData.contactPhones}
+          onChange={(values) => handleInputChange('contactPhones', values)}
+          placeholder="Enter phone number"
+          inputType="tel"
+          maxItems={3}
+        />
+
+        <DynamicInputList
+          label="Contact Email Addresses"
+          values={formData.contactEmails}
+          onChange={(values) => handleInputChange('contactEmails', values)}
+          placeholder="Enter email address"
+          inputType="email"
+          maxItems={3}
         />
       </div>
+    </div>
+  );
 
-      <div>
-        <label className="block text-sm font-medium text-gray-900 mb-2">Education</label>
-        <textarea 
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none" 
-          placeholder="Enter your educational qualifications separated by commas (e.g., MBBS - AIIMS Delhi, MD Cardiology - PGIMER)" 
-          rows="3"
-          value={Array.isArray(formData.education) ? formData.education.join(', ') : ''}
-          onChange={(e) => {
-            const educationList = e.target.value ? e.target.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            handleInputChange('education', educationList);
-          }}
-        />
+  const renderScheduleDetails = () => (
+    <div className="space-y-6">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Available Time Slots</h3>
+        <p className="text-sm text-gray-600 mb-6">
+          Set your consultation availability for the next few weeks. You can customize this later from your profile.
+        </p>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-900 mb-2">Experience</label>
-        <textarea 
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none" 
-          placeholder="Enter your work experience separated by commas (e.g., Senior Cardiologist at AIIMS, Consultant at Apollo Hospital)" 
-          rows="3"
-          value={Array.isArray(formData.experience) ? formData.experience.join(', ') : ''}
-          onChange={(e) => {
-            const experienceList = e.target.value ? e.target.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            handleInputChange('experience', experienceList);
-          }}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-900 mb-2">Services Offered</label>
-        <textarea 
-          className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none" 
-          placeholder="Enter services you offer separated by commas (e.g., General Consultation, Health Checkup, Emergency Care)" 
-          rows="3"
-          value={Array.isArray(formData.services) ? formData.services.join(', ') : ''}
-          onChange={(e) => {
-            const servicesList = e.target.value ? e.target.value.split(',').map(s => s.trim()).filter(s => s) : [];
-            handleInputChange('services', servicesList);
-          }}
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-gray-900 mb-2">Contact Information</label>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <input 
-              type="tel"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none" 
-              placeholder="Additional phone number" 
-              value={formData.contactPhones[0] || ''}
-              onChange={(e) => {
-                const phones = [...formData.contactPhones];
-                phones[0] = e.target.value;
-                handleInputChange('contactPhones', phones);
-              }}
-            />
-          </div>
-          <div>
-            <input 
-              type="email"
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none" 
-              placeholder="Professional email" 
-              value={formData.contactEmails[0] || ''}
-              onChange={(e) => {
-                const emails = [...formData.contactEmails];
-                emails[0] = e.target.value;
-                handleInputChange('contactEmails', emails);
-              }}
-            />
-          </div>
-        </div>
-      </div>
+      <TimeSlotPicker
+        onSlotsChange={(slots) => handleInputChange('slots', slots)}
+        initialSlots={formData.slots}
+      />
     </div>
   );
 
@@ -674,8 +728,9 @@ const DoctorOnboarding = () => {
       case 1: return renderPersonalDetails();
       case 2: return renderProfessionalDetails();
       case 3: return renderConsultationDetails();
-      case 4: return renderClinicImages();
-      case 5: return renderTermsAndConditions();
+      case 4: return renderScheduleDetails();
+      case 5: return renderClinicImages();
+      case 6: return renderTermsAndConditions();
       default: return renderPersonalDetails();
     }
   };
@@ -689,10 +744,16 @@ const DoctorOnboarding = () => {
                formData.city && formData.addressLine1 && formData.addressCity && 
                formData.addressState && formData.postalCode;
       case 3:
-        return formData.consultationFee >= 0 && formData.languages.length > 0;
-      case 4: // Clinic Images - optional, always valid
+        return formData.consultationFee >= 0 && formData.languages.length > 0 && 
+               formData.keySpecialization.some(k => k.trim()) && 
+               formData.education.some(e => e.trim()) && 
+               formData.experience.some(exp => exp.trim()) && 
+               formData.services.some(s => s.trim());
+      case 4: // Schedule - optional, always valid
         return true;
-      case 5:
+      case 5: // Clinic Images - optional, always valid
+        return true;
+      case 6:
         return formData.acceptTerms && formData.acceptPrivacy;
       default:
         return false;
@@ -749,6 +810,28 @@ const DoctorOnboarding = () => {
 
           {renderStepContent()}
 
+          {/* Error Display */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+              <div className="flex">
+                <svg className="w-5 h-5 text-red-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                </svg>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+                <button
+                  onClick={() => setError('')}
+                  className="ml-auto text-red-500 hover:text-red-700"
+                >
+                  <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Navigation Buttons */}
           <div className="flex justify-between mt-8">
             <button
@@ -762,10 +845,15 @@ const DoctorOnboarding = () => {
             {currentStep === totalSteps ? (
               <button
                 onClick={handleSubmit}
-                disabled={!isStepValid()}
+                disabled={!isStepValid() || submitting}
                 className="px-8 py-3 bg-[#7551B2] text-white rounded-lg font-medium hover:bg-[#6441a0] disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
-                Submit for Verification
+                {submitting ? (
+                  <div className="flex items-center">
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2"></div>
+                    Submitting...
+                  </div>
+                ) : 'Submit for Verification'}
               </button>
             ) : (
               <button
