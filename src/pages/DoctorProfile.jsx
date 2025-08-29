@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import useAuthStore from '../stores/useAuthStore';
 import ReviewTab from '../components/ReviewTab';
 import SeoDoctorProfile from '../components/seo/SeoDoctorProfile';
+import DoctorProfileFAQ from '../components/FAQ/DoctorProfileFAQ';
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -402,6 +403,14 @@ const DoctorProfile = () => {
             </div>
           )}
         </div>
+
+        {/* FAQ Section for Doctor */}
+        {doctor && (
+          <DoctorProfileFAQ 
+            doctor={doctor} 
+            className="px-4"
+          />
+        )}
 
         {user && user.role === 'doctor' && !doctorId && (
           <div className="p-4">
