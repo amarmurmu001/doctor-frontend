@@ -4,17 +4,17 @@ function WhyDoctar() {
     {
       id: 1,
       content:
-        "SIX offers a trusted, user-friendly platform tailored for used car dealers and individual sellers.",
+        "Verified & Trusted Doctors – Every doctor listed on Doctar has a complete profile with qualifications, specialization, and experience details. This helps patients make confident and informed choices when selecting the right healthcare professional.",
     },
     {
       id: 2,
       content:
-        "Connect Directly with Owners option to skip middlemen, negotiate freely, and buy what you want within budget at your best price!",
+        "Direct & Instant Connection – Patients don't need to wait or go through middlemen. Doctar allows them to connect directly with doctors through phone calls, WhatsApp, email, or even by booking a clinic visit online — all in just a few clicks.",
     },
     {
       id: 3,
       content:
-        "Connect with Real Buyers and Sellers. Verified listings, genuine leads, and direct deals to ensure a faster & trusted experience.",
+        "Convenient & Cost-Free Experience – Searching for the right doctor on Doctar is completely free for patients. The platform is designed to be fast, easy to use, and accessible anytime, making healthcare more approachable and stress-free.",
     },
   ];
 

@@ -3,29 +3,55 @@ import { useState } from "react";
 const HowItWorks = () => {
   const [activeTab, setActiveTab] = useState("buy");
 
-  const steps = [
+  const patientSteps = [
     {
       id: 1,
-      title: "Find your product",
+      title: "Find Your Doctor",
       description:
-        "Browse and find your perfect pick from our various categories like car, bikes, commercial vehicle and properties and get proper details about it.",
-      icon: "/icons/search.png", // use the actual path to your icon
+        "Browse and search for qualified doctors by specialty, location, and expertise. View complete profiles with qualifications and patient reviews.",
+      icon: "/icons/Search.png",
     },
     {
       id: 2,
-      title: "Get direct contact",
+      title: "Connect Instantly",
       description:
-        "We let you get the direct contact of the seller, owner or dealer and reach out to them, no middleman contact or long waiting queue.",
-      icon: "/icons/phone.png", // use the actual path to your icon
+        "Get direct contact with doctors through phone, WhatsApp, email, or book clinic appointments online without any middleman delays.",
+      icon: "/icons/doctor.png",
     },
     {
       id: 3,
-      title: "Complete transaction",
+      title: "Get Treatment",
       description:
-        "Negotiate directly with the owner, finalize the deal, and complete your transaction without any hidden fees or commission charges.",
-      icon: "/icons/heart.png", // use the actual path to your icon
+        "Consult with verified doctors, receive quality healthcare, and build lasting relationships with trusted medical professionals near you.",
+      icon: "/icons/heart.png",
     },
   ];
+
+  const doctorSteps = [
+    {
+      id: 1,
+      title: "Create Your Profile",
+      description:
+        "Register and create a comprehensive profile with your qualifications, specializations, experience, and clinic information to attract patients.",
+      icon: "/icons/doctor.png",
+    },
+    {
+      id: 2,
+      title: "Get Verified",
+      description:
+        "Complete our verification process to earn the trusted badge. Upload your medical license and credentials for patient confidence.",
+      icon: "/icons/expert.webp",
+    },
+    {
+      id: 3,
+      title: "Start Consulting",
+      description:
+        "Begin receiving patient inquiries, accept appointments, and provide quality healthcare services with zero commission charges.",
+      icon: "/icons/heart.png",
+    },
+  ];
+
+  const steps = activeTab === "buy" ? patientSteps : doctorSteps;
 
   return (
     <div className="bg-white p-3 sm:p-4 md:p-6 lg:p-8 rounded-lg">
@@ -42,7 +68,7 @@ const HowItWorks = () => {
                 : "text-gray-600 hover:text-gray-800"
             }`}
           >
-            How to Buy
+            For Patients
           </button>
           <button
             onClick={() => setActiveTab("sell")}
@@ -52,7 +78,7 @@ const HowItWorks = () => {
                 : "text-gray-600 hover:text-gray-800"
             }`}
           >
-            How to Sell
+            For Doctors
           </button>
         </div>
       </div>
@@ -72,8 +98,17 @@ const HowItWorks = () => {
             </div>
             
             <div className="flex justify-start mb-6">
-              <div className="bg-white rounded-full p-3 lg:p-3 xl:p-4">
-                <img src={step.icon} alt={step.title} className="w-8 h-8 lg:w-8 xl:w-10 lg:h-8 xl:h-10" />
+              <div className="bg-white rounded-full p-3 lg:p-3 xl:p-4 shadow-sm">
+                <img 
+                  src={step.icon} 
+                  alt={step.title} 
+                  className="w-8 h-8 lg:w-8 xl:w-10 lg:h-8 xl:h-10 object-contain"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.style.display = 'none';
+                    e.target.parentElement.innerHTML = '<div class="w-8 h-8 lg:w-8 xl:w-10 lg:h-8 xl:h-10 flex items-center justify-center text-purple-600 text-2xl">📋</div>';
+                  }}
+                />
               </div>
             </div>
             <h3 className="font-semibold text-left text-lg lg:text-lg xl:text-xl text-gray-700 mb-2">

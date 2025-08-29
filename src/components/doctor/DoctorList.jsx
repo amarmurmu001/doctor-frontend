@@ -113,7 +113,7 @@ export default function DoctorsList() {
   // Loading state
   if (loading) {
     return (
-      <div className="px-4">
+      <div className="px-4 ">
         <h2 className="text-lg font-bold mb-4">
           {selectedLocation ? `Finding doctors in ${selectedLocation}...` : 'Finding doctors near you...'}
         </h2>

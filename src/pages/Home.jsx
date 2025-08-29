@@ -18,13 +18,13 @@ import FAQ from "../components/FAQ.jsx";
 import HomeFAQ from "../components/home/HomeFAQ.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import QueryGrid from "../components/home/QueryGrid.jsx";
-import { useNavigate } from "react-router-dom";
+
 import DefaultSeo from "../components/seo/DefaultSeo.jsx";
 
 
 export default function Home() {
 
-  const navigate = useNavigate();
+
   
   return (
     <>
@@ -54,11 +54,11 @@ export default function Home() {
         </div>
 
         
-        <div className="mt-4 px-2 sm:px-0">
+        <div className="mt-4 px-2 sm:px-0 my-10 ">
           <QueryGrid />
         </div>
 
-        <div className="mt-4 px-2 sm:px-0">
+        <div className="mt-4 px-2 sm:px-0 mb-10">
           <DoctorsList />
         </div>
 

@@ -4,6 +4,7 @@ import DoctorCard from '../components/doctor/DoctorCard';
 import SearchBar from '../components/search/SearchBar';
 import useLocationStore from '../stores/locationStore';
 import PageSeo from '../components/seo/PageSeo';
+import DynamicFAQ from '../components/FAQ/DynamicFAQ';
 
 const SearchResults = () => {
   const navigate = useNavigate();
@@ -166,6 +167,21 @@ const SearchResults = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* FAQ Section */}
+        {!loading && (
+          <div className="mt-12">
+            <DynamicFAQ 
+              categories={['general', 'patients', 'appointments']}
+              location={searchLocation}
+              specialty={searchTerm}
+              maxItems={6}
+              title="Frequently Asked Questions"
+              searchable={false}
+              className="shadow-lg"
+            />
+          </div>
         )}
       </div>
       </div>
