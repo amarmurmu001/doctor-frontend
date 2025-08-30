@@ -185,7 +185,7 @@ export default function DoctorsList() {
         
           <button
             onClick={() => navigate('/doctors')}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+            className="text-sm text-purple-600 hover:text-purple-800 font-medium"
           >
             All
           </button>

@@ -58,7 +58,7 @@ function Nav() {
           <img
             src="/icons/logo.png"
             alt="Doctar"
-            className="w-28 h-auto cursor-pointer"
+            className="w-32 h-auto cursor-pointer"
             onClick={() => navigate("/")}
           />
         </div>
