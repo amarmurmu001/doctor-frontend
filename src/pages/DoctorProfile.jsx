@@ -5,6 +5,7 @@ import ReviewTab from "../components/ReviewTab";
 import ContactTab from "../components/ContactTab";
 import SeoDoctorProfile from "../components/seo/SeoDoctorProfile";
 import DoctorProfileFAQ from "../components/FAQ/DoctorProfileFAQ";
+import Nav from "../components/layout/Nav";
 
 // Image Modal Component
 const ImageModal = ({ isOpen, onClose, images, currentIndex, setCurrentIndex }) => {
@@ -587,11 +588,25 @@ const DoctorProfile = () => {
 
       {/* Desktop Layout (md and up) */}
       <div className="hidden md:block bg-purple-50 min-h-screen ">
+        <Nav />
         {/* Main Content Container */}
         <div className="max-w-7xl mx-auto px-4 py-10 flex gap-8">
           {/* Left Sidebar - Profile Card */}
           <div className="w-80 flex-shrink-0">
             <div className="bg-[#7551B2] rounded-2xl  p-6 sticky top-25">
+            {user && user.role === "doctor" && !doctorId ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => navigate("/doctor/edit")}
+                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-sm font-semibold"
+                  title="Edit Profile"
+                >
+                  ✎
+                </button>
+              </div>
+            ) : (
+              <span className="w-10 h-10" />
+            )}
               {/* Profile Image */}
               <div className="text-center mb-6">
                 <div className="w-32 h-32 mx-auto rounded-2xl bg-white overflow-hidden mb-4 shadow-lg">
