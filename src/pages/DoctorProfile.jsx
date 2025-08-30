@@ -1,10 +1,105 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import useAuthStore from "../stores/useAuthStore";
 import ReviewTab from "../components/ReviewTab";
 import ContactTab from "../components/ContactTab";
 import SeoDoctorProfile from "../components/seo/SeoDoctorProfile";
 import DoctorProfileFAQ from "../components/FAQ/DoctorProfileFAQ";
+
+// Image Modal Component
+const ImageModal = ({ isOpen, onClose, images, currentIndex, setCurrentIndex }) => {
+  const currentImage = images[currentIndex];
+
+  const nextImage = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
+  }, [images.length, setCurrentIndex]);
+
+  const prevImage = useCallback(() => {
+    setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
+  }, [images.length, setCurrentIndex]);
+
+  const handleKeyDown = useCallback((e) => {
+    if (e.key === 'Escape') onClose();
+    if (e.key === 'ArrowRight') nextImage();
+    if (e.key === 'ArrowLeft') prevImage();
+  }, [onClose, nextImage, prevImage]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = 'unset';
+      };
+    }
+  }, [isOpen, handleKeyDown]);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center p-4">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-60 text-white hover:text-gray-300 transition-colors"
+      >
+        <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      {/* Navigation Arrows */}
+      {images.length > 1 && (
+        <>
+          <button
+            onClick={prevImage}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-60"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button
+            onClick={nextImage}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white hover:text-gray-300 transition-colors z-60"
+          >
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </>
+      )}
+
+      {/* Main Image */}
+      <div className="max-w-4xl max-h-full relative">
+        <img
+          src={currentImage?.url || currentImage}
+          alt={currentImage?.alt || "Doctor image"}
+          className="max-w-full max-h-full object-contain"
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/icons/doctor.png";
+          }}
+        />
+
+        {/* Image Counter */}
+        {images.length > 1 && (
+          <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-3 py-1 rounded-full text-sm">
+            {currentIndex + 1} / {images.length}
+          </div>
+        )}
+      </div>
+
+      {/* Click outside to close */}
+      <div
+        className="absolute inset-0 -z-10"
+        onClick={onClose}
+      />
+    </div>
+  );
+};
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
@@ -16,6 +111,24 @@ const DoctorProfile = () => {
   const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Image modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalImages, setModalImages] = useState([]);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Helper functions for image modal
+  const openImageModal = (images, startIndex = 0) => {
+    setModalImages(images);
+    setCurrentImageIndex(startIndex);
+    setIsModalOpen(true);
+  };
+
+  const closeImageModal = () => {
+    setIsModalOpen(false);
+    setModalImages([]);
+    setCurrentImageIndex(0);
+  };
 
   useEffect(() => {
     async function loadDoctor() {
@@ -219,11 +332,12 @@ const DoctorProfile = () => {
 
           {/* Profile Information */}
           <div className="flex flex-col items-center pt-8">
-            <div className="w-[182px] h-[182px] rounded-3xl bg-white overflow-hidden mb-6 shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)]">
+            <div className="w-[182px] h-[182px] rounded-3xl bg-white overflow-hidden mb-6 shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)] cursor-pointer hover:shadow-[0_20px_20px_0_rgba(0,0,0,0.3)] transition-all duration-300"
+                 onClick={() => openImageModal([doctor?.user?.image?.url || "/icons/doctor.png"], 0)}>
               <img
                 src={doctor?.user?.image?.url || "/icons/doctor.png"}
                 alt="Doctor Profile"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                 onError={(e) => {
                   e.target.onerror = null;
                   e.target.src = "/icons/doctor.png";
@@ -294,12 +408,13 @@ const DoctorProfile = () => {
                     ? doctor.gallery.slice(0, 3).map((image, index) => (
                         <div
                           key={index}
-                          className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0"
+                          className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-300"
+                          onClick={() => openImageModal(doctor.gallery, index)}
                         >
                           <img
                             src={image.url}
                             alt={`Gallery ${index + 1}`}
-                            className="w-full h-full object-cover rounded-lg"
+                            className="w-full h-full object-cover rounded-lg hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
                               e.target.onerror = null;
                               e.target.src = "/banner.png";
@@ -579,7 +694,8 @@ const DoctorProfile = () => {
                         ? doctor.gallery.map((image, index) => (
                             <div
                               key={index}
-                              className="aspect-video bg-gray-100 rounded-xl overflow-hidden"
+                              className="aspect-video bg-gray-100 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300"
+                              onClick={() => openImageModal(doctor.gallery, index)}
                             >
                               <img
                                 src={image.url}
@@ -779,6 +895,15 @@ const DoctorProfile = () => {
           </div>
         </div>
       </div>
+
+      {/* Image Modal */}
+      <ImageModal
+        isOpen={isModalOpen}
+        onClose={closeImageModal}
+        images={modalImages}
+        currentIndex={currentImageIndex}
+        setCurrentIndex={setCurrentImageIndex}
+      />
 
       {/* FAQ Section - Full Width for Both Mobile and Desktop */}
       {doctor && (
