@@ -120,7 +120,7 @@ const useLocationStore = create(
         return defaultLocations;
       }
       
-      const response = await fetch(`${API_BASE_URL}/api/doctors`);
+      const response = await fetch(`${API_BASE_URL}/api/doctors?status=approved`);
       if (response.ok) {
         const data = await response.json();
         const locations = Array.isArray(data) 

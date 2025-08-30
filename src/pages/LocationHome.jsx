@@ -26,7 +26,7 @@ const LocationHome = () => {
       // Fetch location data and doctors
       const [locationResponse, doctorsResponse] = await Promise.all([
         fetch(`${API_BASE_URL}/api/locations/${location.toLowerCase()}`).catch(() => null),
-        fetch(`${API_BASE_URL}/api/doctors?city=${encodeURIComponent(location.toLowerCase())}&limit=20`)
+        fetch(`${API_BASE_URL}/api/doctors?city=${encodeURIComponent(location.toLowerCase())}&limit=20&status=approved`)
       ]);
 
       // Set location data (fallback to mock if API fails)

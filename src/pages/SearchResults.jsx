@@ -28,8 +28,9 @@ const SearchResults = () => {
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
       const params = new URLSearchParams();
       
-      // ✅ Use existing API parameters
+      // ✅ Use existing API parameters with approval filter
       params.set('search', searchTerm);
+      params.set('status', 'approved'); // Only show approved doctors
       if (searchLocation) params.set('city', searchLocation.toLowerCase());
       if (searchType === 'specialty') params.set('specialty', searchTerm);
       
@@ -44,10 +45,11 @@ const SearchResults = () => {
       const data = await response.json();
       console.log('✅ Search results:', data);
       
-      // ✅ Handle response format
+      // ✅ Handle response format and filter for approved doctors
       const doctorsData = Array.isArray(data) ? data : (data.data || []);
-      setDoctors(doctorsData);
-      setTotalResults(data.total || doctorsData.length);
+      const approvedDoctors = doctorsData.filter(doctor => doctor.status === 'approved');
+      setDoctors(approvedDoctors);
+      setTotalResults(data.total || approvedDoctors.length);
       
     } catch (err) {
       console.error('❌ Search error:', err);

@@ -35,9 +35,10 @@ export default function DoctorsList() {
       // (Backend will handle state-to-city mapping as well)
       const searchCity = locationCities[0] || selectedLocation;
       
-      const params = new URLSearchParams({ 
+      const params = new URLSearchParams({
         city: searchCity.toLowerCase().trim(),
-        limit: '20' // Limit results for better performance
+        limit: '20', // Limit results for better performance
+        status: 'approved' // Only show approved doctors
       });
       
       const url = `${API_BASE_URL}/api/doctors?${params}`;
@@ -66,11 +67,14 @@ export default function DoctorsList() {
         doctorsArray = data.doctors || data.data || data.results || [];
       }
       
-      // Ensure we have valid doctor objects
-      const validDoctors = doctorsArray.filter(doctor => 
-        doctor && (doctor._id || doctor.id) && (doctor.user?.name || doctor.name)
+      // Ensure we have valid doctor objects and only approved doctors
+      const validDoctors = doctorsArray.filter(doctor =>
+        doctor &&
+        (doctor._id || doctor.id) &&
+        (doctor.user?.name || doctor.name) &&
+        doctor.status === 'approved' // Additional client-side filtering
       );
-      
+
       setDoctors(validDoctors);
       
       if (validDoctors.length === 0 && doctorsArray.length > 0) {

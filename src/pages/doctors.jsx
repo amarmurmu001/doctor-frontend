@@ -18,9 +18,10 @@ export default function Doctors() {
         throw new Error('Backend URL not configured');
       }
 
-      // Fetch doctors with pagination
+      // Fetch doctors with pagination and approval filter
       const params = new URLSearchParams({
         limit: '20', // Fetch more doctors for the grid
+        status: 'approved' // Only show approved doctors
       });
 
       const url = `${API_BASE_URL}/api/doctors?${params}`;
@@ -44,9 +45,12 @@ export default function Doctors() {
         doctorsArray = data.doctors || data.data || data.results || [];
       }
 
-      // Ensure we have valid doctor objects
+      // Ensure we have valid doctor objects and only approved doctors
       const validDoctors = doctorsArray.filter(doctor =>
-        doctor && (doctor._id || doctor.id) && (doctor.user?.name || doctor.name)
+        doctor &&
+        (doctor._id || doctor.id) &&
+        (doctor.user?.name || doctor.name) &&
+        doctor.status === 'approved' // Additional client-side filtering
       );
 
       setDoctors(validDoctors);

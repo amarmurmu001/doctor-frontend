@@ -3,7 +3,7 @@ import { fetchDoctorReviews } from '../services/reviewAPI';
 import ReviewForm from './reviews/ReviewForm';
 
 const ReviewTab = ({ doctorId }) => {
-  console.log('Rendering ReviewTab for doctorId:', doctorId);
+ 
   
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -29,7 +29,6 @@ const ReviewTab = ({ doctorId }) => {
   const loadReviews = async () => {
     
     if (!doctorId) {
-      console.log('No doctorId, skipping fetch');
       setLoading(false);
       return;
     }
@@ -39,11 +38,6 @@ const ReviewTab = ({ doctorId }) => {
     
     try {
       const data = await fetchDoctorReviews(doctorId);
-      console.log('Fetched reviews - raw data:', data);
-      console.log('Type of data:', typeof data);
-      console.log('Is array:', Array.isArray(data));
-      
-      // Enhanced data parsing to handle different response formats
       let reviewsData = [];
       
       if (Array.isArray(data)) {
@@ -55,9 +49,6 @@ const ReviewTab = ({ doctorId }) => {
       } else if (data && Array.isArray(data.reviews)) {
         reviewsData = data.reviews;
       }
-      
-      console.log('Processed reviews data:', reviewsData);
-      console.log('Reviews count:', reviewsData.length);
       
       setReviews(reviewsData);
     } catch (err) {
@@ -104,7 +95,6 @@ const ReviewTab = ({ doctorId }) => {
       <div className="space-y-6">
         <div className="text-center py-8">
           <p className="text-gray-500">Loading reviews...</p>
-          <p className="text-xs text-gray-400 mt-2">Doctor ID: {doctorId}</p>
         </div>
       </div>
     );

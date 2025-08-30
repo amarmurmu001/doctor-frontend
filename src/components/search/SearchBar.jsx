@@ -28,9 +28,10 @@ export default function SearchBar({
         setLoading(true);
         const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
         
-        // ✅ Use the existing doctors endpoint with search parameter
+        // ✅ Use the existing doctors endpoint with search parameter and approval filter
         const params = new URLSearchParams();
         params.set('search', searchTerm);
+        params.set('status', 'approved'); // Only show approved doctors
         if (selectedLocation) params.set('city', selectedLocation.toLowerCase());
         params.set('limit', '5'); // Limit to 5 suggestions
         
@@ -45,9 +46,10 @@ export default function SearchBar({
         const data = await response.json();
         console.log('✅ Suggestions data:', data);
         
-        // ✅ Process doctors data into suggestions
+        // ✅ Process doctors data into suggestions (only approved doctors)
         const doctors = Array.isArray(data) ? data : (data.data || []);
-        const doctorSuggestions = doctors.map(doctor => ({
+        const approvedDoctors = doctors.filter(doctor => doctor.status === 'approved');
+        const doctorSuggestions = approvedDoctors.map(doctor => ({
           type: 'doctor',
           text: `Dr. ${doctor.user?.name || doctor.name}`,
           value: doctor.user?.name || doctor.name,
@@ -55,8 +57,8 @@ export default function SearchBar({
           id: doctor._id
         }));
         
-        // ✅ Add specialty suggestions (unique)
-        const specialties = [...new Set(doctors.map(d => d.specialty).filter(Boolean))];
+        // ✅ Add specialty suggestions (unique from approved doctors)
+        const specialties = [...new Set(approvedDoctors.map(d => d.specialty).filter(Boolean))];
         const specialtySuggestions = specialties.map(specialty => ({
           type: 'specialty',
           text: specialty,
