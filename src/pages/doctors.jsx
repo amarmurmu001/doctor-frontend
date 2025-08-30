@@ -124,9 +124,9 @@ export default function Doctors() {
     return (
       <div className="w-full h-screen bg-[#f4f4ff] flex flex-col">
         <PageHeader />
-        <div className="flex-1 px-4 py-6">
-          <h2 className="text-lg font-bold mb-6 text-center">Finding Doctors...</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full overflow-y-auto">
+        <div className="flex-1 px-3 sm:px-4 py-4 sm:py-6">
+          <h2 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-center">Finding Doctors...</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 h-full overflow-y-auto">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
               <div
                 key={i}
@@ -153,7 +153,7 @@ export default function Doctors() {
     return (
       <div className="w-full h-screen bg-[#f4f4ff] flex flex-col">
         <PageHeader />
-        <div className="flex-1 px-4 py-6 flex items-center justify-center">
+        <div className="flex-1 px-3 sm:px-4 py-4 sm:py-6 flex items-center justify-center">
           <div className="text-center bg-red-50 rounded-lg p-8 border border-red-200 max-w-md">
             <div className="text-4xl mb-4">⚠️</div>
             <h3 className="text-lg font-semibold text-red-900 mb-2">Unable to Load Doctors</h3>
@@ -176,8 +176,8 @@ export default function Doctors() {
       <PageHeader />
 
       {/* Doctors grid with title */}
-      <div className="flex-1 px-4 py-6">
-        <h2 className="text-lg font-bold mb-6 text-center">
+      <div className="flex-1 px-3 sm:px-4 py-4 sm:py-6">
+        <h2 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-center">
           {getHeaderInfo() ?
             `Total ${getHeaderInfo().count} doctors found in ${getHeaderInfo().location}` :
             'Our Doctors'
@@ -186,10 +186,10 @@ export default function Doctors() {
 
         {/* Empty state */}
         {doctors.length === 0 && !loading && (
-          <div className="text-center py-8 bg-yellow-50 rounded-lg border border-yellow-200">
-            <div className="text-4xl mb-3">🏥</div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Doctors Found</h3>
-            <p className="text-gray-600 text-sm">
+          <div className="text-center py-6 sm:py-8 bg-yellow-50 rounded-lg border border-yellow-200 mx-4 sm:mx-0">
+            <div className="text-3xl sm:text-4xl mb-3">🏥</div>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">No Doctors Found</h3>
+            <p className="text-gray-600 text-sm px-4 sm:px-0">
               We couldn't find any doctors at the moment. Please try again later.
             </p>
           </div>
@@ -197,7 +197,7 @@ export default function Doctors() {
 
         {/* 3-column grid layout - maintaining original card height */}
         {doctors.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 h-full overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 h-full overflow-y-auto">
             {doctors.map((doctor, index) => (
               <DoctorCard
                 key={doctor._id || doctor.id || `doctor-${index}`}
