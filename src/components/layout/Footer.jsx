@@ -59,7 +59,7 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-[#2c2548] to-[#1a1a2e] text-white py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid text-center grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
               <h3 className="font-semibold text-lg text-white">
@@ -83,14 +83,8 @@ const Footer = () => {
         
         {/* Bottom section */}
         <div className="mt-12 pt-8 border-t border-gray-600">
-          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-3">
-              <img 
-                src="/icons/logo.png" 
-                alt="Doctar" 
-                className="h-8 w-auto"
-              />
-            </div>
+          <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0">
+            
             
             <div className="text-gray-400 text-sm text-center md:text-right">
               <p>&copy; 2025 Doctar. All rights reserved.</p>
