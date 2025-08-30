@@ -10,7 +10,7 @@ import ErrorBoundary from "./components/layout/ErrorBoundary";
 const Home = lazy(() => import("./pages/Home"));
 import useLocationStore from "./stores/locationStore";
 import Nav from "./components/layout/Nav";
-import SubDepartments from "./pages/SubDepartments";
+import SubDepartments from "./pages/subDepartments";
 import Doctors from "./pages/doctors";
 import Departments from "./pages/Departments";
 import DoctorProfile from "./pages/DoctorProfile";
