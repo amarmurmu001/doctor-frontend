@@ -1,118 +1,155 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import useAuthStore from '../stores/useAuthStore';
-import ReviewTab from '../components/ReviewTab';
-import ContactTab from '../components/ContactTab';
-import SeoDoctorProfile from '../components/seo/SeoDoctorProfile';
-import DoctorProfileFAQ from '../components/FAQ/DoctorProfileFAQ';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useAuthStore from "../stores/useAuthStore";
+import ReviewTab from "../components/ReviewTab";
+import ContactTab from "../components/ContactTab";
+import SeoDoctorProfile from "../components/seo/SeoDoctorProfile";
+import DoctorProfileFAQ from "../components/FAQ/DoctorProfileFAQ";
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
   const { doctorId, location, doctorSlug } = useParams();
-  const user = useAuthStore(s => s.user);
-  const logout = useAuthStore(s => s.logout);
-  const [activeTab, setActiveTab] = useState('About');
+  const user = useAuthStore((s) => s.user);
+  const logout = useAuthStore((s) => s.logout);
+  const [activeTab, setActiveTab] = useState("About");
   const [doctor, setDoctor] = useState(null);
   const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     async function loadDoctor() {
       try {
         setLoading(true);
         const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-        
+
         if (doctorId || doctorSlug) {
-          console.log('Loading other doctor profile:', doctorId || doctorSlug);
-          
+          console.log("Loading other doctor profile:", doctorId || doctorSlug);
+
           let res;
           if (doctorSlug && !doctorId) {
             res = await fetch(`${API_BASE_URL}/api/doctors/slug/${doctorSlug}`);
           } else {
-            res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`);
+            res = await fetch(
+              `${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`
+            );
           }
-          
-          if (!res.ok) throw new Error('Doctor not found');
+
+          if (!res.ok) throw new Error("Doctor not found");
           const response = await res.json();
           const doctorData = response.success ? response.data : response;
           setDoctor(doctorData);
           setActualDoctorId(doctorData._id || doctorId || doctorSlug);
-          
+
           const canonicalUrl = getCanonicalUrl(doctorData);
-          if (canonicalUrl && window.location.pathname !== canonicalUrl.replace('https://www.doctar.in', '')) {
-            window.history.replaceState({}, '', canonicalUrl.replace('https://www.doctar.in', ''));
+          if (
+            canonicalUrl &&
+            window.location.pathname !==
+              canonicalUrl.replace("https://www.doctar.in", "")
+          ) {
+            window.history.replaceState(
+              {},
+              "",
+              canonicalUrl.replace("https://www.doctar.in", "")
+            );
           }
-          
+
           if (location && doctorData.city !== location) {
-            console.log('Location mismatch - URL:', location, 'Doctor city:', doctorData.city);
+            console.log(
+              "Location mismatch - URL:",
+              location,
+              "Doctor city:",
+              doctorData.city
+            );
           }
-        } else if (user && user.role === 'doctor') {
-          console.log('Loading own doctor profile for user:', user.id);
-          
-          const token = localStorage.getItem('token');
-          const res = await fetch(`${API_BASE_URL}/api/doctors/me/doctor-profile`, {
-            headers: {
-              'Authorization': `Bearer ${token}`,
-              'Content-Type': 'application/json'
+        } else if (user && user.role === "doctor") {
+          console.log("Loading own doctor profile for user:", user.id);
+
+          const token = localStorage.getItem("token");
+          const res = await fetch(
+            `${API_BASE_URL}/api/doctors/me/doctor-profile`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
             }
-          });
-          
+          );
+
           if (!res.ok) {
             if (res.status === 404) {
-              setError('Doctor profile not found. Please create your profile.');
+              setError("Doctor profile not found. Please create your profile.");
             } else {
-              throw new Error('Failed to load doctor profile');
+              throw new Error("Failed to load doctor profile");
             }
           } else {
             const response = await res.json();
             const doctorData = response.success ? response.data : response;
             setDoctor(doctorData);
             setActualDoctorId(doctorData._id);
-            console.log('Own doctor profile loaded:', doctorData);
+            console.log("Own doctor profile loaded:", doctorData);
           }
         } else {
-          setError('No doctor profile to display');
+          setError("No doctor profile to display");
         }
       } catch (e) {
-        console.error('Error loading doctor:', e);
-        setError(e.message || 'Failed to load doctor profile');
+        console.error("Error loading doctor:", e);
+        setError(e.message || "Failed to load doctor profile");
       } finally {
         setLoading(false);
       }
     }
-    
+
     loadDoctor();
   }, [user, doctorId, doctorSlug, location]);
 
   const generateDiseaseKeywords = (doctor) => {
     const specialtyKeywords = {
-      'Cardiologist': 'heart disease, cardiac problems, hypertension, chest pain, heart attack prevention',
-      'Dermatologist': 'skin problems, acne, eczema, hair fall, skin allergies, dermatitis',
-      'Orthopedic': 'bone fractures, joint pain, arthritis, back pain, sports injuries, osteoporosis',
-      'Pediatrician': 'child health, vaccination, fever in children, growth issues, pediatric care',
-      'Neurologist': 'headache, migraine, seizures, nerve problems, stroke, neurological disorders',
-      'General Physician': 'fever, cold, cough, diabetes, blood pressure, general health checkup',
-      'Gynecologist': 'women health, pregnancy care, menstrual problems, gynecological issues',
-      'Psychiatrist': 'mental health, depression, anxiety, stress management, psychiatric care',
-      'ENT Specialist': 'ear problems, nose issues, throat infections, hearing loss, sinusitis',
-      'Ophthalmologist': 'eye care, vision problems, cataract, glaucoma, eye infections'
+      Cardiologist:
+        "heart disease, cardiac problems, hypertension, chest pain, heart attack prevention",
+      Dermatologist:
+        "skin problems, acne, eczema, hair fall, skin allergies, dermatitis",
+      Orthopedic:
+        "bone fractures, joint pain, arthritis, back pain, sports injuries, osteoporosis",
+      Pediatrician:
+        "child health, vaccination, fever in children, growth issues, pediatric care",
+      Neurologist:
+        "headache, migraine, seizures, nerve problems, stroke, neurological disorders",
+      "General Physician":
+        "fever, cold, cough, diabetes, blood pressure, general health checkup",
+      Gynecologist:
+        "women health, pregnancy care, menstrual problems, gynecological issues",
+      Psychiatrist:
+        "mental health, depression, anxiety, stress management, psychiatric care",
+      "ENT Specialist":
+        "ear problems, nose issues, throat infections, hearing loss, sinusitis",
+      Ophthalmologist:
+        "eye care, vision problems, cataract, glaucoma, eye infections",
     };
-    
-    return specialtyKeywords[doctor?.specialty] || `${doctor?.specialty?.toLowerCase()} treatment, consultation, medical care`;
+
+    return (
+      specialtyKeywords[doctor?.specialty] ||
+      `${doctor?.specialty?.toLowerCase()} treatment, consultation, medical care`
+    );
   };
 
   const getCanonicalUrl = (doctor) => {
-    const doctorLocation = doctor.city || 'india';
-    const slug = `${doctor.user?.name?.toLowerCase().replace(/\s+/g, '-')}-${doctor.specialty?.toLowerCase().replace(/\s+/g, '-')}`;
-    return `https://www.doctar.in/${doctorLocation.toLowerCase().replace(/\s+/g, '-')}/doctor/${slug}`;
+    const doctorLocation = doctor.city || "india";
+    const slug = `${doctor.user?.name
+      ?.toLowerCase()
+      .replace(/\s+/g, "-")}-${doctor.specialty
+      ?.toLowerCase()
+      .replace(/\s+/g, "-")}`;
+    return `https://www.doctar.in/${doctorLocation
+      .toLowerCase()
+      .replace(/\s+/g, "-")}/doctor/${slug}`;
   };
 
-  console.log('Doctor Profile State:', { 
-    doctorId, 
-    actualDoctorId, 
-    user: user?.id, 
-    userRole: user?.role 
+  console.log("Doctor Profile State:", {
+    doctorId,
+    actualDoctorId,
+    user: user?.id,
+    userRole: user?.role,
   });
 
   if (loading) {
@@ -128,18 +165,25 @@ const DoctorProfile = () => {
       {/* Dynamic SEO Component */}
       {doctor && (
         <SeoDoctorProfile
-          fullName={doctor.user?.name || 'Doctor'}
-          specialization={doctor.specialty || 'General Physician'}
-          location={doctor.city || 'India'}
+          fullName={doctor.user?.name || "Doctor"}
+          specialization={doctor.specialty || "General Physician"}
+          location={doctor.city || "India"}
           yearsExperience={doctor.yearsOfExperience || 5}
           diseaseKeywords={generateDiseaseKeywords(doctor)}
-          doctorImage={doctor.profilePicture?.filename || ''}
-          doctorSlug={doctor.slug || `${doctor.user?.name?.toLowerCase().replace(/\s+/g, '-')}-${doctor.specialty?.toLowerCase().replace(/\s+/g, '-')}`}
+          doctorImage={doctor.profilePicture?.filename || ""}
+          doctorSlug={
+            doctor.slug ||
+            `${doctor.user?.name
+              ?.toLowerCase()
+              .replace(/\s+/g, "-")}-${doctor.specialty
+              ?.toLowerCase()
+              .replace(/\s+/g, "-")}`
+          }
           ratingValue={(doctor.averageRating || 4.5).toString()}
           ratingCount={(doctor.totalReviews || 50).toString()}
           consultationFee={doctor.consultationFee}
           clinicName={doctor.clinicName}
-          languages={doctor.languages || ['English', 'Hindi']}
+          languages={doctor.languages || ["English", "Hindi"]}
           canonicalUrl={getCanonicalUrl(doctor)}
         />
       )}
@@ -158,10 +202,10 @@ const DoctorProfile = () => {
               ←
             </button>
             <h1 className="text-white text-lg font-semibold">Doctor Profile</h1>
-            {user && user.role === 'doctor' && !doctorId ? (
+            {user && user.role === "doctor" && !doctorId ? (
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => navigate('/doctor/edit')}
+                  onClick={() => navigate("/doctor/edit")}
                   className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-sm font-semibold"
                   title="Edit Profile"
                 >
@@ -176,9 +220,9 @@ const DoctorProfile = () => {
           {/* Profile Information */}
           <div className="flex flex-col items-center pt-8">
             <div className="w-[182px] h-[182px] rounded-3xl bg-white overflow-hidden mb-6 shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)]">
-              <img 
-                src={doctor?.user?.image?.url || "/icons/doctor.png"} 
-                alt="Doctor Profile" 
+              <img
+                src={doctor?.user?.image?.url || "/icons/doctor.png"}
+                alt="Doctor Profile"
                 className="w-full h-full object-cover"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -187,9 +231,11 @@ const DoctorProfile = () => {
               />
             </div>
             <h2 className="text-white text-xl font-semibold mb-1">
-              {doctor?.user?.name || 'Doctor'}
+              {doctor?.user?.name || "Doctor"}
             </h2>
-            <p className="text-white text-lg">{doctor?.specialty || 'General'}</p>
+            <p className="text-white text-lg">
+              {doctor?.specialty || "General"}
+            </p>
           </div>
         </div>
 
@@ -197,24 +243,26 @@ const DoctorProfile = () => {
         <div className="bg-white">
           <div className="flex justify-center pt-5 pb-6">
             <div className="bg-gray-100 rounded-full p-1 flex relative">
-              {['About', 'Review', 'Contact'].map((tab) => (
+              {["About", "Review", "Contact"].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
                   className={`relative z-10 px-6 py-2 rounded-full font-medium transition-all duration-300 ${
                     activeTab === tab
-                      ? 'text-white'
-                      : 'text-gray-600 hover:text-gray-800'
+                      ? "text-white"
+                      : "text-gray-600 hover:text-gray-800"
                   }`}
                 >
                   {tab}
                 </button>
               ))}
-              <div 
+              <div
                 className={`absolute top-1 bottom-1 rounded-full bg-[#7551b3] transition-all duration-300 ease-in-out ${
-                  activeTab === 'About' ? 'left-1 w-24' :
-                  activeTab === 'Review' ? 'left-1 w-24 translate-x-24' :
-                  'left-1 w-28 translate-x-48'
+                  activeTab === "About"
+                    ? "left-1 w-24"
+                    : activeTab === "Review"
+                    ? "left-1 w-24 translate-x-24"
+                    : "left-1 w-28 translate-x-48"
                 }`}
               />
             </div>
@@ -226,9 +274,9 @@ const DoctorProfile = () => {
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md">
               {error}
-              {error.includes('create your profile') && (
-                <button 
-                  onClick={() => navigate('/doctor/create')}
+              {error.includes("create your profile") && (
+                <button
+                  onClick={() => navigate("/doctor/create")}
                   className="ml-2 underline hover:no-underline"
                 >
                   Create Profile
@@ -236,37 +284,41 @@ const DoctorProfile = () => {
               )}
             </div>
           )}
-          
-          {activeTab === 'About' && !loading && doctor && (
+
+          {activeTab === "About" && !loading && doctor && (
             <div className="space-y-6">
               {/* Hospital Images Gallery */}
               <div className="overflow-x-auto">
                 <div className="flex space-x-4 pb-2">
-                  {doctor.gallery && doctor.gallery.length > 0 ? (
-                    doctor.gallery.slice(0, 3).map((image, index) => (
-                      <div key={index} className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0">
-                        <img 
-                          src={image.url} 
-                          alt={`Gallery ${index + 1}`} 
-                          className="w-full h-full object-cover rounded-lg"
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/banner.png";
-                          }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    Array.from({ length: 3 }).map((_, index) => (
-                      <div key={index} className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0">
-                        <img 
-                          src="/banner.png" 
-                          alt={`Default ${index + 1}`} 
-                          className="w-full h-full object-cover rounded-lg"
-                        />
-                      </div>
-                    ))
-                  )}
+                  {doctor.gallery && doctor.gallery.length > 0
+                    ? doctor.gallery.slice(0, 3).map((image, index) => (
+                        <div
+                          key={index}
+                          className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0"
+                        >
+                          <img
+                            src={image.url}
+                            alt={`Gallery ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                            onError={(e) => {
+                              e.target.onerror = null;
+                              e.target.src = "/banner.png";
+                            }}
+                          />
+                        </div>
+                      ))
+                    : Array.from({ length: 3 }).map((_, index) => (
+                        <div
+                          key={index}
+                          className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0"
+                        >
+                          <img
+                            src="/banner.png"
+                            alt={`Default ${index + 1}`}
+                            className="w-full h-full object-cover rounded-lg"
+                          />
+                        </div>
+                      ))}
                 </div>
               </div>
 
@@ -274,32 +326,44 @@ const DoctorProfile = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">About</h3>
                 <p className="text-gray-600">
-                  {doctor?.about || 'No description provided yet.'}
+                  {doctor?.about || "No description provided yet."}
                 </p>
               </div>
 
               {/* Key Specialization */}
               <div>
-                <h3 className="text-lg font-semibold mb-2">Key Specialization</h3>
+                <h3 className="text-lg font-semibold mb-2">
+                  Key Specialization
+                </h3>
                 <div className="">
                   <div className="space-y-2">
-                    {doctor?.keySpecialization && doctor.keySpecialization.length > 0 ? (
+                    {doctor?.keySpecialization &&
+                    doctor.keySpecialization.length > 0 ? (
                       doctor.keySpecialization.map((spec, index) => (
-                        <div key={index} className="flex items-center space-x-2">
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2"
+                        >
                           <div className="w-2 h-2 bg-black rounded-full"></div>
-                          <span className="text-gray-600 text-base">{spec}</span>
+                          <span className="text-gray-600 text-base">
+                            {spec}
+                          </span>
                         </div>
                       ))
                     ) : (
                       <>
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-black rounded-full"></div>
-                          <span className="text-gray-600 text-base">{doctor?.specialty || 'General'}</span>
+                          <span className="text-gray-600 text-base">
+                            {doctor?.specialty || "General"}
+                          </span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-black rounded-full"></div>
                           <span className="text-gray-600 text-base">
-                            {doctor?.clinicName ? `Clinic: ${doctor.clinicName}` : '—'}
+                            {doctor?.clinicName
+                              ? `Clinic: ${doctor.clinicName}`
+                              : "—"}
                           </span>
                         </div>
                       </>
@@ -312,11 +376,15 @@ const DoctorProfile = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Education</h3>
                 <div className="space-y-2 text-gray-600">
-                  {(doctor?.education && doctor.education.length) ? doctor.education.map((ed, i) => (
-                    <div key={i}>
-                      <p className="font-medium">{ed}</p>
-                    </div>
-                  )) : <p>No education details provided.</p>}
+                  {doctor?.education && doctor.education.length ? (
+                    doctor.education.map((ed, i) => (
+                      <div key={i}>
+                        <p className="font-medium">{ed}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No education details provided.</p>
+                  )}
                 </div>
               </div>
 
@@ -325,12 +393,15 @@ const DoctorProfile = () => {
                 <h3 className="text-lg font-semibold mb-2">Awards</h3>
                 {doctor?.awards && doctor.awards.length > 0 ? (
                   doctor.awards.map((award, index) => (
-                    <div key={index} className='bg-[#f6f6f6] shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)] rounded-lg p-4 mb-3'>
+                    <div
+                      key={index}
+                      className="bg-[#f6f6f6] shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)] rounded-lg p-4 mb-3"
+                    >
                       <div className="flex items-center space-x-3">
                         <div className="w-16 h-16 bg-[#f6f6f6] rounded-lg flex-shrink-0">
-                          <img 
-                            src={award.image?.url || "/banner.png"} 
-                            alt="Award Certificate" 
+                          <img
+                            src={award.image?.url || "/banner.png"}
+                            alt="Award Certificate"
                             className="w-full h-full object-cover rounded-lg"
                             onError={(e) => {
                               e.target.onerror = null;
@@ -339,19 +410,23 @@ const DoctorProfile = () => {
                           />
                         </div>
                         <div>
-                          <p className="text-gray-800 font-medium">{award.title}</p>
-                          <p className="text-gray-600 text-sm">{award.year} - {award.institute}</p>
+                          <p className="text-gray-800 font-medium">
+                            {award.title}
+                          </p>
+                          <p className="text-gray-600 text-sm">
+                            {award.year} - {award.institute}
+                          </p>
                         </div>
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className='bg-[#f6f6f6] shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)] rounded-lg p-4'>
+                  <div className="bg-[#f6f6f6] shadow-[0_13.2px_13.2px_0_rgba(0,0,0,0.25)] rounded-lg p-4">
                     <div className="flex items-center space-x-3">
                       <div className="w-16 h-16 bg-[#f6f6f6] rounded-lg flex-shrink-0">
-                        <img 
-                          src="/banner.png" 
-                          alt="Award Certificate" 
+                        <img
+                          src="/banner.png"
+                          alt="Award Certificate"
                           className="w-full h-full object-cover rounded-lg"
                         />
                       </div>
@@ -367,25 +442,26 @@ const DoctorProfile = () => {
               <div>
                 <h3 className="text-lg font-semibold mb-2">Languages</h3>
                 <p className="text-gray-600">
-                  {(doctor?.languages && doctor.languages.length) ? doctor.languages.join(', ') : '—'}
+                  {doctor?.languages && doctor.languages.length
+                    ? doctor.languages.join(", ")
+                    : "—"}
                 </p>
               </div>
             </div>
           )}
 
-          {activeTab === 'Review' && (
-            <ReviewTab doctorId={actualDoctorId} />
-          )}
+          {activeTab === "Review" && <ReviewTab doctorId={actualDoctorId} />}
 
-          {activeTab === 'Contact' && (
-            <ContactTab doctor={doctor} />
-          )}
+          {activeTab === "Contact" && <ContactTab doctor={doctor} />}
         </div>
 
-        {user && user.role === 'doctor' && !doctorId && (
+        {user && user.role === "doctor" && !doctorId && (
           <div className="p-4">
             <button
-              onClick={() => { logout(); navigate('/login'); }}
+              onClick={() => {
+                logout();
+                navigate("/login");
+              }}
               className="w-full bg-red-500 text-white py-2 rounded-md"
             >
               Logout
@@ -396,8 +472,6 @@ const DoctorProfile = () => {
 
       {/* Desktop Layout (md and up) */}
       <div className="hidden md:block bg-purple-50 min-h-screen ">
-        
-
         {/* Main Content Container */}
         <div className="max-w-7xl mx-auto px-4 py-10 flex gap-8">
           {/* Left Sidebar - Profile Card */}
@@ -406,9 +480,9 @@ const DoctorProfile = () => {
               {/* Profile Image */}
               <div className="text-center mb-6">
                 <div className="w-32 h-32 mx-auto rounded-2xl bg-white overflow-hidden mb-4 shadow-lg">
-                  <img 
-                    src={doctor?.user?.image?.url || "/icons/doctor.png"} 
-                    alt="Doctor Profile" 
+                  <img
+                    src={doctor?.user?.image?.url || "/icons/doctor.png"}
+                    alt="Doctor Profile"
                     className="w-full h-full object-cover"
                     onError={(e) => {
                       e.target.onerror = null;
@@ -417,31 +491,32 @@ const DoctorProfile = () => {
                   />
                 </div>
                 <h2 className="text-xl font-bold text-white mb-1">
-                Dr. {doctor?.user?.name || 'Doctor'}
+                  Dr. {doctor?.user?.name || "Doctor"}
                 </h2>
                 <p className=" text-white font-medium text-md">
-                  {doctor?.specialty || 'General'}
+                  {doctor?.specialty || "General"}
                 </p>
               </div>
-
-              
 
               {/* Brief About */}
               {doctor?.about && (
                 <div className=" ">
                   <p className="text-xs text-white leading-relaxed">
-                    {doctor.about.length > 150 
-                      ? doctor.about.slice(0, 150) + '...' 
-                      : doctor.about
-                    }
+                    {doctor.about.length > 150
+                      ? doctor.about.slice(0, 150) + "..."
+                      : doctor.about}
                   </p>
                 </div>
               )}
               {/*Languages*/}
               <div className=" ">
-                <h3 className="text-md font-semibold my-2 text-white">Languages</h3>
+                <h3 className="text-md font-semibold my-2 text-white">
+                  Languages
+                </h3>
                 <p className="text-xs text-white leading-relaxed">
-                  {doctor?.languages && doctor.languages.length > 0 ? doctor.languages.join(', ') : '—'}
+                  {doctor?.languages && doctor.languages.length > 0
+                    ? doctor.languages.join(", ")
+                    : "—"}
                 </p>
               </div>
             </div>
@@ -453,24 +528,26 @@ const DoctorProfile = () => {
             <div className=" p-4">
               <div className="flex justify-left">
                 <div className="bg-gray-100 rounded-full p-1 flex relative">
-                  {['About', 'Review', 'Contact'].map((tab) => (
+                  {["About", "Review", "Contact"].map((tab) => (
                     <button
                       key={tab}
                       onClick={() => setActiveTab(tab)}
                       className={`relative z-5 px-8 py-2 rounded-full font-small transition-all duration-300 ${
                         activeTab === tab
-                          ? 'text-white'
-                          : 'text-gray-600 hover:text-gray-800'
+                          ? "text-white"
+                          : "text-gray-600 hover:text-gray-800"
                       }`}
                     >
                       {tab}
                     </button>
                   ))}
-                  <div 
+                  <div
                     className={`absolute top-1 bottom-1 rounded-full bg-[#7551b3] transition-all duration-300 ease-in-out ${
-                      activeTab === 'About' ? 'left-1 w-28' :
-                      activeTab === 'Review' ? 'left-1 w-27 translate-x-28' :
-                      'left-1 w-28 translate-x-56'
+                      activeTab === "About"
+                        ? "left-1 w-28"
+                        : activeTab === "Review"
+                        ? "left-1 w-27 translate-x-28"
+                        : "left-1 w-28 translate-x-56"
                     }`}
                   />
                 </div>
@@ -478,13 +555,13 @@ const DoctorProfile = () => {
             </div>
 
             {/* Tab Content */}
-            <div className="p-6 min-h-96">
+            <div className="p-6 min-h-96 ">
               {error && (
                 <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-200">
                   {error}
-                  {error.includes('create your profile') && (
-                    <button 
-                      onClick={() => navigate('/doctor/create')}
+                  {error.includes("create your profile") && (
+                    <button
+                      onClick={() => navigate("/doctor/create")}
                       className="ml-2 underline hover:no-underline font-medium"
                     >
                       Create Profile
@@ -492,158 +569,207 @@ const DoctorProfile = () => {
                   )}
                 </div>
               )}
-              
-              {activeTab === 'About' && !loading && doctor && (
+
+              {activeTab === "About" && !loading && doctor && (
                 <div className="space-y-8">
                   {/* Gallery */}
                   <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Gallery</h3>
                     <div className="grid grid-cols-3 gap-4">
-                      {doctor.gallery && doctor.gallery.length > 0 ? (
-                        doctor.gallery.map((image, index) => (
-                          <div key={index} className="aspect-video bg-gray-100 rounded-xl overflow-hidden">
-                            <img 
-                              src={image.url} 
-                              alt={`Gallery ${index + 1}`} 
-                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                              onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = "/banner.png";
-                              }}
-                            />
-                          </div>
-                        ))
-                      ) : (
-                        Array.from({ length: 3 }).map((_, index) => (
-                          <div key={index} className="aspect-video bg-gray-100 rounded-xl overflow-hidden">
-                            <img 
-                              src="/banner.png" 
-                              alt={`Default ${index + 1}`} 
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-
-                  {/* About Section */}
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">About Doctor</h3>
-                    <div className="bg-gray-50 rounded-xl p-6">
-                      <p className="text-gray-700 leading-relaxed">
-                        {doctor?.about || 'No description provided yet.'}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Key Specializations */}
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Key Specializations</h3>
-                    <div className="bg-gray-50 rounded-xl p-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        {doctor?.keySpecialization && doctor.keySpecialization.length > 0 ? (
-                          doctor.keySpecialization.map((spec, index) => (
-                            <div key={index} className="flex items-center space-x-3">
-                              <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
-                              <span className="text-gray-700">{spec}</span>
-                            </div>
-                          ))
-                        ) : (
-                          <>
-                            <div className="flex items-center space-x-3">
-                              <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
-                              <span className="text-gray-700">{doctor?.specialty || 'General'}</span>
-                            </div>
-                            {doctor?.clinicName && (
-                              <div className="flex items-center space-x-3">
-                                <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
-                                <span className="text-gray-700">Clinic: {doctor.clinicName}</span>
-                              </div>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Education */}
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Education</h3>
-                    <div className="bg-gray-50 rounded-xl p-6">
-                      <div className="space-y-3">
-                        {(doctor?.education && doctor.education.length) ? doctor.education.map((ed, i) => (
-                          <div key={i} className="flex items-start space-x-3">
-                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
-                            <p className="text-gray-700 font-medium">{ed}</p>
-                          </div>
-                        )) : (
-                          <p className="text-gray-600">No education details provided.</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Awards */}
-                  <div>
-                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Awards & Recognition</h3>
-                    <div className="space-y-4">
-                      {doctor?.awards && doctor.awards.length > 0 ? (
-                        doctor.awards.map((award, index) => (
-                          <div key={index} className='bg-gray-50 rounded-xl p-6 border border-gray-100'>
-                            <div className="flex items-start space-x-4">
-                              <div className="w-20 h-20 bg-white rounded-xl flex-shrink-0 border shadow-sm">
-                                <img 
-                                  src={award.image?.url || "/banner.png"} 
-                                  alt="Award Certificate" 
-                                  className="w-full h-full object-cover rounded-xl"
-                                  onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = "/banner.png";
-                                  }}
-                                />
-                              </div>
-                              <div>
-                                <h4 className="font-semibold text-gray-800 mb-1">{award.title}</h4>
-                                <p className="text-gray-600">{award.year} - {award.institute}</p>
-                              </div>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <div className='bg-gray-50 rounded-xl p-6 border border-gray-100'>
-                          <div className="flex items-start space-x-4">
-                            <div className="w-20 h-20 bg-white rounded-xl flex-shrink-0 border shadow-sm">
-                              <img 
-                                src="/banner.png" 
-                                alt="Award Certificate" 
-                                className="w-full h-full object-cover rounded-xl"
+                      {doctor.gallery && doctor.gallery.length > 0
+                        ? doctor.gallery.map((image, index) => (
+                            <div
+                              key={index}
+                              className="aspect-video bg-gray-100 rounded-xl overflow-hidden"
+                            >
+                              <img
+                                src={image.url}
+                                alt={`Gallery ${index + 1}`}
+                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = "/banner.png";
+                                }}
                               />
                             </div>
-                            <div>
-                              <p className="text-gray-600">No awards added yet.</p>
+                          ))
+                        : Array.from({ length: 3 }).map((_, index) => (
+                            <div
+                              key={index}
+                              className="aspect-video bg-gray-100 rounded-xl overflow-hidden"
+                            >
+                              <img
+                                src="/banner.png"
+                                alt={`Default ${index + 1}`}
+                                className="w-full h-full object-cover"
+                              />
                             </div>
+                          ))}
+                    </div>
+                  </div>
+
+                  <div className="flex gap-4">
+                    {/* left side box */}
+                    <div className="w-1/2 ">
+                      {/* About Section */}
+                      <div>
+                        <h3 className="text[16px] font-semibold mb-2 text-gray-800">
+                          About
+                        </h3>
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <p className="text-gray-700 text-[14px] leading-relaxed">
+                            {doctor?.about || "No description provided yet."}
+                          </p>
+                        </div>
+                      </div>
+                      {/* Education */}
+                      <div>
+                        <h3 className="text[16px] font-semibold  mb-2 text-gray-800">
+                          Education
+                        </h3>
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <div className="space-y-3">
+                            {doctor?.education && doctor.education.length ? (
+                              doctor.education.map((ed, i) => (
+                                <div
+                                  key={i}
+                                  className="flex items-start space-x-3"
+                                >
+                                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <p className="text-gray-700 text-[14px] font-medium">
+                                    {ed}
+                                  </p>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-gray-600">
+                                No education details provided.
+                              </p>
+                            )}
                           </div>
                         </div>
-                      )}
+                      </div>
+                    </div>
+
+                    {/* right side box */}
+                    <div className="w-1/2">
+                      {/* Key Specializations */}
+                      <div>
+                        <h3 className="text[16px] font-semibold mb-2 text-gray-800">
+                          Key Specializations
+                        </h3>
+                        <div className="bg-gray-50 rounded-xl p-4">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {doctor?.keySpecialization &&
+                            doctor.keySpecialization.length > 0 ? (
+                              doctor.keySpecialization.map((spec, index) => (
+                                <div
+                                  key={index}
+                                  className="flex items-center space-x-3"
+                                >
+                                  <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
+                                  <span className="text-gray-700 text-[14px]">
+                                    {spec}
+                                  </span>
+                                </div>
+                              ))
+                            ) : (
+                              <>
+                                <div className="flex items-center space-x-3">
+                                  <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
+                                  <span className="text-gray-700 text-[14px]">
+                                    {doctor?.specialty || "General"}
+                                  </span>
+                                </div>
+                                {doctor?.clinicName && (
+                                  <div className="flex items-center space-x-3">
+                                    <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
+                                    <span className="text-gray-700 text-[14px]">
+                                      Clinic: {doctor.clinicName}
+                                    </span>
+                                  </div>
+                                )}
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Awards */}
+                      <div>
+                        <h3 className="text[16px] font-semibold mb-2 text-gray-800">
+                          Awards & Recognition
+                        </h3>
+                        <div className="space-y-4 p-4">
+                          {doctor?.awards && doctor.awards.length > 0 ? (
+                            doctor.awards.map((award, index) => (
+                              <div
+                                key={index}
+                                className="bg-gray-50 rounded-xl p-6 border border-gray-100"
+                              >
+                                <div className="flex items-start space-x-4">
+                                  <div className="w-20 h-20 bg-white rounded-xl flex-shrink-0 border shadow-sm">
+                                    <img
+                                      src={award.image?.url || "/banner.png"}
+                                      alt="Award Certificate"
+                                      className="w-full h-full object-cover rounded-xl"
+                                      onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = "/banner.png";
+                                      }}
+                                    />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-semibold text-gray-800 mb-1">
+                                      {award.title}
+                                    </h4>
+                                    <p className="text-gray-600 text-[14px]">
+                                      {award.year} - {award.institute}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="bg-gray-50 rounded-xl p-6 border border-gray-100">
+                              <div className="flex items-start space-x-4">
+                                <div className="w-20 h-20 bg-white rounded-xl flex-shrink-0 border shadow-sm">
+                                  <img
+                                    src="/banner.png"
+                                    alt="Award Certificate"
+                                    className="w-full h-full object-cover rounded-xl"
+                                  />
+                                </div>
+                                <div>
+                                  <p className="text-gray-600 text-[14px]">
+                                    No awards added yet.
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {activeTab === 'Review' && (
+              
+
+              {activeTab === "Review" && (
                 <ReviewTab doctorId={actualDoctorId} />
               )}
 
-              {activeTab === 'Contact' && (
-                <ContactTab doctor={doctor} />
-              )}
+              {activeTab === "Contact" && <ContactTab doctor={doctor} />}
             </div>
 
-            {user && user.role === 'doctor' && !doctorId && (
+            {user && user.role === "doctor" && !doctorId && (
               <div className="mt-6 p-4">
                 <button
-                  onClick={() => { logout(); navigate('/login'); }}
+                  onClick={() => {
+                    logout();
+                    navigate("/login");
+                  }}
                   className="w-full bg-red-500 hover:bg-red-600 text-white py-3  rounded-xl font-medium transition-colors"
                 >
                   Logout
