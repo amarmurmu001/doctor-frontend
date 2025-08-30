@@ -59,7 +59,7 @@ const doctors = [
   }
 ];
 
-export default function Page4() {
+export default function Doctors() {
   return (
     <div className="w-full bg-[#f4f4ff]">
       {/* Header with search */}
@@ -70,8 +70,7 @@ export default function Page4() {
       {/* Doctors list with title */}
       <DoctorList 
         doctors={doctors} 
-        specialty="Cardiologist" 
-        location="Deoghar" 
+        
       />
     </div>
   );

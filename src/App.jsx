@@ -11,7 +11,7 @@ const Home = lazy(() => import("./pages/Home"));
 import useLocationStore from "./stores/locationStore";
 import Nav from "./components/layout/Nav";
 import DoctorType from "./pages/DoctorType";
-import Page4 from "./pages/page_4";
+import Page4 from "./pages/doctors";
 import Page3 from "./pages/Page3";
 import DoctorProfile from "./pages/DoctorProfile";
 import UserProfile from "./pages/UserProfile";
@@ -55,7 +55,9 @@ import AdminDoctors from "./pages/admin/AdminDoctor";
 import AdminAppointments from "./pages/admin/AdminAppointments";
 import AdminNews from "./pages/admin/AdminNews";
 import AdminBlogs from "./pages/admin/AdminBlogs";
+import SitemapGenerator from "./components/admin/SitemapGenerator";
 import ScrollToTop from "./utils/scrollOnTop";
+import Doctors from "./pages/doctors";
 // import NewsManagement from './pages/admin/NewsManagement'
 // import BlogsManagement from './pages/admin/BlogsManagement'
 
@@ -86,7 +88,7 @@ function AppShell() {
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/x" element={<DoctorType />} />
-            <Route path="/doctor-mapped" element={<Page4 />} />
+            <Route path="/doctors" element={<Doctors />} />
             <Route path="/categories" element={<Page3 />} />
             <Route path="/Doctor-profile" element={<DoctorProfile />} />
             <Route
@@ -138,6 +140,7 @@ function AppShell() {
               <Route path="appointments" element={<AdminAppointments />} />
               <Route path="news" element={<AdminNews />} />
               <Route path="blogs" element={<AdminBlogs />} />
+              <Route path="sitemap" element={<SitemapGenerator />} />
             </Route>
           </Routes>
         </Suspense>
