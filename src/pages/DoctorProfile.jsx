@@ -390,7 +390,7 @@ const DoctorProfile = () => {
 
           {activeTab === 'Contact' && (
             <ContactTab doctor={doctor} />
-          )}
+        )}
         </div>
         {user && user.role === 'doctor' && !doctorId && (
           <div className="p-4">

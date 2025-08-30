@@ -5,39 +5,27 @@ import QueryItem from './QueryItem';
 const queries = [
   {
     id: 1,
-    label: "Heart",
-    image: "/icons/heart.png",
-    path: "/sub-departments?specialty=cardiology"
+    label: "Allopathic",
+    image: "/icons/allopathic.png",
+    path: "/sub-departments?type=allopathic"
   },
   {
     id: 2,
-    label: "Lungs", 
-    image: "/icons/lungs.png",
-    path: "/sub-departments?specialty=pulmonology"
+    label: "Ayurveda",
+    image: "/icons/ayurveda.png",
+    path: "/sub-departments?type=ayurveda"
   },
   {
     id: 3,
-    label: "Kidney",
-    image: "/icons/kidney.png", 
-    path: "/sub-departments?specialty=nephrology"
+    label: "Dentist",
+    image: "/icons/dentist.png",
+    path: "/sub-departments?type=dentist"
   },
   {
     id: 4,
-    label: "Liver",
-    image: "/icons/liver.png",
-    path: "/sub-departments?specialty=hepatology"
-  },
-  {
-    id: 5,
-    label: "Brain",
-    image: "/icons/doctor.png", // Using doctor icon as placeholder for brain
-    path: "/sub-departments?specialty=neurology"
-  },
-  {
-    id: 6,
-    label: "Bones",
-    image: "/icons/medicine-bottle.png", // Using medicine bottle as placeholder for bones
-    path: "/sub-departments?specialty=orthopedics"
+    label: "Homeopathy",
+    image: "/icons/homeopathic.png",
+    path: "/sub-departments?type=homeopathy"
   }
 ];
 
@@ -67,9 +55,10 @@ export default function QueryGrid() {
 
       {/* Query Items Grid */}
       <div className="px-4 w-full max-w-full">
-        <div className="flex gap-4 overflow-x-auto scrollbar-hide pb-2">
+        {/* Responsive Grid Layout */}
+        <div className="grid grid-cols-4 sm:grid-cols-4 md:grid-cols-4 gap-4 md:gap-6 lg:gap-8 xl:gap-10">
           {queries.map((query) => (
-            <div key={query.id} className="flex-shrink-0">
+            <div key={query.id} className="flex justify-center">
               <QueryItem
                 image={query.image}
                 label={query.label}

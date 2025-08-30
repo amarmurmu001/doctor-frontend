@@ -2,6 +2,32 @@ import React, { useState, useEffect, useCallback } from "react";
 import PageHeader from "../components/layout/PageHeader";
 import DoctorCard from "../components/doctor/DoctorCard";
 
+// Utility function to extract rating from doctor data
+const extractRating = (doctor) => {
+  if (!doctor) return 0;
+
+  // Try different rating field names
+  const rating = doctor.averageRating ||
+                doctor.rating ||
+                doctor.ratings ||
+                doctor.totalRating ||
+                doctor.average_rating ||
+                doctor.ratingAverage;
+
+  // If we have a numeric rating, return it
+  if (typeof rating === 'number' && rating > 0) {
+    return rating;
+  }
+
+  // If we have reviews array, calculate average
+  if (doctor.reviews && Array.isArray(doctor.reviews) && doctor.reviews.length > 0) {
+    const totalRating = doctor.reviews.reduce((sum, review) => sum + (review.rating || 0), 0);
+    return totalRating / doctor.reviews.length;
+  }
+
+  return 0;
+};
+
 export default function Doctors() {
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -35,6 +61,19 @@ export default function Doctors() {
 
       const data = await response.json();
       console.log('✅ Doctors data received:', data);
+
+      // Debug: Log rating data for first few doctors
+      if (data && Array.isArray(data) && data.length > 0) {
+        console.log('🔍 Rating data check for first doctor:', {
+          doctor: data[0].name || data[0].user?.name,
+          ratingAverage: data[0].ratingAverage,
+          averageRating: data[0].averageRating,
+          rating: data[0].rating,
+          ratings: data[0].ratings,
+          totalRating: data[0].totalRating,
+          average_rating: data[0].average_rating
+        });
+      }
 
       // Handle different response formats
       let doctorsArray = [];
@@ -106,12 +145,33 @@ export default function Doctors() {
   }
 
   // Function to map doctor data to card props
-  function mapDoctorToCardProps(doctor) {
+  function mapDoctorToCardProps(doctor, index = 0) {
     const userName = doctor.user?.name || doctor.name || 'Doctor';
     const userSpecialty = doctor.specialty || doctor.keySpecialization?.[0] || 'General';
     const consultationFee = doctor.consultationFee || doctor.fee || 0;
     const doctorImage = doctor.profileImage || doctor.user?.profileImage || '/icons/doctor.png';
     const city = doctor.address?.city || 'India';
+    const languages = doctor.languages || ['English'];
+    const yearsOfExperience = doctor.yearsOfExperience || 0;
+    // Extract rating using utility function
+    const ratingAverage = extractRating(doctor);
+
+    // Debug: Log rating extraction for first few doctors
+    if (index < 3) {
+      console.log(`🔍 Doctor ${index + 1} rating extraction:`, {
+        name: userName,
+        extractedRating: ratingAverage,
+        originalData: {
+          averageRating: doctor.averageRating,
+          rating: doctor.rating,
+          ratings: doctor.ratings,
+          totalRating: doctor.totalRating,
+          average_rating: doctor.average_rating,
+          ratingAverage: doctor.ratingAverage,
+          reviewsCount: doctor.reviews?.length || 0
+        }
+      });
+    }
 
     return {
       name: userName,
@@ -120,6 +180,9 @@ export default function Doctors() {
       image: doctorImage,
       doctorId: doctor._id || doctor.id,
       city: city,
+      languages: languages,
+      yearsOfExperience: yearsOfExperience,
+      ratingAverage: ratingAverage,
     };
   }
 
@@ -205,7 +268,7 @@ export default function Doctors() {
             {doctors.map((doctor, index) => (
               <DoctorCard
                 key={doctor._id || doctor.id || `doctor-${index}`}
-                {...mapDoctorToCardProps(doctor)}
+                {...mapDoctorToCardProps(doctor, index)}
               />
             ))}
           </div>

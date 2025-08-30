@@ -12,6 +12,14 @@ export default function DoctorCard({
 }) {
   const navigate = useNavigate();
 
+  // Debug: Log rating data when component renders
+  console.log('🔍 DoctorCard rating data:', {
+    name,
+    ratingAverage,
+    type: typeof ratingAverage,
+    isValid: ratingAverage && ratingAverage > 0
+  });
+
   // Generate SEO-friendly URL
   const generateSeoUrl = () => {
     if (!doctorId) return '/';
@@ -57,7 +65,7 @@ export default function DoctorCard({
             {yearsOfExperience}+ years Experience
           </span>
           <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-semibold">
-            {ratingAverage}/5 Rating
+            {ratingAverage && ratingAverage > 0 ? `${Number(ratingAverage).toFixed(1)}/5 Rating` : 'New Doctor'}
           </span>
         </div>
       </div>

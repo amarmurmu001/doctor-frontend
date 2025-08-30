@@ -19,6 +19,8 @@ const AdminDoctors = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [actionLoading, setActionLoading] = useState(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editDoctor, setEditDoctor] = useState(null);
   const [newDoctor, setNewDoctor] = useState({
     // User fields
     name: '',
@@ -222,11 +224,11 @@ const AdminDoctors = () => {
 
   const handleAddDoctor = async (e) => {
     e.preventDefault();
-    
+
     try {
       setActionLoading('add');
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
-      
+
       // First create the doctor profile
       const response = await fetch(`${API_BASE_URL}/api/admin/doctors`, {
         method: 'POST',
@@ -252,16 +254,16 @@ const AdminDoctors = () => {
         const errorData = await response.text();
         throw new Error(errorData || 'Failed to add doctor');
       }
-      
+
       const result = await response.json();
       const doctorId = result.data._id;
-      
+
       // Upload clinic images if any
       if (newDoctor.clinicImages && newDoctor.clinicImages.length > 0) {
         for (const image of newDoctor.clinicImages) {
           const imageFormData = new FormData();
           imageFormData.append('image', image);
-          
+
           try {
             await fetch(`${API_BASE_URL}/api/doctors/${doctorId}/images`, {
               method: 'POST',
@@ -276,7 +278,7 @@ const AdminDoctors = () => {
           }
         }
       }
-      
+
       await fetchDoctors();
       setShowAddModal(false);
       setNewDoctor({
@@ -288,7 +290,7 @@ const AdminDoctors = () => {
         dateOfBirth: '',
         location: '',
         appLanguage: 'English',
-        
+
         // Doctor fields
         specialty: '',
         yearsOfExperience: 0,
@@ -303,7 +305,7 @@ const AdminDoctors = () => {
         contactEmails: [],
         keySpecialization: [],
         consultationFee: 0,
-        
+
         // Address fields
         addressLine1: '',
         addressLine2: '',
@@ -312,16 +314,64 @@ const AdminDoctors = () => {
         postalCode: '',
         country: '',
         coordinates: null,
-        
+
         // Additional fields
         slots: [],
         clinicImages: []
       });
       alert('Doctor added successfully!');
-      
+
     } catch (err) {
       console.error('Add doctor error:', err);
       setError(err.message || 'Failed to add doctor');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
+  const handleEditDoctor = async (e) => {
+    e.preventDefault();
+
+    try {
+      setActionLoading(editDoctor._id);
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      // Prepare the update data
+      const updateData = {
+        name: editDoctor.user?.name || editDoctor.name,
+        email: editDoctor.user?.email || editDoctor.email,
+        phone: editDoctor.user?.phone || editDoctor.phone,
+        specialty: editDoctor.specialty,
+        yearsOfExperience: editDoctor.yearsOfExperience,
+        clinicName: editDoctor.clinicName,
+        city: editDoctor.city,
+        about: editDoctor.about,
+        consultationFee: editDoctor.consultationFee
+      };
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/doctors/${editDoctor._id}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(updateData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        throw new Error(errorData || 'Failed to update doctor');
+      }
+
+      await fetchDoctors();
+      setShowEditModal(false);
+      setEditDoctor(null);
+      setError('');
+      alert('Doctor updated successfully!');
+
+    } catch (err) {
+      console.error('Edit doctor error:', err);
+      setError(err.message || 'Failed to update doctor');
     } finally {
       setActionLoading(null);
     }
@@ -766,6 +816,15 @@ const AdminDoctors = () => {
                             className="text-purple-600 hover:text-purple-900 font-medium transition-colors"
                           >
                             View
+                          </button>
+                          <button
+                            onClick={() => {
+                              setEditDoctor({...doctor});
+                              setShowEditModal(true);
+                            }}
+                            className="text-blue-600 hover:text-blue-900 font-medium transition-colors"
+                          >
+                            Edit
                           </button>
                           {doctor.status === 'pending' && (
                             <>
@@ -1772,6 +1831,215 @@ const AdminDoctors = () => {
                 </button>
               </div>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Doctor Modal */}
+      {showEditModal && editDoctor && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">Edit Doctor</h3>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <form onSubmit={handleEditDoctor} className="p-6 space-y-6">
+              {/* Personal Information */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                  Personal Information
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Full Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={editDoctor.user?.name || editDoctor.name || ''}
+                        onChange={(e) => setEditDoctor({
+                          ...editDoctor,
+                          user: { ...editDoctor.user, name: e.target.value },
+                          name: e.target.value
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Dr. John Doe"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Email <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        required
+                        value={editDoctor.user?.email || editDoctor.email || ''}
+                        onChange={(e) => setEditDoctor({
+                          ...editDoctor,
+                          user: { ...editDoctor.user, email: e.target.value },
+                          email: e.target.value
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="john.doe@example.com"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        value={editDoctor.user?.phone || editDoctor.phone || ''}
+                        onChange={(e) => setEditDoctor({
+                          ...editDoctor,
+                          user: { ...editDoctor.user, phone: e.target.value },
+                          phone: e.target.value
+                        })}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="+91 9876543210"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Specialty <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        required
+                        value={editDoctor.specialty || ''}
+                        onChange={(e) => setEditDoctor({...editDoctor, specialty: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      >
+                        <option value="">Select Specialty</option>
+                        <option value="General Physician">General Physician</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Dermatologist">Dermatologist</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="Orthopedic">Orthopedic</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Psychiatrist">Psychiatrist</option>
+                        <option value="Gynecologist">Gynecologist</option>
+                        <option value="ENT Specialist">ENT Specialist</option>
+                        <option value="Ophthalmologist">Ophthalmologist</option>
+                        <option value="Urologist">Urologist</option>
+                        <option value="Oncologist">Oncologist</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Years of Experience
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        max="50"
+                        value={editDoctor.yearsOfExperience || 0}
+                        onChange={(e) => setEditDoctor({...editDoctor, yearsOfExperience: parseInt(e.target.value) || 0})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="5"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        City <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={editDoctor.city || ''}
+                        onChange={(e) => setEditDoctor({...editDoctor, city: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Mumbai"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Clinic Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editDoctor.clinicName || ''}
+                        onChange={(e) => setEditDoctor({...editDoctor, clinicName: e.target.value})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="Apollo Hospital"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Consultation Fee (₹)
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        value={editDoctor.consultationFee || 0}
+                        onChange={(e) => setEditDoctor({...editDoctor, consultationFee: parseInt(e.target.value) || 0})}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                        placeholder="500"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* About Section */}
+              <div>
+                <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                  <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  About Doctor
+                </h4>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <textarea
+                    value={editDoctor.about || ''}
+                    onChange={(e) => setEditDoctor({...editDoctor, about: e.target.value})}
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    placeholder="Brief description about the doctor's expertise and approach..."
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end space-x-4 pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowEditModal(false)}
+                  className="px-6 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={actionLoading === editDoctor._id}
+                  className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center"
+                >
+                  {actionLoading === editDoctor._id ? (
+                    <>
+                      <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                      </svg>
+                      Updating...
+                    </>
+                  ) : (
+                    'Update Doctor'
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

@@ -60,17 +60,18 @@ const LocationHome = () => {
           id: doctor._id || doctor.id,
           name: doctor.user?.name || doctor.name || 'Doctor',
           specialty: doctor.specialty || doctor.keySpecialization?.[0] || 'General',
-          rating: 4.5, // Default rating since not in API
-          experience: doctor.experience || 10
+          rating: doctor.averageRating || doctor.rating || 4.5,
+          experience: doctor.yearsOfExperience || 10,
+          languages: doctor.languages || ['English']
         }));
 
         setTopDoctors(validDoctors);
       } else {
         // Fallback to mock doctors
         setTopDoctors([
-          { id: 1, name: 'Dr. Rajesh Kumar', specialty: 'Cardiologist', rating: 4.8, experience: 15 },
-          { id: 2, name: 'Dr. Priya Sharma', specialty: 'Dermatologist', rating: 4.9, experience: 12 },
-          { id: 3, name: 'Dr. Amit Patel', specialty: 'Orthopedic', rating: 4.7, experience: 18 }
+          { id: 1, name: 'Dr. Rajesh Kumar', specialty: 'Cardiologist', rating: 4.8, experience: 15, languages: ['English', 'Hindi'] },
+          { id: 2, name: 'Dr. Priya Sharma', specialty: 'Dermatologist', rating: 4.9, experience: 12, languages: ['English', 'Hindi', 'Bengali'] },
+          { id: 3, name: 'Dr. Amit Patel', specialty: 'Orthopedic', rating: 4.7, experience: 18, languages: ['English', 'Gujarati'] }
         ]);
       }
 
@@ -294,6 +295,9 @@ const LocationHome = () => {
                           <div className="flex items-center mt-1">
                             <span className="text-yellow-500 text-sm">★</span>
                             <span className="ml-1 text-sm text-gray-600">{doctor.rating} • {doctor.experience} years</span>
+                          </div>
+                          <div className="flex items-center mt-1">
+                            <span className="text-xs text-gray-500">🗣️ {doctor.languages?.join(', ')}</span>
                           </div>
                         </div>
 

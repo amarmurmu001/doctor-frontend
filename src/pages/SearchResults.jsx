@@ -6,6 +6,399 @@ import useLocationStore from '../stores/locationStore';
 import PageSeo from '../components/seo/PageSeo';
 import DynamicFAQ from '../components/FAQ/DynamicFAQ';
 
+// ✅ Enhanced strict keyword filtering function with improved accuracy
+const strictKeywordFilter = (doctors, searchTerm, searchType) => {
+  if (!searchTerm || searchTerm.trim() === '') {
+    return doctors; // Return all doctors if no search term
+  }
+
+  const term = searchTerm.toLowerCase().trim();
+  const normalizedTerm = normalizeMedicalTerm(term);
+  const searchWords = term.split(' ').filter(word => word.length > 0);
+  const normalizedWords = normalizedTerm.split(' ').filter(word => word.length > 0);
+
+  // Score and filter doctors based on relevance
+  const scoredDoctors = doctors.map(doctor => {
+    let score = 0;
+    let matchType = 'none';
+
+    // Get all searchable fields from the doctor
+    const doctorName = (doctor.user?.name || doctor.name || '').toLowerCase();
+    const doctorSpecialty = (doctor.specialty || '').toLowerCase();
+    const doctorAbout = (doctor.about || '').toLowerCase();
+    const doctorClinic = (doctor.clinicName || '').toLowerCase();
+    const doctorCity = (doctor.city || doctor.address?.city || '').toLowerCase();
+    const doctorLanguages = (doctor.languages || []).join(' ').toLowerCase();
+    const doctorEducation = (doctor.education || []).join(' ').toLowerCase();
+    const doctorExperience = (doctor.experience || []).join(' ').toLowerCase();
+    const doctorServices = (doctor.services || []).join(' ').toLowerCase();
+    const doctorKeySpecializations = (doctor.keySpecialization || []).join(' ').toLowerCase();
+
+    // Enhanced specialty detection
+    if (searchType === 'specialty' || isSpecialty(searchTerm)) {
+      matchType = 'specialty';
+
+      // Exact specialty match (highest priority)
+      if (doctorSpecialty.includes(term) ||
+          doctorSpecialty.includes(normalizedTerm) ||
+          doctorKeySpecializations.includes(term) ||
+          doctorKeySpecializations.includes(normalizedTerm) ||
+          doctorServices.includes(term) ||
+          doctorServices.includes(normalizedTerm)) {
+        score += 100;
+      }
+
+      // Fuzzy specialty matching
+      if (fuzzySpecialtyMatch(term, doctorSpecialty) ||
+          fuzzySpecialtyMatch(normalizedTerm, doctorSpecialty) ||
+          fuzzySpecialtyMatch(term, doctorKeySpecializations) ||
+          fuzzySpecialtyMatch(normalizedTerm, doctorKeySpecializations) ||
+          fuzzySpecialtyMatch(term, doctorServices) ||
+          fuzzySpecialtyMatch(normalizedTerm, doctorServices)) {
+        score += 50;
+      }
+
+      // Word-by-word specialty matching
+      normalizedWords.forEach(word => {
+        if (doctorSpecialty.includes(word) ||
+            doctorKeySpecializations.includes(word) ||
+            doctorServices.includes(word)) {
+          score += 25;
+        }
+      });
+
+      // Must have specialty match for specialty searches
+      if (score === 0) return null;
+    }
+
+    // Enhanced doctor name matching
+    else if (isDoctorName(searchTerm)) {
+      matchType = 'name';
+
+      // Exact name match
+      if (doctorName === term) {
+        score += 100;
+      }
+      // Partial name match
+      else if (doctorName.includes(term)) {
+        score += 80;
+      }
+      // Word-by-word name matching
+      else if (doctorName.split(' ').some(namePart =>
+        searchWords.some(word => namePart.includes(word) && word.length > 2))) {
+        score += 60;
+      }
+
+      // Must have name match for name searches
+      if (score === 0) return null;
+    }
+
+    // General search with improved accuracy
+    else {
+      matchType = 'general';
+
+      // Name matches (highest priority)
+      if (doctorName.includes(term)) {
+        score += 90;
+        matchType = 'name_in_general';
+      }
+
+      // Specialty matches (high priority)
+      if (doctorSpecialty.includes(term) ||
+          doctorSpecialty.includes(normalizedTerm) ||
+          doctorKeySpecializations.includes(term) ||
+          doctorKeySpecializations.includes(normalizedTerm) ||
+          doctorServices.includes(term) ||
+          doctorServices.includes(normalizedTerm)) {
+        score += 80;
+        matchType = 'specialty_in_general';
+      }
+
+      // Fuzzy specialty matching
+      if (fuzzySpecialtyMatch(term, doctorSpecialty) ||
+          fuzzySpecialtyMatch(normalizedTerm, doctorSpecialty) ||
+          fuzzySpecialtyMatch(term, doctorKeySpecializations) ||
+          fuzzySpecialtyMatch(normalizedTerm, doctorKeySpecializations) ||
+          fuzzySpecialtyMatch(term, doctorServices) ||
+          fuzzySpecialtyMatch(normalizedTerm, doctorServices)) {
+        score += 40;
+      }
+
+      // Clinic name matches
+      if (doctorClinic.includes(term)) {
+        score += 70;
+        matchType = 'clinic_in_general';
+      }
+
+      // About/description matches
+      if (doctorAbout.includes(term)) {
+        score += 60;
+        matchType = 'about_in_general';
+      }
+
+      // City/location matches
+      if (doctorCity.includes(term)) {
+        score += 50;
+        matchType = 'location_in_general';
+      }
+
+      // Language matches
+      if (doctorLanguages.includes(term)) {
+        score += 30;
+      }
+
+      // Education matches
+      if (doctorEducation.includes(term)) {
+        score += 20;
+      }
+
+      // Word-by-word matching for multi-word searches
+      [...searchWords, ...normalizedWords].forEach(word => {
+        if (word.length > 2) { // Only check meaningful words
+          const allText = [
+            doctorName, doctorSpecialty, doctorAbout, doctorClinic,
+            doctorCity, doctorLanguages, doctorEducation, doctorExperience,
+            doctorServices, doctorKeySpecializations
+          ].join(' ');
+
+          if (allText.includes(word)) {
+            score += 10;
+          }
+        }
+      });
+
+      // Additional fuzzy matching for partial words
+      searchWords.forEach(word => {
+        if (word.length > 3) {
+          // Check for partial matches (e.g., "cardio" matches "cardiology")
+          const allText = [
+            doctorName, doctorSpecialty, doctorAbout, doctorClinic,
+            doctorCity, doctorLanguages, doctorEducation, doctorExperience,
+            doctorServices, doctorKeySpecializations
+          ].join(' ');
+
+          // Look for words that start with the search term
+          const words = allText.split(' ');
+          words.forEach(textWord => {
+            if (textWord.startsWith(word) && textWord.length > word.length) {
+              score += 5; // Smaller score for partial matches
+            }
+          });
+        }
+      });
+
+      // Must have minimum score for general searches
+      if (score < 10) return null;
+    }
+
+    return {
+      doctor,
+      score,
+      matchType
+    };
+  }).filter(item => item !== null); // Remove null entries
+
+  // Sort by score (highest first) and return doctors
+  return scoredDoctors
+    .sort((a, b) => b.score - a.score)
+    .map(item => item.doctor);
+};
+
+// Fuzzy specialty matching for common variations and misspellings
+const fuzzySpecialtyMatch = (searchTerm, doctorField) => {
+  if (!searchTerm || !doctorField) return false;
+
+  const term = searchTerm.toLowerCase().trim();
+  const field = doctorField.toLowerCase();
+
+  // Common specialty variations and abbreviations
+  const specialtyMappings = {
+    // Cardiology variations
+    'cardio': ['cardiology', 'cardiologist', 'cardiovascular', 'heart'],
+    'heart': ['cardiology', 'cardiologist', 'cardiovascular'],
+
+    // Dermatology variations
+    'derma': ['dermatology', 'dermatologist', 'skin'],
+    'skin': ['dermatology', 'dermatologist'],
+
+    // Pediatrics variations
+    'pedia': ['pediatrics', 'pediatrician', 'child', 'children'],
+    'child': ['pediatrics', 'pediatrician'],
+    'kids': ['pediatrics', 'pediatrician'],
+
+    // Gynecology variations
+    'gyn': ['gynecology', 'gynecologist', 'women', 'obgyn'],
+    'women': ['gynecology', 'gynecologist', 'obstetrics'],
+    'obgyn': ['gynecology', 'obstetrics', 'gynecologist'],
+
+    // Neurology variations
+    'neuro': ['neurology', 'neurologist', 'brain', 'nervous'],
+    'brain': ['neurology', 'neurologist'],
+
+    // Orthopedics variations
+    'ortho': ['orthopedics', 'orthopedic', 'bone', 'joint'],
+    'bone': ['orthopedics', 'orthopedic'],
+    'joint': ['orthopedics', 'orthopedic', 'rheumatology'],
+
+    // Psychiatry variations
+    'psych': ['psychiatry', 'psychiatrist', 'mental', 'mind'],
+    'mental': ['psychiatry', 'psychiatrist', 'psychology'],
+    'mind': ['psychiatry', 'psychiatrist'],
+
+    // Dentistry variations
+    'dental': ['dentistry', 'dentist', 'teeth', 'oral'],
+    'teeth': ['dentistry', 'dentist', 'oral'],
+    'oral': ['dentistry', 'dentist', 'oral surgery'],
+
+    // General medicine variations
+    'general': ['general medicine', 'family medicine', 'gp', 'physician'],
+    'gp': ['general medicine', 'family medicine', 'physician'],
+    'family': ['family medicine', 'general medicine'],
+
+    // ENT variations
+    'ent': ['ent', 'ear nose throat', 'otorhinolaryngology'],
+    'ear': ['ent', 'ear nose throat'],
+    'nose': ['ent', 'ear nose throat'],
+    'throat': ['ent', 'ear nose throat'],
+
+    // Eye variations
+    'eye': ['ophthalmology', 'ophthalmologist', 'eye care'],
+    'vision': ['ophthalmology', 'ophthalmologist'],
+
+    // Surgery variations
+    'surgery': ['surgeon', 'surgical', 'operation'],
+    'surgeon': ['surgery', 'surgical'],
+
+    // Alternative medicine
+    'ayurveda': ['ayurvedic', 'ayurveda', 'traditional medicine'],
+    'ayurvedic': ['ayurveda', 'traditional medicine'],
+    'homeopathy': ['homeopathic', 'homeopathy', 'natural medicine'],
+    'homeopathic': ['homeopathy', 'natural medicine'],
+    'allopathy': ['allopathic', 'modern medicine', 'western medicine'],
+    'allopathic': ['allopathy', 'modern medicine']
+  };
+
+  // Check if search term matches any specialty variations
+  for (const [key, variations] of Object.entries(specialtyMappings)) {
+    if (term.includes(key) || variations.some(v => term.includes(v))) {
+      return variations.some(variation => field.includes(variation));
+    }
+  }
+
+  // Check if field contains the search term or vice versa
+  return field.includes(term) || term.includes(field);
+};
+
+// Helper function to detect if search term is likely a specialty
+const isSpecialty = (searchTerm) => {
+  if (!searchTerm) return false;
+
+  const term = searchTerm.toLowerCase().trim();
+
+  // Common medical specialties and their variations
+  const specialties = [
+    'cardiologist', 'dermatologist', 'pediatrician', 'gynecologist', 'neurologist',
+    'orthopedic', 'psychiatrist', 'surgeon', 'physician', 'dentist', 'ent',
+    'ophthalmologist', 'urologist', 'oncologist', 'radiologist', 'pathologist',
+    'anesthesiologist', 'emergency', 'internal medicine', 'family medicine',
+    'cardiology', 'dermatology', 'pediatrics', 'gynecology', 'neurology',
+    'orthopedics', 'psychiatry', 'surgery', 'dentistry', 'ophthalmology',
+    'general medicine', 'ayurvedic', 'homeopathy', 'allopathic',
+    // Add common variations and abbreviations
+    'cardio', 'derma', 'pedia', 'gyn', 'neuro', 'ortho', 'psych', 'gp',
+    'obgyn', 'ent', 'eye', 'heart', 'skin', 'child', 'women', 'bone',
+    'mental', 'dental', 'oral', 'family'
+  ];
+
+  return specialties.some(specialty =>
+    term.includes(specialty) || specialty.includes(term)
+  );
+};
+
+// Enhanced doctor name detection with better accuracy
+const isDoctorName = (searchTerm) => {
+  if (!searchTerm) return false;
+
+  const term = searchTerm.toLowerCase().trim();
+  const words = term.split(' ').filter(word => word.length > 0);
+
+  // Check if it starts with common doctor prefixes
+  const doctorPrefixes = ['dr.', 'dr ', 'doctor ', 'dr-', 'drs.', 'drs '];
+  if (doctorPrefixes.some(prefix => term.startsWith(prefix))) {
+    return true;
+  }
+
+  // Check for medical titles
+  const medicalTitles = ['md', 'mbbs', 'ms', 'mch', 'dm', 'dnb', 'frcs', 'mrCP'];
+  if (medicalTitles.some(title => term.includes(title))) {
+    return false; // This is likely a qualification, not a name
+  }
+
+  // Check if it contains multiple words (likely a name)
+  if (words.length >= 2) {
+    // Common name patterns (first + last name)
+    const namePattern = /^[a-z]{2,}$/; // At least 2 characters, only letters
+    const hasValidNameWords = words.every(word =>
+      namePattern.test(word) && word.length >= 2 && word.length <= 20
+    );
+
+    // Check if it doesn't contain common specialty terms
+    const hasSpecialtyTerms = isSpecialty(searchTerm);
+
+    // Additional check: if it looks like a proper name
+    const looksLikeName = words.length <= 4 && // Typical name length
+                         words.some(word => word.length >= 3) && // Has substantial words
+                         !words.some(word => /\d/.test(word)); // No numbers
+
+    return hasValidNameWords && !hasSpecialtyTerms && looksLikeName;
+  }
+
+  // Single word names (rare but possible)
+  if (words.length === 1) {
+    const singleWord = words[0];
+    // Check if it's a common single-word doctor name or has name-like characteristics
+    return singleWord.length >= 3 &&
+           /^[a-z]+$/.test(singleWord) &&
+           !isSpecialty(singleWord) &&
+           !medicalTitles.includes(singleWord);
+  }
+
+  return false;
+};
+
+// Medical abbreviation and acronym handler
+const normalizeMedicalTerm = (term) => {
+  const abbreviations = {
+    'cardio': 'cardiology',
+    'derma': 'dermatology',
+    'pedia': 'pediatrics',
+    'gyn': 'gynecology',
+    'neuro': 'neurology',
+    'ortho': 'orthopedics',
+    'psych': 'psychiatry',
+    'gp': 'general physician',
+    'ent': 'ear nose throat',
+    'obgyn': 'obstetrics gynecology',
+    'eye': 'ophthalmology',
+    'kidney': 'nephrology',
+    'liver': 'hepatology',
+    'lung': 'pulmonology',
+    'heart': 'cardiology',
+    'skin': 'dermatology',
+    'bone': 'orthopedics',
+    'brain': 'neurology',
+    'mental': 'psychiatry',
+    'teeth': 'dentistry',
+    'oral': 'dentistry',
+    'women': 'gynecology',
+    'child': 'pediatrics',
+    'kids': 'pediatrics',
+    'family': 'family medicine'
+  };
+
+  return abbreviations[term.toLowerCase()] || term;
+};
+
 const SearchResults = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -48,8 +441,12 @@ const SearchResults = () => {
       // ✅ Handle response format and filter for approved doctors
       const doctorsData = Array.isArray(data) ? data : (data.data || []);
       const approvedDoctors = doctorsData.filter(doctor => doctor.status === 'approved');
-      setDoctors(approvedDoctors);
-      setTotalResults(data.total || approvedDoctors.length);
+
+      // ✅ Implement strict keyword filtering
+      const strictFilteredDoctors = strictKeywordFilter(approvedDoctors, searchTerm, searchType);
+
+      setDoctors(strictFilteredDoctors);
+      setTotalResults(strictFilteredDoctors.length);
       
     } catch (err) {
       console.error('❌ Search error:', err);
@@ -66,57 +463,7 @@ const SearchResults = () => {
     fetchSearchResults();
   }, [searchTerm, searchType, searchLocation, fetchSearchResults]);
 
-  // Function to detect if search term is likely a doctor name
-  const isDoctorName = (searchTerm) => {
-    if (!searchTerm) return false;
-    
-    const term = searchTerm.toLowerCase().trim();
-    
-    // Check if it starts with common doctor prefixes
-    const doctorPrefixes = ['dr.', 'dr ', 'doctor '];
-    if (doctorPrefixes.some(prefix => term.startsWith(prefix))) {
-      return true;
-    }
-    
-    // Check if it contains multiple words (likely a name)
-    const words = term.split(' ').filter(word => word.length > 0);
-    if (words.length >= 2) {
-      // Check if any word looks like a common first/last name pattern
-      const namePatterns = /^[a-z]+$/;
-      const hasNameLikeWords = words.some(word => namePatterns.test(word) && word.length >= 3);
-      
-      // Check if it doesn't contain common specialty terms
-      const specialtyTerms = ['cardiologist', 'dermatologist', 'pediatrician', 'gynecologist', 'neurologist', 
-                              'orthopedic', 'psychiatrist', 'surgeon', 'physician', 'specialist', 'therapy', 
-                              'treatment', 'clinic', 'hospital', 'medicine', 'surgery'];
-      const hasSpecialtyTerms = words.some(word => specialtyTerms.includes(word));
-      
-      return hasNameLikeWords && !hasSpecialtyTerms;
-    }
-    
-    return false;
-  };
 
-  // Function to detect if search term is likely a specialty
-  const isSpecialty = (searchTerm) => {
-    if (!searchTerm) return false;
-    
-    const term = searchTerm.toLowerCase().trim();
-    
-    // Common medical specialties
-    const specialties = [
-      'cardiologist', 'dermatologist', 'pediatrician', 'gynecologist', 'neurologist',
-      'orthopedic', 'psychiatrist', 'surgeon', 'physician', 'dentist', 'ent',
-      'ophthalmologist', 'urologist', 'oncologist', 'radiologist', 'pathologist',
-      'anesthesiologist', 'emergency', 'internal medicine', 'family medicine',
-      'cardiology', 'dermatology', 'pediatrics', 'gynecology', 'neurology',
-      'orthopedics', 'psychiatry', 'surgery', 'dentistry', 'ophthalmology'
-    ];
-    
-    return specialties.some(specialty => 
-      term.includes(specialty) || specialty.includes(term)
-    );
-  };
 
   // Determine relevant FAQ categories based on search context
   const determineRelevantCategories = (searchTerm, searchType, totalResults) => {
@@ -213,16 +560,27 @@ const SearchResults = () => {
             {doctors.length === 0 ? (
               <div className="text-center py-12 bg-white rounded-lg shadow-sm">
                 <div className="text-6xl mb-4">🔍</div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">No doctors found</h3>
-                <p className="text-gray-600 mb-6">
-                  Try different keywords or check spelling
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">No matching doctors found</h3>
+                <p className="text-gray-600 mb-4">
+                  No doctors match your search criteria "{searchTerm}". Our search is strict to ensure relevant results.
                 </p>
-                <button
-                  onClick={() => navigate('/')}
-                  className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
-                >
-                  Go Home
-                </button>
+                <p className="text-sm text-gray-500 mb-6">
+                  Try searching for specific specialties like "Cardiology" or doctor names like "Dr. John Doe"
+                </p>
+                <div className="flex gap-3 justify-center">
+                  <button
+                    onClick={() => navigate('/departments')}
+                    className="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700"
+                  >
+                    Browse Specialties
+                  </button>
+                  <button
+                    onClick={() => navigate('/')}
+                    className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
+                  >
+                    Go Home
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -231,8 +589,8 @@ const SearchResults = () => {
                     key={doctor._id || doctor.id}
                     name={doctor.user?.name || doctor.name}
                     specialty={doctor.specialty}
-                    price={doctor.consultationFee 
-                      ? `₹${doctor.consultationFee}/Consultation` 
+                    price={doctor.consultationFee
+                      ? `₹${doctor.consultationFee}/Consultation`
                       : 'Contact for fee'
                     }
                     image={doctor.profilePicture?.url || '/icons/doctor.png'}
@@ -240,6 +598,17 @@ const SearchResults = () => {
                     city={doctor.city}
                     slug={doctor.slug}
                     yearsOfExperience={doctor.yearsOfExperience}
+                    languages={doctor.languages || ['English']}
+                    ratingAverage={doctor.averageRating ||
+                                   doctor.rating ||
+                                   doctor.ratings ||
+                                   doctor.totalRating ||
+                                   doctor.average_rating ||
+                                   doctor.ratingAverage ||
+                                   (doctor.reviews && doctor.reviews.length > 0
+                                     ? (doctor.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / doctor.reviews.length)
+                                     : 0) ||
+                                   0}
                   />
                 ))}
               </div>

@@ -104,7 +104,17 @@ export default function DoctorsList() {
     const doctorImage = doctor.profileImage || doctor.user?.profileImage || '/icons/doctor.png';
     const city = doctor.address?.city || selectedLocation || 'India';
     const yearsOfExperience = doctor.yearsOfExperience || 0;
-    const ratingAverage = doctor.ratingAverage || 0;
+    // Comprehensive rating field mapping
+    const ratingAverage = doctor.averageRating ||
+                         doctor.rating ||
+                         doctor.ratings ||
+                         doctor.totalRating ||
+                         doctor.average_rating ||
+                         doctor.ratingAverage ||
+                         (doctor.reviews && doctor.reviews.length > 0
+                           ? (doctor.reviews.reduce((sum, review) => sum + (review.rating || 0), 0) / doctor.reviews.length)
+                           : 0) ||
+                         0;
     const languages = doctor.languages || [];
     
     return {
