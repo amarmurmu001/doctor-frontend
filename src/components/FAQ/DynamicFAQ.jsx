@@ -209,8 +209,8 @@ const DynamicFAQ = ({
       <div className={className ? "p-0" : "p-6"}>
         <div className="space-y-4">
           {filteredFAQs.map((faq, index) => (
-            <div
-              key={faq.id || index}
+            <div 
+              key={faq.id || index} 
               className={className && className.includes('border-none') ? "rounded-lg overflow-hidden" : className ? "rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200" : "border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow duration-200"}
             >
               <button
@@ -233,7 +233,7 @@ const DynamicFAQ = ({
                   </svg>
                 </div>
               </button>
-
+              
               {activeIndex === index && (
                 <div className={`px-6 py-4 ${className ? 'bg-white/5 border-t border-white/20' : 'bg-white border-t border-gray-200'}`}>
                   <p className={`leading-relaxed ${className ? 'text-white/90' : 'text-gray-700'}`}>
@@ -242,7 +242,7 @@ const DynamicFAQ = ({
                   {faq.keywords && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       {faq.keywords.slice(0, 3).map((keyword, keyIndex) => (
-                        <span
+                        <span 
                           key={keyIndex}
                           className={`px-2 py-1 text-xs rounded-full ${
                             className

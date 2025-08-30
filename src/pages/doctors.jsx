@@ -126,7 +126,7 @@ export default function Doctors() {
         <PageHeader />
         <div className="flex-1 px-3 sm:px-4 py-4 sm:py-6">
           <h2 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-center">Finding Doctors...</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 h-full overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:h-full overflow-y-auto">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
               <div
                 key={i}
@@ -197,7 +197,7 @@ export default function Doctors() {
 
         {/* 3-column grid layout - maintaining original card height */}
         {doctors.length > 0 && (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 h-full overflow-y-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 ">
             {doctors.map((doctor, index) => (
               <DoctorCard
                 key={doctor._id || doctor.id || `doctor-${index}`}
