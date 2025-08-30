@@ -7,6 +7,7 @@ const WhyChooseUs = ({
   buttonText = "Apply Now",
   backgroundColor = "bg-[#7551B2]",
   buttonColor = "bg-[#5154B5]",
+  onButtonClick = () => {},
 }) => {
   return (
     <div>
@@ -30,7 +31,7 @@ const WhyChooseUs = ({
         {/* Apply Now Button */}
         <div className="flex justify-end mb-1">
           <button
-            onClick={""}
+            onClick={onButtonClick}
             className={`${buttonColor} text-white px-6 border py-2 sm:px-8 sm:py-3 rounded-2xl font-semibold hover:opacity-90 transition-colors text-sm sm:text-base`}
           >
             {buttonText}

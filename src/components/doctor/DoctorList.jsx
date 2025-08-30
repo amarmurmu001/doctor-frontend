@@ -164,7 +164,7 @@ export default function DoctorsList() {
         </h2>
         
           <button
-            onClick={() => navigate('/doctor-mapped')}
+            onClick={() => navigate('/doctors')}
             className="text-sm text-blue-600 hover:text-blue-800 font-medium"
           >
             All

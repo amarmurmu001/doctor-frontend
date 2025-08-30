@@ -14,15 +14,15 @@ const HomeFAQ = () => {
         </div>
         
         {/* Custom styled FAQ for homepage */}
-        <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6">
-          <DynamicFAQ 
+        <div className="p-6">
+          <DynamicFAQ
             categories={['general', 'patients', 'doctors']}
             location={selectedLocation}
             specialty={null}
             maxItems={8}
             title=""
             searchable={false}
-            className="bg-transparent shadow-none"
+            className="bg-transparent shadow-none border-none"
           />
         </div>
       </div>

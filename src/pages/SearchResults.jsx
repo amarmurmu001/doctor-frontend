@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import DoctorCard from '../components/doctor/DoctorCard';
-import SearchBar from '../components/search/SearchBar';
+
 import useLocationStore from '../stores/locationStore';
 import PageSeo from '../components/seo/PageSeo';
 import DynamicFAQ from '../components/FAQ/DynamicFAQ';
@@ -63,6 +63,82 @@ const SearchResults = () => {
     if (!searchTerm) return;
     fetchSearchResults();
   }, [searchTerm, searchType, searchLocation, fetchSearchResults]);
+
+  // Function to detect if search term is likely a doctor name
+  const isDoctorName = (searchTerm) => {
+    if (!searchTerm) return false;
+    
+    const term = searchTerm.toLowerCase().trim();
+    
+    // Check if it starts with common doctor prefixes
+    const doctorPrefixes = ['dr.', 'dr ', 'doctor '];
+    if (doctorPrefixes.some(prefix => term.startsWith(prefix))) {
+      return true;
+    }
+    
+    // Check if it contains multiple words (likely a name)
+    const words = term.split(' ').filter(word => word.length > 0);
+    if (words.length >= 2) {
+      // Check if any word looks like a common first/last name pattern
+      const namePatterns = /^[a-z]+$/;
+      const hasNameLikeWords = words.some(word => namePatterns.test(word) && word.length >= 3);
+      
+      // Check if it doesn't contain common specialty terms
+      const specialtyTerms = ['cardiologist', 'dermatologist', 'pediatrician', 'gynecologist', 'neurologist', 
+                              'orthopedic', 'psychiatrist', 'surgeon', 'physician', 'specialist', 'therapy', 
+                              'treatment', 'clinic', 'hospital', 'medicine', 'surgery'];
+      const hasSpecialtyTerms = words.some(word => specialtyTerms.includes(word));
+      
+      return hasNameLikeWords && !hasSpecialtyTerms;
+    }
+    
+    return false;
+  };
+
+  // Function to detect if search term is likely a specialty
+  const isSpecialty = (searchTerm) => {
+    if (!searchTerm) return false;
+    
+    const term = searchTerm.toLowerCase().trim();
+    
+    // Common medical specialties
+    const specialties = [
+      'cardiologist', 'dermatologist', 'pediatrician', 'gynecologist', 'neurologist',
+      'orthopedic', 'psychiatrist', 'surgeon', 'physician', 'dentist', 'ent',
+      'ophthalmologist', 'urologist', 'oncologist', 'radiologist', 'pathologist',
+      'anesthesiologist', 'emergency', 'internal medicine', 'family medicine',
+      'cardiology', 'dermatology', 'pediatrics', 'gynecology', 'neurology',
+      'orthopedics', 'psychiatry', 'surgery', 'dentistry', 'ophthalmology'
+    ];
+    
+    return specialties.some(specialty => 
+      term.includes(specialty) || specialty.includes(term)
+    );
+  };
+
+  // Determine relevant FAQ categories based on search context
+  const determineRelevantCategories = (searchTerm, searchType, totalResults) => {
+    const categories = ['general', 'patients'];
+    
+    // Add appointments category if results found
+    if (totalResults > 0) {
+      categories.push('appointments');
+    }
+    
+    // Add doctors category for specialty searches or general doctor searches
+    if (searchType === 'specialty' || 
+        isSpecialty(searchTerm) || 
+        (searchTerm && searchTerm.toLowerCase().includes('doctor'))) {
+      categories.push('doctors');
+    }
+    
+    // Add support category for general searches with no results
+    if (totalResults === 0) {
+      categories.push('support');
+    }
+    
+    return categories;
+  };
 
 
 
@@ -170,20 +246,69 @@ const SearchResults = () => {
         )}
 
         {/* FAQ Section */}
-        {!loading && (
-          <div className="mt-12">
-            <DynamicFAQ 
-              categories={['general', 'patients', 'appointments']}
-              location={searchLocation}
-              specialty={searchTerm}
-              maxItems={6}
-              title="Frequently Asked Questions"
-              searchable={false}
-              className="shadow-lg"
-            />
+        
+      </div>
+      {!loading && (
+          <div className="mt-12 bg-[#7551B2] py-12 px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl font-bold text-white mb-2">
+                  {(() => {
+                    if (searchTerm && searchLocation) {
+                      if (isDoctorName(searchTerm)) {
+                        return `FAQs about finding Dr. ${searchTerm} in ${searchLocation}`;
+                      } else if (isSpecialty(searchTerm)) {
+                        return `FAQs about ${searchTerm} specialists in ${searchLocation}`;
+                      } else {
+                        return `FAQs about ${searchTerm} in ${searchLocation}`;
+                      }
+                    } else if (searchTerm) {
+                      if (isDoctorName(searchTerm)) {
+                        return `FAQs about finding Dr. ${searchTerm}`;
+                      } else if (isSpecialty(searchTerm)) {
+                        return `FAQs about ${searchTerm} specialists`;
+                      } else {
+                        return `FAQs about ${searchTerm}`;
+                      }
+                    } else if (searchLocation) {
+                      return `FAQs about doctors in ${searchLocation}`;
+                    } else {
+                      return "Frequently Asked Questions";
+                    }
+                  })()}
+                </h2>
+                <p className="text-white/80">
+                  {totalResults > 0 ? (() => {
+                    if (isDoctorName(searchTerm)) {
+                      return `Get answers to common questions about finding and booking appointments with doctors like ${searchTerm} ${searchLocation ? `in ${searchLocation}` : ''}`;
+                    } else if (isSpecialty(searchTerm)) {
+                      return `Get answers to common questions about finding ${searchTerm} specialists ${searchLocation ? `in ${searchLocation}` : ''}`;
+                    } else {
+                      return `Get answers to common questions about finding ${searchTerm || 'doctors'} ${searchLocation ? `in ${searchLocation}` : ''}`;
+                    }
+                  })() : "Get answers to common questions about finding doctors"}
+                </p>
+              </div>
+              <DynamicFAQ
+                categories={determineRelevantCategories(searchTerm, searchType, totalResults)}
+                location={searchLocation}
+                specialty={(searchType === 'specialty' || isSpecialty(searchTerm)) && !isDoctorName(searchTerm) ? searchTerm : null}
+                searchContext={{
+                  searchTerm,
+                  searchType: isDoctorName(searchTerm) ? 'doctor_name' : isSpecialty(searchTerm) ? 'specialty' : searchType,
+                  totalResults,
+                  hasResults: totalResults > 0,
+                  isDoctorName: isDoctorName(searchTerm),
+                  isSpecialty: isSpecialty(searchTerm)
+                }}
+                maxItems={totalResults > 0 ? 8 : 6}
+                title=""
+                searchable={false}
+                className="bg-transparent shadow-none border-none"
+              />
+            </div>
           </div>
         )}
-      </div>
       </div>
     </>
   );

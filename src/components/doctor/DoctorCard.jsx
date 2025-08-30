@@ -21,7 +21,7 @@ export default function DoctorCard({ name, specialty, price, image, doctorId, ci
   return (
     <div 
       onClick={handleClick}
-      className="min-w-[300px] flex items-center border-2 border-blue-500 rounded-xl bg-white overflow-hidden hover:shadow-lg transition cursor-pointer"
+      className="min-w-[300px] h-30 flex items-center border-2 border-blue-500 rounded-xl bg-white overflow-hidden hover:shadow-lg transition cursor-pointer"
     >
       {/* Left: Text */}
       <div className="flex-1 p-4">

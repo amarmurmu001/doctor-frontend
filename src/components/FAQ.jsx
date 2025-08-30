@@ -9,16 +9,16 @@ const FAQ = ({
   title = "Frequently Asked Questions"
 }) => {
   return (
-    <div className="bg-gray-50 py-12">
+    <div className="bg-[#7551B2] py-12">
       <div className="max-w-4xl mx-auto px-4">
-        <DynamicFAQ 
+        <DynamicFAQ
           categories={categories}
           location={location}
           specialty={specialty}
           maxItems={maxItems}
           title={title}
           searchable={true}
-          className="shadow-lg"
+          className="shadow-lg bg-transparent"
         />
       </div>
     </div>

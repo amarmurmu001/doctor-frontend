@@ -406,10 +406,14 @@ const DoctorProfile = () => {
 
         {/* FAQ Section for Doctor */}
         {doctor && (
-          <DoctorProfileFAQ 
-            doctor={doctor} 
-            className="px-4"
-          />
+          <div className="bg-[#7551B2] py-8">
+            <div className="max-w-4xl mx-auto px-4">
+              <DoctorProfileFAQ
+                doctor={doctor}
+                className="bg-transparent border-none"
+              />
+            </div>
+          </div>
         )}
 
         {user && user.role === 'doctor' && !doctorId && (

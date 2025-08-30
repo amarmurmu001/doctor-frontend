@@ -386,27 +386,97 @@ export const generateLocationFAQ = (location) => [
 ];
 
 // Specialty-specific FAQ templates  
-export const generateSpecialtyFAQ = (specialty) => [
-  {
-    question: `What conditions do ${specialty} doctors treat?`,
-    answer: `${specialty} doctors specialize in diagnosing and treating conditions related to their field. You can consult ${specialty} specialists for specialized care and treatment.`,
-    keywords: [specialty.toLowerCase(), "conditions", "treatment"]
-  },
-  {
-    question: `How do I choose the right ${specialty} doctor?`,
-    answer: `Consider the doctor's experience, patient reviews, consultation fees, and location. Doctar provides detailed profiles of ${specialty} doctors to help you make an informed choice.`,
-    keywords: ["choose doctor", specialty.toLowerCase(), "selection criteria"]
-  },
-  {
-    question: `Do ${specialty} doctors offer online consultations?`,
-    answer: `Many ${specialty} doctors offer online consultations through video calls, phone calls, or WhatsApp. Check individual doctor profiles for their consultation options.`,
-    keywords: ["online consultation", specialty.toLowerCase(), "teleconsultation"]
-  },
-  {
-    question: `What is the average consultation fee for ${specialty} doctors?`,
-    answer: `Consultation fees for ${specialty} doctors vary based on their experience and location. Doctar displays transparent pricing for each ${specialty} specialist.`,
-    keywords: ["consultation fee", "price", specialty.toLowerCase()]
-  }
-];
+export const generateSpecialtyFAQ = (specialty) => {
+  const specialtyLower = specialty.toLowerCase();
+  
+  // Base FAQs for all specialties
+  const baseFAQs = [
+    {
+      question: `What conditions do ${specialty} doctors treat?`,
+      answer: `${specialty} doctors specialize in diagnosing and treating conditions related to their field. You can consult ${specialty} specialists for specialized care and treatment.`,
+      keywords: [specialtyLower, "conditions", "treatment"]
+    },
+    {
+      question: `How do I choose the right ${specialty} doctor?`,
+      answer: `Consider the doctor's experience, patient reviews, consultation fees, and location. Doctar provides detailed profiles of ${specialty} doctors to help you make an informed choice.`,
+      keywords: ["choose doctor", specialtyLower, "selection criteria"]
+    },
+    {
+      question: `What is the consultation fee for ${specialty} doctors?`,
+      answer: `Consultation fees for ${specialty} doctors vary based on their experience, location, and clinic facilities. You can view exact consultation fees on each doctor's profile before booking.`,
+      keywords: ["consultation fee", specialtyLower, "cost", "price"]
+    },
+    {
+      question: `Can I book same-day appointments with ${specialty} doctors?`,
+      answer: `Yes, many ${specialty} doctors offer same-day appointments based on availability. Check their profile for real-time slot availability and book instantly.`,
+      keywords: ["same day appointment", specialtyLower, "urgent", "immediate"]
+    }
+  ];
 
-export default faqCategories;
+  // Specialty-specific FAQs
+  const specialtySpecificFAQs = getSpecialtySpecificFAQs(specialty);
+  
+  return [...baseFAQs, ...specialtySpecificFAQs];
+};
+
+// Specialty-specific FAQ content
+const getSpecialtySpecificFAQs = (specialty) => {
+  const specialtyFAQs = {
+    'Cardiologist': [
+      {
+        question: `When should I consult a Cardiologist?`,
+        answer: `Consult a cardiologist for chest pain, shortness of breath, irregular heartbeat, high blood pressure, family history of heart disease, or if your general physician refers you for cardiac evaluation.`,
+        keywords: ["cardiologist", "heart problems", "chest pain", "when to consult"]
+      },
+      {
+        question: `What tests do Cardiologists perform?`,
+        answer: `Cardiologists perform ECG, echocardiogram, stress tests, angiography, and other cardiac diagnostic tests to evaluate heart health and diagnose cardiovascular conditions.`,
+        keywords: ["cardiologist", "heart tests", "ECG", "echocardiogram"]
+      }
+    ],
+    'Dermatologist': [
+      {
+        question: `When should I see a Dermatologist?`,
+        answer: `See a dermatologist for persistent skin problems, acne, hair loss, unusual moles, skin allergies, eczema, or any concerning changes in your skin.`,
+        keywords: ["dermatologist", "skin problems", "acne", "when to consult"]
+      },
+      {
+        question: `Do Dermatologists treat hair problems?`,
+        answer: `Yes, dermatologists treat various hair and scalp conditions including hair loss, dandruff, scalp infections, and other hair-related disorders.`,
+        keywords: ["dermatologist", "hair problems", "hair loss", "scalp"]
+      }
+    ],
+    'Pediatrician': [
+      {
+        question: `At what age should I take my child to a Pediatrician?`,
+        answer: `Children should see a pediatrician from birth through adolescence (usually up to 18 years). Regular check-ups are important for growth monitoring and vaccinations.`,
+        keywords: ["pediatrician", "child age", "when to visit", "children"]
+      },
+      {
+        question: `What vaccinations does a Pediatrician provide?`,
+        answer: `Pediatricians provide all childhood vaccinations including BCG, DPT, Polio, MMR, Hepatitis B, and other vaccines as per the national immunization schedule.`,
+        keywords: ["pediatrician", "vaccinations", "immunization", "children"]
+      }
+    ],
+    'Gynecologist': [
+      {
+        question: `When should women visit a Gynecologist?`,
+        answer: `Women should visit a gynecologist for regular check-ups, menstrual problems, pregnancy care, family planning, menopause management, and any reproductive health concerns.`,
+        keywords: ["gynecologist", "women health", "when to visit", "reproductive health"]
+      },
+      {
+        question: `Do Gynecologists provide pregnancy care?`,
+        answer: `Yes, gynecologists provide comprehensive pregnancy care including prenatal check-ups, delivery, and postnatal care to ensure healthy pregnancy and childbirth.`,
+        keywords: ["gynecologist", "pregnancy care", "prenatal", "delivery"]
+      }
+    ]
+  };
+
+  return specialtyFAQs[specialty] || [
+    {
+      question: `What should I bring to my ${specialty} appointment?`,
+      answer: `Bring your medical history, current medications list, insurance details, and any relevant test reports or previous consultation records for your ${specialty} appointment.`,
+      keywords: [specialty.toLowerCase(), "appointment preparation", "what to bring"]
+    }
+  ];
+};

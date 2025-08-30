@@ -162,10 +162,7 @@ export default function SearchBar({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // ✅ Get icon for suggestion type
-  const getSuggestionIcon = (type) => {
-    return type === 'doctor' ? '👨‍⚕️' : '🏥';
-  };
+  // ✅ Suggestion icons removed - cleaner design
 
   return (
     <div className="flex items-center bg-white rounded-full w-full max-w-md shadow-sm hover:shadow-md transition-shadow duration-200">
@@ -215,17 +212,16 @@ export default function SearchBar({
                 type="button"
                 onClick={() => handleSelect(suggestion)}
                 onMouseEnter={() => setHighlightedIndex(index)}
-                className={`w-full text-left px-4 py-3 hover:bg-purple-50 transition-colors duration-150 border-b border-gray-100 last:border-b-0 flex items-center ${
-                  highlightedIndex === index ? 'bg-purple-600 text-white' : 'text-gray-700'
+                className={`group w-full text-left px-4 py-3 hover:bg-[#7551B2] hover:text-white transition-colors duration-150 border-b border-gray-100 last:border-b-0 ${
+                  highlightedIndex === index ? 'bg-[#7551B2] text-white' : 'text-gray-700'
                 }`}
               >
-                <span className="mr-3 text-lg">{getSuggestionIcon(suggestion.type)}</span>
                 <div className="flex-1">
-                  <div className={`font-medium ${highlightedIndex === index ? 'text-white' : 'text-gray-900'}`}>
+                  <div className={`font-medium ${highlightedIndex === index ? 'text-white' : 'text-gray-900'} group-hover:text-white`}>
                     {suggestion.text}
                   </div>
                   {suggestion.specialty && (
-                    <div className={`text-xs ${highlightedIndex === index ? 'text-purple-200' : 'text-gray-500'}`}>
+                    <div className={`text-xs ${highlightedIndex === index ? 'text-purple-100' : 'text-gray-500'} group-hover:text-purple-100`}>
                       {suggestion.specialty}
                     </div>
                   )}

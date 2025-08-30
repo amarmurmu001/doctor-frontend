@@ -7,37 +7,37 @@ const queries = [
     id: 1,
     label: "Heart",
     image: "/icons/heart.png",
-    path: "/x?specialty=cardiology"
+    path: "/sub-departments?specialty=cardiology"
   },
   {
     id: 2,
     label: "Lungs", 
     image: "/icons/lungs.png",
-    path: "/x?specialty=pulmonology"
+    path: "/sub-departments?specialty=pulmonology"
   },
   {
     id: 3,
     label: "Kidney",
     image: "/icons/kidney.png", 
-    path: "/x?specialty=nephrology"
+    path: "/sub-departments?specialty=nephrology"
   },
   {
     id: 4,
     label: "Liver",
     image: "/icons/liver.png",
-    path: "/x?specialty=hepatology"
+    path: "/sub-departments?specialty=hepatology"
   },
   {
     id: 5,
     label: "Brain",
     image: "/icons/doctor.png", // Using doctor icon as placeholder for brain
-    path: "/x?specialty=neurology"
+    path: "/sub-departments?specialty=neurology"
   },
   {
     id: 6,
     label: "Bones",
     image: "/icons/medicine-bottle.png", // Using medicine bottle as placeholder for bones
-    path: "/x?specialty=orthopedics"
+    path: "/sub-departments?specialty=orthopedics"
   }
 ];
 
@@ -57,7 +57,7 @@ export default function QueryGrid() {
             Query
           </h2>
           <button
-            onClick={() => navigate('/categories')}
+            onClick={() => navigate('/departments')}
             className="text-sm text-purple-600 font-medium hover:text-purple-700 transition-colors"
           >
             All
@@ -80,16 +80,7 @@ export default function QueryGrid() {
         </div>
       </div>
 
-      {/* Hide scrollbar */}
-      <style jsx>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
+      {/* Hide scrollbar - using CSS classes in index.css */}
     </section>
   );
 }

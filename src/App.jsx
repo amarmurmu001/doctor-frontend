@@ -10,9 +10,9 @@ import ErrorBoundary from "./components/layout/ErrorBoundary";
 const Home = lazy(() => import("./pages/Home"));
 import useLocationStore from "./stores/locationStore";
 import Nav from "./components/layout/Nav";
-import DoctorType from "./pages/DoctorType";
-import Page4 from "./pages/doctors";
-import Page3 from "./pages/Page3";
+import SubDepartments from "./pages/SubDepartments";
+import Doctors from "./pages/doctors";
+import Departments from "./pages/Departments";
 import DoctorProfile from "./pages/DoctorProfile";
 import UserProfile from "./pages/UserProfile";
 import DoctorEdit from "./pages/DoctorEdit";
@@ -57,7 +57,6 @@ import AdminNews from "./pages/admin/AdminNews";
 import AdminBlogs from "./pages/admin/AdminBlogs";
 import SitemapGenerator from "./components/admin/SitemapGenerator";
 import ScrollToTop from "./utils/scrollOnTop";
-import Doctors from "./pages/doctors";
 // import NewsManagement from './pages/admin/NewsManagement'
 // import BlogsManagement from './pages/admin/BlogsManagement'
 
@@ -87,9 +86,9 @@ function AppShell() {
         <Suspense fallback={<Loader />}>
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/x" element={<DoctorType />} />
+            <Route path="/sub-departments" element={<SubDepartments />} />
             <Route path="/doctors" element={<Doctors />} />
-            <Route path="/categories" element={<Page3 />} />
+            <Route path="/departments" element={<Departments />} />
             <Route path="/Doctor-profile" element={<DoctorProfile />} />
             <Route
               path="/Doctor-profile/:doctorId"

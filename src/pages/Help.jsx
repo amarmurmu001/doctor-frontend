@@ -1,6 +1,7 @@
 import React from 'react';
 import PageSeo from '../components/seo/PageSeo';
 import Footer from '../components/layout/Footer';
+import DynamicFAQ from '../components/FAQ/DynamicFAQ';
 
 const Help = () => {
   return (
@@ -20,71 +21,19 @@ const Help = () => {
           step-by-step guides, and troubleshooting tips to help you make the most of our platform.
         </p>
 
-        <h2 className="text-2xl font-semibold mb-4">Frequently Asked Questions</h2>
-
-        <h3 className="text-xl font-semibold mb-3">Getting Started</h3>
-        
-        <h4 className="text-lg font-medium mb-2">What is DOCTAR?</h4>
-        <p className="mb-4">
-          DOCTAR is a digital healthcare platform that connects patients directly with verified 
-          doctors, clinics, and hospitals across India. We provide free appointment booking and 
-          multiple ways to connect with healthcare providers.
-        </p>
-
-        <h4 className="text-lg font-medium mb-2">How do I search for doctors?</h4>
-        <p className="mb-4">
-          You can search for doctors by specialty, location, or name using our search feature. 
-          Simply enter your requirements in the search bar and browse through verified doctor profiles.
-        </p>
-
-        <h4 className="text-lg font-medium mb-2">Is booking an appointment really free?</h4>
-        <p className="mb-6">
-          Yes, booking appointments through DOCTAR is completely free. You only pay the consultation 
-          fee directly to the healthcare provider.
-        </p>
-
-        <h3 className="text-xl font-semibold mb-3">For Patients</h3>
-        
-        <h4 className="text-lg font-medium mb-2">How do I book an appointment?</h4>
-        <ol className="list-decimal pl-6 mb-4">
-          <li>Search for a doctor or healthcare facility</li>
-          <li>View their profile and available time slots</li>
-          <li>Choose your preferred time</li>
-          <li>Contact the provider directly through phone, WhatsApp, or email</li>
-          <li>Confirm your appointment details</li>
-        </ol>
-
-        <h4 className="text-lg font-medium mb-2">What information do I need to provide?</h4>
-        <p className="mb-4">
-          When booking an appointment, you may need to provide your name, contact information, 
-          and a brief description of your health concern. Specific requirements vary by provider.
-        </p>
-
-        <h4 className="text-lg font-medium mb-2">Can I cancel or reschedule my appointment?</h4>
-        <p className="mb-6">
-          Yes, you can cancel or reschedule by contacting the healthcare provider directly through 
-          the communication method you used for booking.
-        </p>
-
-        <h3 className="text-xl font-semibold mb-3">For Healthcare Providers</h3>
-        
-        <h4 className="text-lg font-medium mb-2">How can I join DOCTAR?</h4>
-        <p className="mb-4">
-          Healthcare providers can join DOCTAR by registering on our platform and completing 
-          the verification process. Contact our team for assistance with onboarding.
-        </p>
-
-        <h4 className="text-lg font-medium mb-2">How do I update my profile information?</h4>
-        <p className="mb-4">
-          Once registered, you can log into your provider account to update your profile, 
-          add services, modify timings, and manage your information.
-        </p>
-
-        <h4 className="text-lg font-medium mb-2">How do patients contact me?</h4>
-        <p className="mb-6">
-          Patients can reach you through the contact methods you specify in your profile - 
-          phone, WhatsApp, email, or direct clinic visits.
-        </p>
+        {/* Dynamic FAQ Section */}
+        <div className="mb-12">
+          <DynamicFAQ
+            categories={['general', 'patients', 'doctors', 'appointments', 'support']}
+            location={null}
+            specialty={null}
+            searchContext={null}
+            maxItems={20}
+            title="Frequently Asked Questions"
+            searchable={true}
+            className="bg-white rounded-lg shadow-sm border"
+          />
+        </div>
 
         <h2 className="text-2xl font-semibold mb-4">Technical Support</h2>
         
