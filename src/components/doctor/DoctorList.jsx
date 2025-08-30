@@ -29,7 +29,7 @@ export default function DoctorsList() {
 
       // Improved API call with better error handling and state-to-city mapping
       const locationCities = expandLocationToCities(selectedLocation);
-      console.log('🔍 Searching for doctors in cities:', locationCities);
+      
       
       // If location expands to multiple cities, search for the first one
       // (Backend will handle state-to-city mapping as well)
@@ -41,7 +41,7 @@ export default function DoctorsList() {
       });
       
       const url = `${API_BASE_URL}/api/doctors?${params}`;
-      console.log('🏥 Fetching doctors for:', selectedLocation, 'URL:', url);
+     
       
       const response = await fetch(url);
       
@@ -99,6 +99,9 @@ export default function DoctorsList() {
     const consultationFee = doctor.consultationFee || doctor.fee || 0;
     const doctorImage = doctor.profileImage || doctor.user?.profileImage || '/icons/doctor.png';
     const city = doctor.address?.city || selectedLocation || 'India';
+    const yearsOfExperience = doctor.yearsOfExperience || 0;
+    const ratingAverage = doctor.ratingAverage || 0;
+    const languages = doctor.languages || [];
     
     return {
       name: userName,
@@ -107,6 +110,9 @@ export default function DoctorsList() {
       image: doctorImage,
       doctorId: doctor._id || doctor.id,
       city: city,
+      yearsOfExperience: yearsOfExperience,
+      ratingAverage: ratingAverage,
+      languages: languages,
     };
   }
 

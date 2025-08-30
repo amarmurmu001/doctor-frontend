@@ -1,6 +1,15 @@
 import { useNavigate } from 'react-router-dom';
 
-export default function DoctorCard({ name, specialty, price, image, doctorId, city = 'india' }) {
+export default function DoctorCard({
+  name,
+  specialty,
+  languages,
+  yearsOfExperience,
+  ratingAverage,
+  image,
+  doctorId,
+  city = 'india'
+}) {
   const navigate = useNavigate();
 
   // Generate SEO-friendly URL
@@ -19,27 +28,39 @@ export default function DoctorCard({ name, specialty, price, image, doctorId, ci
   }
 
   return (
-    <div 
+    <div
       onClick={handleClick}
-      className="min-w-[300px] h-30 flex items-center border-2 border-blue-500 rounded-xl bg-white overflow-hidden hover:shadow-lg transition cursor-pointer"
+      className="min-w-[300px] p-2 flex items-center border-2 border-blue-500 rounded-xl bg-white overflow-hidden hover:shadow-lg transition cursor-pointer"
     >
-      {/* Left: Text */}
-      <div className="flex-1 p-4">
-        <h3 className="font-semibold text-gray-800">{name}</h3>
-        <p className="text-sm text-gray-500">{specialty}</p>
-        <p className="text-sm font-medium text-gray-700 mt-2">{price}</p>
-      </div>
-
       {/* Right: Image */}
-      <div className="w-24 h-24 flex-shrink-0">
+      <div className="w-28 h-28 flex-shrink-0">
         <img
           src={image}
           alt={name}
           className="w-full h-full object-cover"
         />
       </div>
+
+      {/* Left: Text */}
+      <div className="flex-1 ">
+        <h3 className="font-semibold text-gray-800 text-lg">{name}</h3>
+        <div className="flex items-center gap-2 mt-1">
+          <img src="/icons/real-icon.png" alt="heart" className="w-4 h-4" />
+          <span className="text-sm text-gray-700">{specialty}</span>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-600 ">
+          <span>🗣️</span>
+          <span >{languages?.join(', ')}</span>
+        </div>
+        <div className="flex items-center gap-2 mt-3">
+          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-semibold">
+            {yearsOfExperience}+ years Experience
+          </span>
+          <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-semibold">
+            {ratingAverage}/5 Rating
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
-
-

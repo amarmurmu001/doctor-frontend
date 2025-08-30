@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import useAuthStore from '../stores/useAuthStore';
 import ReviewTab from '../components/ReviewTab';
+import ContactTab from '../components/ContactTab';
 import SeoDoctorProfile from '../components/seo/SeoDoctorProfile';
 import DoctorProfileFAQ from '../components/FAQ/DoctorProfileFAQ';
 
@@ -388,86 +389,7 @@ const DoctorProfile = () => {
           )}
 
           {activeTab === 'Contact' && (
-            <div className="space-y-6">
-              {/* Location Section */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-800">Location</h3>
-                
-                
-                {/* Map Placeholder */}
-                <div className="bg-blue-900 rounded-lg h-48 flex items-center justify-center mb-4">
-                  <div className="text-center text-white">
-                    <div className="text-4xl mb-2">📍</div>
-                    <p className="text-sm">Map View</p>
-                    <p className="text-xs opacity-75">Clinic Location</p>
-                  </div>
-                </div>
-              </div>
-              <div className="bg-purple-200 rounded-lg p-3 text-sm text-gray-600 mb-3">
-                  <p>🏥 {doctor?.clinicName || 'Medical Clinic'}</p>
-                  <p>📍 {doctor?.address?.line1 || 'Near Main Market'}, {doctor?.address?.city || doctor?.city || 'Deoghar'}, {doctor?.address?.state || 'Jharkhand'}</p>
-                </div>
-
-              {/* Hospitals Section */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-800">Hospitals</h3>
-                <div className="space-y-2">
-                  <div className="bg-purple-200 rounded-lg p-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-800">📞 +91 98765 43210</p>
-                      <p className="text-sm text-gray-600">Primary Contact</p>
-                    </div>
-                  </div>
-                  <div className="bg-purple-200 rounded-lg p-3 flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-800">📞 +91 98765 43211</p>
-                      <p className="text-sm text-gray-600">Secondary Contact</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Online Section */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-800">Online</h3>
-                <div className="bg-purple-200 rounded-lg p-3 flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-gray-800">💬 {doctor?.user?.email || 'support@doctar.com'}</p>
-                    <p className="text-sm text-gray-600">Email Support</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Timing Section */}
-              <div>
-                <h3 className="text-lg font-semibold mb-3 text-gray-800">Timing</h3>
-                <div className="space-y-2">
-                  {/* Generate time slots like in the image */}
-                  {[
-                    { date: '14', day: 'FRI', time: '7:00 AM to 10:00 PM' },
-                    { date: '15', day: 'SAT', time: '8:00 PM to 10:00 PM' },
-                    { date: '16', day: 'SUN', time: '7:00 AM to 8:30 PM' },
-                    { date: '17', day: 'MON', time: '7:00 AM to 8:30 PM' },
-                    { date: '18', day: 'TUE', time: '7:00 AM to 8:30 PM' },
-                    { date: '19', day: 'WED', time: '7:00 AM to 8:30 PM' },
-                    { date: '20', day: 'THU', time: '7:00 AM to 8:30 PM' }
-                  ].map((slot, index) => (
-                    <div key={index} className="bg-purple-200 rounded-lg p-3 flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="bg-[#7551B2] text-white rounded-lg p-2 text-center min-w-[40px]">
-                          <div className="text-lg font-bold">{slot.date}</div>
-                          <div className="text-xs">{slot.day}</div>
-                        </div>
-                        <div>
-                          <p className="font-medium text-gray-800">{slot.time}</p>
-                          <p className="text-sm text-gray-600">Available</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
+            <ContactTab doctor={doctor} />
           )}
         </div>
         {user && user.role === 'doctor' && !doctorId && (

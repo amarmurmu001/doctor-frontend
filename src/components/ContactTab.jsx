@@ -23,7 +23,7 @@ const ContactTab = ({ doctor }) => {
     new window.google.maps.Marker({
       position: { lat, lng },
       map: map,
-      title: doctor.clinicName || `Dr. ${doctor.user?.name}'s Clinic`,
+      title: doctor.clinicName || doctor.user?.clinicName || `Dr. ${doctor.user?.name}'s Clinic`,
       icon: {
         url: 'data:image/svg+xml;base64,' + btoa(`
           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="#ef4444">
@@ -137,12 +137,16 @@ const ContactTab = ({ doctor }) => {
           <div className="flex items-center space-x-6">
             <div className="text-center">
               <p className="text-xs text-gray-500">Distance</p>
-              <p className="text-sm font-semibold">8 Km</p>
+              <p className="text-sm font-semibold">
+                {doctor?.distance || '8 Km'}
+              </p>
             </div>
             <div className="w-px h-8 bg-gray-300"></div>
             <div className="text-center">
               <p className="text-xs text-gray-500">Time</p>
-              <p className="text-sm font-semibold">15 Mins</p>
+              <p className="text-sm font-semibold">
+                {doctor?.estimatedTime || '15 Mins'}
+              </p>
             </div>
           </div>
           
@@ -159,7 +163,9 @@ const ContactTab = ({ doctor }) => {
       {/* Reception Heading with Appointment */}
       <div className="flex justify-between items-center">
         <h3 className="text-lg font-semibold">Reception</h3>
-        <span className="text-sm text-gray-500">(Appointment 8 AM to 10 PM)</span>
+        <span className="text-sm text-gray-500">
+          (Appointment {doctor?.appointmentHours || '8 AM to 10 PM'})
+        </span>
       </div>
       
       {/* Reception Section */}
@@ -298,7 +304,10 @@ const ContactTab = ({ doctor }) => {
                     </div>
                   ) : (
                     <p className="text-sm text-gray-500 font-medium">
-                      {isToday ? 'No slots available today' : '7:00 AM to 9:30 PM'}
+                      {isToday
+                        ? (doctor?.noSlotsMessage || 'No slots available today')
+                        : (doctor?.defaultTiming || '7:00 AM to 9:30 PM')
+                      }
                     </p>
                   )}
                 </div>
