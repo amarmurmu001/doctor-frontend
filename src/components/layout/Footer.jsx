@@ -59,7 +59,7 @@ const Footer = () => {
   return (
     <footer className="bg-gradient-to-b from-[#2c2548] to-[#1a1a2e] text-white py-12">
       <div className="max-w-7xl mx-auto px-4">
-        <div className="grid text-center grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
           {footerSections.map((section, index) => (
             <div key={index} className="space-y-4">
               <h3 className="font-semibold text-lg text-white">
