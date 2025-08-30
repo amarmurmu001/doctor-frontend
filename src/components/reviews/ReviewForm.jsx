@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { submitReview } from '../../services/reviewAPI';
+import StarRating from '../ui/StarRating';
 
 const ReviewForm = ({ doctorId, onReviewSubmitted, onCancel }) => {
   const [rating, setRating] = useState(5);
@@ -50,22 +51,12 @@ const ReviewForm = ({ doctorId, onReviewSubmitted, onCancel }) => {
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">Rating</label>
-          <div className="flex gap-2">
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() => setRating(star)}
-                className="focus:outline-none"
-              >
-                <img 
-                  className="w-6 h-6" 
-                  src={star <= rating ? "/icons/icon.png" : "/icons/star-empty.png"} 
-                  alt={`${star} star`} 
-                />
-              </button>
-            ))}
-          </div>
+          <StarRating
+            rating={rating}
+            size="md"
+            interactive={true}
+            onRatingChange={setRating}
+          />
         </div>
         
         <div className="mb-4">

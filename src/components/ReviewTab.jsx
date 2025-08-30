@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchDoctorReviews } from '../services/reviewAPI';
 import ReviewForm from './reviews/ReviewForm';
+import StarRating from './ui/StarRating';
 
 const ReviewTab = ({ doctorId }) => {
  
@@ -72,21 +73,10 @@ const ReviewTab = ({ doctorId }) => {
     loadReviews(); // Reload reviews after submission
   };
   
-  // Render star rating
+  // Render star rating using StarRating component
   const renderStars = (rating) => {
     console.log('Rendering stars for rating:', rating);
-    return (
-      <div className="flex gap-1">
-        {[1, 2, 3, 4, 5].map((star) => (
-          <img 
-            key={star} 
-            className="w-4 h-4" 
-            src={star <= rating ? "/icons/star-filled.png" : "/icons/star-empty.png"} 
-            alt="star" 
-          />
-        ))}
-      </div>
-    );
+    return <StarRating rating={rating} size="sm" />;
   };
 
   // Loading state

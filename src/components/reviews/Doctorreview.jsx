@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ReviewModal from './ReviewModal';
+import StarRating from '../ui/StarRating';
 
 export default function() {
   const [showModal, setShowModal] = useState(false);
@@ -76,9 +77,9 @@ export default function() {
       </div>
     
       {[
-        { id: "doctor1", name: "Sunita Jain", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry." },
-        { id: "doctor2", name: "Aryan", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry." },
-        { id: "doctor3", name: "Abhishek Sharma", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry." }
+        { id: "doctor1", name: "Sunita Jain", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", rating: 4 },
+        { id: "doctor2", name: "Aryan", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", rating: 5 },
+        { id: "doctor3", name: "Abhishek Sharma", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", rating: 3 }
       ].map((doctor, i) => (
         <div
           key={i}
@@ -91,9 +92,7 @@ export default function() {
             <div className="flex justify-between items-center">
               <h2 className="capitalize font-medium text-xs sm:text-sm truncate">{doctor.name}</h2>
               <div className="flex gap-1 flex-shrink-0">
-                {[1, 2, 3, 4, 5].map((index) => (
-                  <img key={index} className="w-3 h-3 sm:w-[13.3px] sm:h-[12.6px]" src="/icons/icon.png" alt="star" />
-                ))}
+                <StarRating rating={doctor.rating || 5} size="xs" />
               </div>
             </div>
             <p className="text-[7px] sm:text-[8.31px] text-gray-600 line-clamp-2 leading-tight">{doctor.text}</p>
