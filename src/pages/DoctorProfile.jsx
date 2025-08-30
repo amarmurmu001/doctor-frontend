@@ -209,7 +209,7 @@ const DoctorProfile = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`relative z-10 px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                  className={`relative z-5 px-6 py-2 rounded-full font-medium transition-all duration-300 ${
                     activeTab === tab
                       ? 'text-white'
                       : 'text-gray-600 hover:text-gray-800'
