@@ -8,12 +8,12 @@ import DoctorProfileFAQ from '../components/FAQ/DoctorProfileFAQ';
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
-  const { doctorId, location, doctorSlug } = useParams(); // Add new SEO route params
+  const { doctorId, location, doctorSlug } = useParams();
   const user = useAuthStore(s => s.user);
   const logout = useAuthStore(s => s.logout);
   const [activeTab, setActiveTab] = useState('About');
   const [doctor, setDoctor] = useState(null);
-  const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug); // Handle both params
+  const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -24,15 +24,12 @@ const DoctorProfile = () => {
         const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
         
         if (doctorId || doctorSlug) {
-          // Viewing another doctor's profile - use provided doctorId or doctorSlug
           console.log('Loading other doctor profile:', doctorId || doctorSlug);
           
           let res;
           if (doctorSlug && !doctorId) {
-            // Use slug endpoint for SEO URLs
             res = await fetch(`${API_BASE_URL}/api/doctors/slug/${doctorSlug}`);
           } else {
-            // Use ID endpoint for legacy URLs
             res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`);
           }
           
@@ -42,21 +39,17 @@ const DoctorProfile = () => {
           setDoctor(doctorData);
           setActualDoctorId(doctorData._id || doctorId || doctorSlug);
           
-          // Update URL to SEO-friendly format if needed
           const canonicalUrl = getCanonicalUrl(doctorData);
           if (canonicalUrl && window.location.pathname !== canonicalUrl.replace('https://www.doctar.in', '')) {
             window.history.replaceState({}, '', canonicalUrl.replace('https://www.doctar.in', ''));
           }
           
-          // Use location from URL params if available
           if (location && doctorData.city !== location) {
             console.log('Location mismatch - URL:', location, 'Doctor city:', doctorData.city);
           }
         } else if (user && user.role === 'doctor') {
-          // Viewing own profile - get doctor profile by user ID
           console.log('Loading own doctor profile for user:', user.id);
           
-          // Get auth token
           const token = localStorage.getItem('token');
           const res = await fetch(`${API_BASE_URL}/api/doctors/me/doctor-profile`, {
             headers: {
@@ -75,7 +68,7 @@ const DoctorProfile = () => {
             const response = await res.json();
             const doctorData = response.success ? response.data : response;
             setDoctor(doctorData);
-            setActualDoctorId(doctorData._id); // Set the actual doctor ID from the response
+            setActualDoctorId(doctorData._id);
             console.log('Own doctor profile loaded:', doctorData);
           }
         } else {
@@ -92,7 +85,6 @@ const DoctorProfile = () => {
     loadDoctor();
   }, [user, doctorId, doctorSlug, location]);
 
-  // ✅ Generate disease-specific keywords based on specialization
   const generateDiseaseKeywords = (doctor) => {
     const specialtyKeywords = {
       'Cardiologist': 'heart disease, cardiac problems, hypertension, chest pain, heart attack prevention',
@@ -110,7 +102,6 @@ const DoctorProfile = () => {
     return specialtyKeywords[doctor?.specialty] || `${doctor?.specialty?.toLowerCase()} treatment, consultation, medical care`;
   };
 
-  // ✅ Generate canonical URL for SEO
   const getCanonicalUrl = (doctor) => {
     const doctorLocation = doctor.city || 'india';
     const slug = `${doctor.user?.name?.toLowerCase().replace(/\s+/g, '-')}-${doctor.specialty?.toLowerCase().replace(/\s+/g, '-')}`;
@@ -134,7 +125,7 @@ const DoctorProfile = () => {
 
   return (
     <>
-      {/* ✅ Dynamic SEO Component */}
+      {/* Dynamic SEO Component */}
       {doctor && (
         <SeoDoctorProfile
           fullName={doctor.user?.name || 'Doctor'}
@@ -153,7 +144,8 @@ const DoctorProfile = () => {
         />
       )}
 
-      <div className="min-h-screen bg-white">
+      {/* Mobile Layout (default - stacked vertically) */}
+      <div className="min-h-screen bg-white md:hidden">
         {/* Purple Header Section */}
         <div className="bg-[#7551b3] relative h-96">
           {/* Top Navigation */}
@@ -201,7 +193,7 @@ const DoctorProfile = () => {
           </div>
         </div>
 
-        {/* Pill-shaped Tab Navigation */}
+        {/* Mobile Tab Navigation */}
         <div className="bg-white">
           <div className="flex justify-center pt-5 pb-6">
             <div className="bg-gray-100 rounded-full p-1 flex relative">
@@ -209,7 +201,7 @@ const DoctorProfile = () => {
                 <button
                   key={tab}
                   onClick={() => setActiveTab(tab)}
-                  className={`relative z-5 px-6 py-2 rounded-full font-medium transition-all duration-300 ${
+                  className={`relative z-10 px-6 py-2 rounded-full font-medium transition-all duration-300 ${
                     activeTab === tab
                       ? 'text-white'
                       : 'text-gray-600 hover:text-gray-800'
@@ -218,7 +210,6 @@ const DoctorProfile = () => {
                   {tab}
                 </button>
               ))}
-              {/* Animated Pill Background */}
               <div 
                 className={`absolute top-1 bottom-1 rounded-full bg-[#7551b3] transition-all duration-300 ease-in-out ${
                   activeTab === 'About' ? 'left-1 w-24' :
@@ -230,7 +221,7 @@ const DoctorProfile = () => {
           </div>
         </div>
 
-        {/* Tab Content */}
+        {/* Mobile Tab Content */}
         <div className="p-4">
           {error && (
             <div className="mb-4 p-3 bg-red-50 text-red-600 rounded-md">
@@ -266,7 +257,6 @@ const DoctorProfile = () => {
                       </div>
                     ))
                   ) : (
-                    // Default images if no gallery
                     Array.from({ length: 3 }).map((_, index) => (
                       <div key={index} className="w-48 h-32 bg-gray-200 rounded-lg flex-shrink-0">
                         <img 
@@ -384,14 +374,14 @@ const DoctorProfile = () => {
           )}
 
           {activeTab === 'Review' && (
-            /* Pass the actualDoctorId to ReviewTab - this is the key fix! */
             <ReviewTab doctorId={actualDoctorId} />
           )}
 
           {activeTab === 'Contact' && (
             <ContactTab doctor={doctor} />
-        )}
+          )}
         </div>
+
         {user && user.role === 'doctor' && !doctorId && (
           <div className="p-4">
             <button
@@ -402,21 +392,279 @@ const DoctorProfile = () => {
             </button>
           </div>
         )}
+      </div>
 
-        {/* FAQ Section for Doctor */}
-        {doctor && (
-          <div className="bg-[#7551B2] py-8">
-            <div className="max-w-4xl mx-auto px-4">
-              <DoctorProfileFAQ
-                doctor={doctor}
-                className="bg-transparent border-none"
-              />
+      {/* Desktop Layout (md and up) */}
+      <div className="hidden md:block bg-purple-50 min-h-screen ">
+        
+
+        {/* Main Content Container */}
+        <div className="max-w-7xl mx-auto px-4 py-10 flex gap-8">
+          {/* Left Sidebar - Profile Card */}
+          <div className="w-80 flex-shrink-0">
+            <div className="bg-[#7551B2] rounded-2xl  p-6 sticky top-25">
+              {/* Profile Image */}
+              <div className="text-center mb-6">
+                <div className="w-32 h-32 mx-auto rounded-2xl bg-white overflow-hidden mb-4 shadow-lg">
+                  <img 
+                    src={doctor?.user?.image?.url || "/icons/doctor.png"} 
+                    alt="Doctor Profile" 
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/icons/doctor.png";
+                    }}
+                  />
+                </div>
+                <h2 className="text-xl font-bold text-white mb-1">
+                Dr. {doctor?.user?.name || 'Doctor'}
+                </h2>
+                <p className=" text-white font-medium text-md">
+                  {doctor?.specialty || 'General'}
+                </p>
+              </div>
+
+              
+
+              {/* Brief About */}
+              {doctor?.about && (
+                <div className=" ">
+                  <p className="text-xs text-white leading-relaxed">
+                    {doctor.about.length > 150 
+                      ? doctor.about.slice(0, 150) + '...' 
+                      : doctor.about
+                    }
+                  </p>
+                </div>
+              )}
+              {/*Languages*/}
+              <div className=" ">
+                <h3 className="text-md font-semibold my-2 text-white">Languages</h3>
+                <p className="text-xs text-white leading-relaxed">
+                  {doctor?.languages && doctor.languages.length > 0 ? doctor.languages.join(', ') : '—'}
+                </p>
+              </div>
             </div>
           </div>
-        )}
 
-        
+          {/* Right Content Area */}
+          <div className="flex-1 bg-white rounded-2xl shadow-2xl">
+            {/* Tab Navigation */}
+            <div className=" p-4">
+              <div className="flex justify-left">
+                <div className="bg-gray-100 rounded-full p-1 flex relative">
+                  {['About', 'Review', 'Contact'].map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`relative z-5 px-8 py-2 rounded-full font-small transition-all duration-300 ${
+                        activeTab === tab
+                          ? 'text-white'
+                          : 'text-gray-600 hover:text-gray-800'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                  <div 
+                    className={`absolute top-1 bottom-1 rounded-full bg-[#7551b3] transition-all duration-300 ease-in-out ${
+                      activeTab === 'About' ? 'left-1 w-28' :
+                      activeTab === 'Review' ? 'left-1 w-27 translate-x-28' :
+                      'left-1 w-28 translate-x-56'
+                    }`}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Tab Content */}
+            <div className="p-6 min-h-96">
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 text-red-600 rounded-xl border border-red-200">
+                  {error}
+                  {error.includes('create your profile') && (
+                    <button 
+                      onClick={() => navigate('/doctor/create')}
+                      className="ml-2 underline hover:no-underline font-medium"
+                    >
+                      Create Profile
+                    </button>
+                  )}
+                </div>
+              )}
+              
+              {activeTab === 'About' && !loading && doctor && (
+                <div className="space-y-8">
+                  {/* Gallery */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Gallery</h3>
+                    <div className="grid grid-cols-3 gap-4">
+                      {doctor.gallery && doctor.gallery.length > 0 ? (
+                        doctor.gallery.map((image, index) => (
+                          <div key={index} className="aspect-video bg-gray-100 rounded-xl overflow-hidden">
+                            <img 
+                              src={image.url} 
+                              alt={`Gallery ${index + 1}`} 
+                              className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/banner.png";
+                              }}
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        Array.from({ length: 3 }).map((_, index) => (
+                          <div key={index} className="aspect-video bg-gray-100 rounded-xl overflow-hidden">
+                            <img 
+                              src="/banner.png" 
+                              alt={`Default ${index + 1}`} 
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))
+                      )}
+                    </div>
+                  </div>
+
+                  {/* About Section */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">About Doctor</h3>
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <p className="text-gray-700 leading-relaxed">
+                        {doctor?.about || 'No description provided yet.'}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Key Specializations */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Key Specializations</h3>
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        {doctor?.keySpecialization && doctor.keySpecialization.length > 0 ? (
+                          doctor.keySpecialization.map((spec, index) => (
+                            <div key={index} className="flex items-center space-x-3">
+                              <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
+                              <span className="text-gray-700">{spec}</span>
+                            </div>
+                          ))
+                        ) : (
+                          <>
+                            <div className="flex items-center space-x-3">
+                              <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
+                              <span className="text-gray-700">{doctor?.specialty || 'General'}</span>
+                            </div>
+                            {doctor?.clinicName && (
+                              <div className="flex items-center space-x-3">
+                                <div className="w-2 h-2 bg-[#7551b3] rounded-full flex-shrink-0"></div>
+                                <span className="text-gray-700">Clinic: {doctor.clinicName}</span>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Education */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Education</h3>
+                    <div className="bg-gray-50 rounded-xl p-6">
+                      <div className="space-y-3">
+                        {(doctor?.education && doctor.education.length) ? doctor.education.map((ed, i) => (
+                          <div key={i} className="flex items-start space-x-3">
+                            <div className="w-2 h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <p className="text-gray-700 font-medium">{ed}</p>
+                          </div>
+                        )) : (
+                          <p className="text-gray-600">No education details provided.</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Awards */}
+                  <div>
+                    <h3 className="text-xl font-semibold mb-4 text-gray-800">Awards & Recognition</h3>
+                    <div className="space-y-4">
+                      {doctor?.awards && doctor.awards.length > 0 ? (
+                        doctor.awards.map((award, index) => (
+                          <div key={index} className='bg-gray-50 rounded-xl p-6 border border-gray-100'>
+                            <div className="flex items-start space-x-4">
+                              <div className="w-20 h-20 bg-white rounded-xl flex-shrink-0 border shadow-sm">
+                                <img 
+                                  src={award.image?.url || "/banner.png"} 
+                                  alt="Award Certificate" 
+                                  className="w-full h-full object-cover rounded-xl"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/banner.png";
+                                  }}
+                                />
+                              </div>
+                              <div>
+                                <h4 className="font-semibold text-gray-800 mb-1">{award.title}</h4>
+                                <p className="text-gray-600">{award.year} - {award.institute}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))
+                      ) : (
+                        <div className='bg-gray-50 rounded-xl p-6 border border-gray-100'>
+                          <div className="flex items-start space-x-4">
+                            <div className="w-20 h-20 bg-white rounded-xl flex-shrink-0 border shadow-sm">
+                              <img 
+                                src="/banner.png" 
+                                alt="Award Certificate" 
+                                className="w-full h-full object-cover rounded-xl"
+                              />
+                            </div>
+                            <div>
+                              <p className="text-gray-600">No awards added yet.</p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'Review' && (
+                <ReviewTab doctorId={actualDoctorId} />
+              )}
+
+              {activeTab === 'Contact' && (
+                <ContactTab doctor={doctor} />
+              )}
+            </div>
+
+            {user && user.role === 'doctor' && !doctorId && (
+              <div className="mt-6 p-4">
+                <button
+                  onClick={() => { logout(); navigate('/login'); }}
+                  className="w-full bg-red-500 hover:bg-red-600 text-white py-3  rounded-xl font-medium transition-colors"
+                >
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
+
+      {/* FAQ Section - Full Width for Both Mobile and Desktop */}
+      {doctor && (
+        <div className="bg-[#7551B2] py-8">
+          <div className="max-w-4xl mx-auto px-4">
+            <DoctorProfileFAQ
+              doctor={doctor}
+              className="bg-transparent border-none"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 };

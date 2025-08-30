@@ -1,40 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Blog Content and Categories -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://doctar.in/blog</loc>
-    
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://doctar.in/blog/category/health</loc>
-    
-    <changefreq>weekly</changefreq>
+    <loc>https://doctar.in/blog/drtgsdrthdft</loc>
+    <lastmod>2025-08-30T13:28:37.093Z</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://doctar.in/blog/category/wellness</loc>
-    
-    <changefreq>weekly</changefreq>
+    <loc>https://doctar.in/blog/hfthfthf</loc>
+    <lastmod>2025-08-30T13:28:37.093Z</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://doctar.in/blog/category/medical-advice</loc>
-    
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://doctar.in/blog/category/disease-prevention</loc>
-    
-    <changefreq>weekly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://doctar.in/blog/category/treatment</loc>
-    
-    <changefreq>weekly</changefreq>
+    <loc>https://doctar.in/blog/68aa8f40f856b823e200faa8</loc>
+    <lastmod>2025-08-30T13:28:37.093Z</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
 </urlset>
