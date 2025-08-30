@@ -41,17 +41,11 @@ export default function CategoryGrid() {
 
   return (
     <section className="w-full max-w-full ">
-      {/* Section Header */}
-      <div className="px-4 mb-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-2">
-          Medical Categories
-        </h2>
-        
-      </div>
+     
 
       {/* Fixed Container to Prevent Horizontal Scroll */}
       <div className="px-4 w-full max-w-full">
-        <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
+        <div className="grid grid-cols-2 gap-2 sm:gap-6 w-full">
           {categories.map((category) => (
             <article
               key={category.id}
