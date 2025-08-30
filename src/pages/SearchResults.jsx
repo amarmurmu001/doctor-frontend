@@ -574,12 +574,12 @@ const SearchResults = () => {
                   >
                     Browse Specialties
                   </button>
-                  <button
-                    onClick={() => navigate('/')}
+                <button
+                  onClick={() => navigate('/')}
                     className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
-                  >
-                    Go Home
-                  </button>
+                >
+                  Go Home
+                </button>
                 </div>
               </div>
             ) : (
@@ -589,8 +589,8 @@ const SearchResults = () => {
                     key={doctor._id || doctor.id}
                     name={doctor.user?.name || doctor.name}
                     specialty={doctor.specialty}
-                    price={doctor.consultationFee
-                      ? `₹${doctor.consultationFee}/Consultation`
+                    price={doctor.consultationFee 
+                      ? `₹${doctor.consultationFee}/Consultation` 
                       : 'Contact for fee'
                     }
                     image={doctor.profilePicture?.url || '/icons/doctor.png'}

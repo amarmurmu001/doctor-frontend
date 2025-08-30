@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import ReviewModal from './ReviewModal';
 import StarRating from '../ui/StarRating';
 
-export default function() {
+export default function Doctorreview() {
   const [showModal, setShowModal] = useState(false);
   const [selectedDoctorId, setSelectedDoctorId] = useState(null);
   const [error, setError] = useState('');
@@ -77,9 +77,9 @@ export default function() {
       </div>
     
       {[
-        { id: "doctor1", name: "Sunita Jain", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", rating: 4 },
-        { id: "doctor2", name: "Aryan", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", rating: 5 },
-        { id: "doctor3", name: "Abhishek Sharma", image: "/icons/shape.png", text: "Lorem Ipsum is simply dummy text of the printing and typesetting industry.", rating: 3 }
+        { id: "doctor1", name: "Dr. Sunita Jain", image: "/icons/doctor.png", text: "Excellent consultation experience. The doctor was very knowledgeable and patient in explaining the treatment options.", rating: 4 },
+        { id: "doctor2", name: "Dr. Aryan Kumar", image: "/icons/doctor.png", text: "Professional and caring approach. Highly recommend for anyone seeking quality healthcare services.", rating: 5 },
+        { id: "doctor3", name: "Dr. Abhishek Sharma", image: "/icons/doctor.png", text: "Great communication and thorough examination. Very satisfied with the overall experience.", rating: 3 }
       ].map((doctor, i) => (
         <div
           key={i}
