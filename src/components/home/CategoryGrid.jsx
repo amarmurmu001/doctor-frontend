@@ -51,7 +51,7 @@ export default function CategoryGrid() {
 
       {/* Fixed Container to Prevent Horizontal Scroll */}
       <div className="px-4 w-full max-w-full">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 md:gap-6 w-full">
+        <div className="grid grid-cols-2 gap-4 sm:gap-6 w-full">
           {categories.map((category) => (
             <article
               key={category.id}
@@ -69,14 +69,14 @@ export default function CategoryGrid() {
             >
               {/* Category Icon */}
               <div className="flex justify-center mb-2 sm:mb-3">
-                <div 
-                  className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-full bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 border border-gray-100"
+                <div
+                  className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-white to-gray-50 flex items-center justify-center shadow-sm group-hover:shadow-md transition-all duration-300 border border-gray-100"
                   style={{ borderColor: `${category.color}20` }}
                 >
-                  <img 
-                    src={category.icon} 
-                    alt="" 
-                    className="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7 object-contain transition-transform duration-300 group-hover:scale-110"
+                  <img
+                    src={category.icon}
+                    alt=""
+                    className="w-7 h-7 sm:w-9 sm:h-9 md:w-11 md:h-11 object-contain transition-transform duration-300 group-hover:scale-110"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.style.display = 'none';
