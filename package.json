@@ -15,7 +15,7 @@
     "sitemap:index": "node scripts/generate-sitemap-index.cjs"
   },
   "dependencies": {
-    "@react-google-maps/api": "^2.20.7",
+
     "@tailwindcss/vite": "^4.1.12",
     "axios": "^1.11.0",
     "lucide-react": "^0.540.0",

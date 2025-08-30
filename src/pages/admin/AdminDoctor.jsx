@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import useAuthStore from '../../stores/useAuthStore';
 import DynamicInputList from '../../components/DynamicInputList';
-import MapLocationPicker from '../../components/MapLocationPicker';
+import GeolocationPicker from '../../components/GeolocationPicker';
 import TimeSlotPicker from '../../components/TimeSlotPicker';
 
 const AdminDoctors = () => {
@@ -1257,7 +1257,7 @@ const AdminDoctors = () => {
                 </h4>
                 <div className="bg-gray-50 rounded-lg p-4">
                  
-                  <MapLocationPicker
+                  <GeolocationPicker
                     onLocationSelect={(coords) => {
                       setNewDoctor({
                         ...newDoctor,

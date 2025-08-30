@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../stores/useAuthStore';
 import ProgressBar from '../../components/auth/ProgressBar';
 import DynamicInputList from '../../components/DynamicInputList';
-import MapLocationPicker from '../../components/MapLocationPicker';
+import GeolocationPicker from '../../components/GeolocationPicker';
 import TimeSlotPicker from '../../components/TimeSlotPicker';
 import { submitDoctorApplication } from '../../services/authAPI';
 
@@ -460,9 +460,9 @@ const DoctorOnboarding = () => {
           </div>
         </div>
 
-        {/* Map Location Picker */}
+        {/* Geolocation Picker */}
         <div className="border-t pt-6">
-          <MapLocationPicker
+          <GeolocationPicker
             onLocationSelect={(coords) => handleInputChange('coordinates', coords)}
             initialLocation={formData.coordinates}
             address={`${formData.addressLine1}, ${formData.addressCity}, ${formData.addressState}`}
