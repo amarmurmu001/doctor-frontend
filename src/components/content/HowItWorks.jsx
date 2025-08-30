@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { FaSearch, FaUserMd, FaHeart, FaShieldAlt } from "react-icons/fa";
 
 const HowItWorks = () => {
   const [activeTab, setActiveTab] = useState("buy");
@@ -9,21 +10,24 @@ const HowItWorks = () => {
       title: "Find Your Doctor",
       description:
         "Browse and search for qualified doctors by specialty, location, and expertise. View complete profiles with qualifications and patient reviews.",
-      icon: "/icons/Search.png",
+      icon: FaSearch,
+      iconColor: "#7551B2",
     },
     {
       id: 2,
       title: "Connect Instantly",
       description:
         "Get direct contact with doctors through phone, WhatsApp, email, or book clinic appointments online without any middleman delays.",
-      icon: "/icons/doctor.png",
+      icon: FaUserMd,
+      iconColor: "#10B981",
     },
     {
       id: 3,
       title: "Get Treatment",
       description:
         "Consult with verified doctors, receive quality healthcare, and build lasting relationships with trusted medical professionals near you.",
-      icon: "/icons/heart.png",
+      icon: FaHeart,
+      iconColor: "#EF4444",
     },
   ];
 
@@ -33,21 +37,24 @@ const HowItWorks = () => {
       title: "Create Your Profile",
       description:
         "Register and create a comprehensive profile with your qualifications, specializations, experience, and clinic information to attract patients.",
-      icon: "/icons/doctor.png",
+      icon: FaUserMd,
+      iconColor: "#7551B2",
     },
     {
       id: 2,
       title: "Get Verified",
       description:
         "Complete our verification process to earn the trusted badge. Upload your medical license and credentials for patient confidence.",
-      icon: "/icons/expert.webp",
+      icon: FaShieldAlt,
+      iconColor: "#F59E0B",
     },
     {
       id: 3,
       title: "Start Consulting",
       description:
         "Begin receiving patient inquiries, accept appointments, and provide quality healthcare services with zero commission charges.",
-      icon: "/icons/heart.png",
+      icon: FaHeart,
+      iconColor: "#EF4444",
     },
   ];
 
@@ -99,15 +106,9 @@ const HowItWorks = () => {
             
             <div className="flex justify-start mb-6">
               <div className="bg-white rounded-full p-3 lg:p-3 xl:p-4 shadow-sm">
-                <img 
-                  src={step.icon} 
-                  alt={step.title} 
-                  className="w-8 h-8 lg:w-8 xl:w-10 lg:h-8 xl:h-10 object-contain"
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.style.display = 'none';
-                    e.target.parentElement.innerHTML = '<div class="w-8 h-8 lg:w-8 xl:w-10 lg:h-8 xl:h-10 flex items-center justify-center text-purple-600 text-2xl">📋</div>';
-                  }}
+                <step.icon
+                  className="w-8 h-8 lg:w-8 xl:w-10 lg:h-8 xl:h-10"
+                  style={{ color: step.iconColor }}
                 />
               </div>
             </div>
@@ -120,15 +121,17 @@ const HowItWorks = () => {
       </div>
 
       {/* Custom scrollbar styles for mobile */}
-      <style jsx>{`
-        .overflow-x-auto::-webkit-scrollbar {
-          display: none;
-        }
-        .overflow-x-auto {
-          scrollbar-width: none; /* Firefox */
-          -ms-overflow-style: none; /* Internet Explorer 10+ */
-        }
-      `}</style>
+      <style>
+        {`
+          .overflow-x-auto::-webkit-scrollbar {
+            display: none;
+          }
+          .overflow-x-auto {
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* Internet Explorer 10+ */
+          }
+        `}
+      </style>
     </div>
   );
 };
