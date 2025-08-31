@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 import { registerUser, sendOtp } from '../../services/authAPI'
 import useAuthStore from '../../stores/useAuthStore'
 import ProgressBar from '../../components/auth/ProgressBar'
@@ -53,7 +54,21 @@ export default function Signup() {
   const steps = ['Sign Up', 'Verify OTP', 'Role Selection', 'Complete Profile']
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Helmet defer={false}>
+        <title>Patient Sign Up | Create Your Doctar Account</title>
+        <meta name="description" content="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration." />
+        <meta name="keywords" content="patient sign up, doctar sign up, healthcare registration, create patient account, book doctor online, online doctor consultation signup, patient registration portal, doctar account create, join doctar" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.doctar.in/auth/signup" />
+        <meta property="og:title" content="Patient Sign Up | Create Your Doctar Account" />
+        <meta property="og:description" content="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration." />
+        <meta property="og:url" content="https://www.doctar.in/auth/signup" />
+        <meta name="twitter:title" content="Patient Sign Up | Create Your Doctar Account" />
+        <meta name="twitter:description" content="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration." />
+      </Helmet>
+
+      <div className="min-h-screen bg-gray-50">
       {/* Progress Bar */}
       <ProgressBar 
         currentStep={1} 
@@ -148,5 +163,6 @@ export default function Signup() {
         </div>
       </div>
     </div>
+    </>
   )
 }

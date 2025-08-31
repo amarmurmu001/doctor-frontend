@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Helmet } from 'react-helmet'
 import { loginUser } from '../../services/authAPI'
 import useAuthStore from '../../stores/useAuthStore'
 
@@ -43,13 +44,27 @@ function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-white" style={{
-      backgroundImage: `
-        linear-gradient(to right, #f3f4f6 1px, transparent 1px),
-        linear-gradient(to bottom, #f3f4f6 1px, transparent 1px)
-      `,
-      backgroundSize: '20px 20px'
-    }}>
+    <>
+      <Helmet defer={false}>
+        <title>Patient Login | Secure Access to Doctar Account</title>
+        <meta name="description" content="Login to your Doctar account to book appointments, connect with doctors, manage health records, and access personalized healthcare services. Secure and easy patient login." />
+        <meta name="keywords" content="patient login, doctar login, healthcare login, book doctor appointment, patient account access, online doctor consultation login, secure medical login, doctar patient portal, login to book doctor" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.doctar.in/login" />
+        <meta property="og:title" content="Patient Login | Secure Access to Doctar Account" />
+        <meta property="og:description" content="Login to your Doctar account to book appointments, connect with doctors, manage health records, and access personalized healthcare services. Secure and easy patient login." />
+        <meta property="og:url" content="https://www.doctar.in/login" />
+        <meta name="twitter:title" content="Patient Login | Secure Access to Doctar Account" />
+        <meta name="twitter:description" content="Login to your Doctar account to book appointments, connect with doctors, manage health records, and access personalized healthcare services. Secure and easy patient login." />
+      </Helmet>
+
+      <div className="min-h-screen bg-white" style={{
+        backgroundImage: `
+          linear-gradient(to right, #f3f4f6 1px, transparent 1px),
+          linear-gradient(to bottom, #f3f4f6 1px, transparent 1px)
+        `,
+        backgroundSize: '20px 20px'
+      }}>
       {/* Purple header bar */}
       <div className="w-full h-2 bg-purple-500"></div>
       
@@ -161,8 +176,9 @@ function Login() {
       </div>
 
       {/* Doctor illustration */}
-      
+
     </div>
+    </>
   )
 }
 

@@ -98,7 +98,7 @@ const SeoDoctorProfile = ({
   };
 
   return (
-    <Helmet>
+    <Helmet defer={false}>
       {/* Primary Meta Tags */}
       <title>{title}</title>
       <meta name="title" content={title} />

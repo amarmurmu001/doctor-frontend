@@ -144,7 +144,7 @@ const LocationHome = () => {
 
   return (
     <>
-      <Helmet>
+      <Helmet defer={false}>
         <title>{locationTitle}</title>
         <meta name="description" content={locationDescription} />
         <meta name="keywords" content={`doctors in ${location}, best doctors ${location}, book appointment ${location}, healthcare ${location}`} />

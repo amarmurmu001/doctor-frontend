@@ -10,7 +10,7 @@ const DefaultSeo = ({
   pageType = "website"
 }) => {
   return (
-    <Helmet>
+    <Helmet defer={true}>
       {/* Primary Meta Tags */}
       <title>{title}</title>
       <meta name="title" content={title} />

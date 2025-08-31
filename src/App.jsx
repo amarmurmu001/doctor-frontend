@@ -5,6 +5,7 @@ import {
   Route,
   useLocation,
 } from "react-router-dom";
+
 import Loader from "./components/layout/Loader";
 import ErrorBoundary from "./components/layout/ErrorBoundary";
 const Home = lazy(() => import("./pages/Home"));

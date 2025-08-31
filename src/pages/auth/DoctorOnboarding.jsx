@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 import useAuthStore from '../../stores/useAuthStore';
 import ProgressBar from '../../components/auth/ProgressBar';
 import DynamicInputList from '../../components/DynamicInputList';
@@ -772,7 +773,21 @@ const DoctorOnboarding = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
+      <Helmet defer={false}>
+        <title>Doctor Registration | Join Doctar Platform</title>
+        <meta name="description" content="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations." />
+        <meta name="keywords" content="doctor registration, join doctar, doctor sign up, register as a doctor, online consultation doctor registration, healthcare platform registration, doctor profile create, doctar doctor portal, doctor account signup" />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.doctar.in/auth/doctor-onboarding" />
+        <meta property="og:title" content="Doctor Registration | Join Doctar Platform" />
+        <meta property="og:description" content="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations." />
+        <meta property="og:url" content="https://www.doctar.in/auth/doctor-onboarding" />
+        <meta name="twitter:title" content="Doctor Registration | Join Doctar Platform" />
+        <meta name="twitter:description" content="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations." />
+      </Helmet>
+
+      <div className="min-h-screen bg-gray-50">
       {/* Progress Bar */}
       <ProgressBar 
         currentStep={4} 
@@ -879,6 +894,7 @@ const DoctorOnboarding = () => {
         </div>
       </div>
     </div>
+    </>
   );
 };
 

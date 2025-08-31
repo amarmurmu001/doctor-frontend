@@ -19,7 +19,7 @@ const PageSeo = ({
   const finalCanonicalUrl = canonicalUrl || "https://www.doctar.in";
 
   return (
-    <Helmet>
+    <Helmet defer={false}>
       {/* Primary Meta Tags */}
       <title>{finalTitle}</title>
       <meta name="title" content={finalTitle} />
