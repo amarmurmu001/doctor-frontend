@@ -103,7 +103,7 @@ const RoleSelection = () => {
                 <div className="ml-4 flex-shrink-0">
                   <div className="w-20 h-20 rounded-xl overflow-hidden">
                     <img 
-                      src="/icons/Doctor-role.png" 
+                      src="/icons/doctor-role.png" 
                       alt="Doctor" 
                       className="w-full h-full object-cover"
                     />
