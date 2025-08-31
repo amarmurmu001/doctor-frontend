@@ -14,31 +14,45 @@ export default function DoctorCard({
 
   // Specialty icon mapping
   const getSpecialtyIcon = (specialty) => {
+    if (!specialty) return '/icons/doctor.png';
+
     const specialtyLower = specialty.toLowerCase();
-    
+
     if (specialtyLower.includes('cardio') || specialtyLower.includes('heart')) {
       return '/icons/cardiologist.PNG';
     } else if (specialtyLower.includes('neuro')) {
       return '/icons/neurologist.PNG';
     } else if (specialtyLower.includes('ortho') || specialtyLower.includes('bone')) {
-      return '/icons/orthopaedist.PNG';
+      return '/icons/Query/orthopaedist.PNG';
     } else if (specialtyLower.includes('gynae') || specialtyLower.includes('obstetric')) {
-      return '/icons/gynaecologist.PNG';
+      return '/icons/IMG_8131.PNG';
     } else if (specialtyLower.includes('dentistry') || specialtyLower.includes('dentist')) {
-      return '/icons/dentist.PNG';
+      return '/icons/dentist.png';
     } else if (specialtyLower.includes('endo') || specialtyLower.includes('diabetes')) {
       return '/icons/endocrinologist.PNG';
     } else if (specialtyLower.includes('onco') || specialtyLower.includes('cancer')) {
       return '/icons/oncologist.PNG';
     } else if (specialtyLower.includes('ayur')) {
-      return '/icons/ayurveda.PNG';
+      return '/icons/ayurveda.png';
     } else if (specialtyLower.includes('homeo')) {
-      return '/icons/homeopathic.PNG';
+      return '/icons/homeopathic.png';
     } else if (specialtyLower.includes('allopathic')) {
-      return '/icons/allopathic.PNG';
+      return '/icons/allopathic.png';
+    } else if (specialtyLower.includes('ent') || specialtyLower.includes('ear')) {
+      return '/icons/ENT.PNG';
+    } else if (specialtyLower.includes('general') || specialtyLower.includes('physician')) {
+      return '/icons/general physcisian.PNG';
+    } else if (specialtyLower.includes('eye') || specialtyLower.includes('opthal')) {
+      return '/icons/opthalmologist.PNG';
+    } else if (specialtyLower.includes('urology') || specialtyLower.includes('urinary')) {
+      return '/icons/urology.PNG';
+    } else if (specialtyLower.includes('gynecology') || specialtyLower.includes('gynecology')) {
+      return '/icons/IMG_8131.PNG';
+    } else if (specialtyLower.includes('diabet')) {
+      return '/icons/diabetologist.PNG';
     } else {
       // Default icon for other specialties
-      return '/icons/doctor.PNG';
+      return '/icons/general physcisian.PNG';
     }
   };
 
