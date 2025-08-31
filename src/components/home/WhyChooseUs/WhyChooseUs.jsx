@@ -1,3 +1,6 @@
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import useAuthStore from "../../../stores/useAuthStore";
 import FeaturesList from "./FeaturesList";
 
 const WhyChooseUs = ({
@@ -9,6 +12,12 @@ const WhyChooseUs = ({
   buttonColor = "bg-[#5154B5]",
   onButtonClick = () => {},
 }) => {
+  const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
+  const token = useAuthStore((s) => s.token);
+
+  // Check if user is signed in
+  const isSignedIn = user && token;
   return (
     <div>
       <h3 className="text-center md:hidden text-black font-bold text-xl mb-4">
@@ -28,15 +37,17 @@ const WhyChooseUs = ({
           <FeaturesList features={features} />
         </div>
 
-        {/* Apply Now Button */}
-        <div className="flex justify-end mb-1">
-          <button
-            onClick={onButtonClick}
-            className={`${buttonColor} text-white px-6 border py-2 sm:px-8 sm:py-3 rounded-2xl font-semibold hover:opacity-90 transition-colors text-sm sm:text-base`}
-          >
-            {buttonText}
-          </button>
-        </div>
+        {/* Apply Now Button - Only show for non-signed-in users */}
+        {!isSignedIn && (
+          <div className="flex justify-end mb-1">
+            <button
+              onClick={() => navigate("/auth/signup")}
+              className={`${buttonColor} text-white px-6 border py-2 sm:px-8 sm:py-3 rounded-2xl font-semibold hover:opacity-90 transition-colors text-sm sm:text-base`}
+            >
+              {buttonText}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );
