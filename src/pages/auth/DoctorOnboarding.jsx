@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import useAuthStore from '../../stores/useAuthStore';
@@ -90,9 +90,30 @@ const DoctorOnboarding = () => {
     }
   }, [onboarding?.basicInfo]);
 
-  const handleInputChange = (field, value) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+
+
+  const handleInputChange = useCallback((field, value) => {
+    console.log('🔍 DoctorOnboarding: handleInputChange called', { field, value });
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      console.log('🔍 DoctorOnboarding: Updated formData', newData);
+      return newData;
+    });
+  }, []);
+
+  const handleSlotsChange = useCallback((slots) => {
+    console.log('🔍 DoctorOnboarding: handleSlotsChange called', slots);
+    setFormData(prev => {
+      const newData = { ...prev, slots };
+      console.log('🔍 DoctorOnboarding: Updated formData with slots', newData);
+      return newData;
+    });
+  }, []);
+
+  // Memoize initialSlots to prevent unnecessary re-renders
+  const memoizedInitialSlots = useMemo(() => {
+    return formData.slots || [];
+  }, [formData.slots]);
 
   const handleCaptchaValidation = useCallback((isValid) => {
     setFormData(prev => ({ ...prev, captchaValid: isValid }));
@@ -588,8 +609,8 @@ const DoctorOnboarding = () => {
       </div>
 
       <TimeRangePicker
-        onSlotsChange={(slots) => handleInputChange('slots', slots)}
-        initialSlots={formData.slots}
+        onSlotsChange={handleSlotsChange}
+        initialSlots={memoizedInitialSlots}
       />
     </div>
   );
@@ -824,7 +845,7 @@ const DoctorOnboarding = () => {
 
       {/* Content */}
       <div className="px-6 py-6">
-        <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-sm p-6">
+        <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-sm p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
               Doctor Registration - {doctorSteps[currentStep - 1]} Details

@@ -1,7 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 
 const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
-  const [timeRanges, setTimeRanges] = useState([]);
+  const [editedSlots, setEditedSlots] = useState({});
+  const prevInitialSlotsRef = useRef();
+  const isInitializingRef = useRef(false);
+  const onSlotsChangeRef = useRef(onSlotsChange);
+
+  // Update the ref when onSlotsChange changes
+  onSlotsChangeRef.current = onSlotsChange;
 
   // Generate next 7 days
   const getNextWeek = () => {
@@ -35,74 +41,106 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
 
   // Initialize from existing slots if any
   useEffect(() => {
-    if (initialSlots && initialSlots.length > 0) {
-      // Convert existing slots to time ranges
-      const ranges = initialSlots.map(slot => {
-        if (slot.times && slot.times.length >= 2) {
-          return {
-            date: slot.date,
-            startTime: slot.times[0],
-            endTime: slot.times[1]
-          };
-        } else if (slot.times && slot.times.length === 1) {
-          return {
-            date: slot.date,
-            startTime: slot.times[0],
-            endTime: '5:00 PM' // Default end time
-          };
-        }
-        return null;
-      }).filter(Boolean);
+    console.log('🔍 TimeRangePicker: Initializing with initialSlots', initialSlots);
 
-      setTimeRanges(ranges);
-    }
-  }, [initialSlots]);
+    // Check if initialSlots have actually changed by comparing JSON
+    const prevSlots = prevInitialSlotsRef.current;
+    const currentSlotsString = JSON.stringify(initialSlots || []);
+    const prevSlotsString = JSON.stringify(prevSlots || []);
 
-  // Convert time ranges to slots format for parent component
-  useEffect(() => {
-    const slots = timeRanges.map(range => ({
-      date: range.date,
-      times: [range.startTime, range.endTime]
-    }));
-
-    if (onSlotsChange) {
-      onSlotsChange(slots);
-    }
-  }, [timeRanges, onSlotsChange]);
-
-  const addTimeRange = (dateString) => {
-    // Check if range already exists for this date
-    const existingRange = timeRanges.find(range => range.date === dateString);
-    if (existingRange) {
-      alert('Time range already exists for this day');
+    if (currentSlotsString === prevSlotsString) {
+      console.log('🔍 TimeRangePicker: initialSlots unchanged, skipping re-initialization');
       return;
     }
 
-    const newRange = {
-      date: dateString,
-      startTime: '9:00 AM',
-      endTime: '5:00 PM'
-    };
+    console.log('🔍 TimeRangePicker: initialSlots changed, proceeding with initialization');
+    prevInitialSlotsRef.current = initialSlots;
+    isInitializingRef.current = true;
 
-    setTimeRanges(prev => [...prev, newRange]);
-  };
+    if (initialSlots && initialSlots.length > 0) {
+      const initialEditedSlots = {};
+      initialSlots.forEach(slot => {
+        const dateKey = slot.date ? new Date(slot.date).toISOString().split('T')[0] : null;
+        if (dateKey && slot.times && slot.times.length > 0) {
+          initialEditedSlots[dateKey] = [...slot.times];
+        }
+      });
+      console.log('🔍 TimeRangePicker: Setting initial editedSlots', initialEditedSlots);
+      setEditedSlots(initialEditedSlots);
+    } else if (!initialSlots || initialSlots.length === 0) {
+      console.log('🔍 TimeRangePicker: No initialSlots provided or empty, clearing state');
+      setEditedSlots({});
+    }
 
-  const updateTimeRange = (dateString, field, value) => {
-    setTimeRanges(prev =>
-      prev.map(range =>
-        range.date === dateString
-          ? { ...range, [field]: value }
-          : range
-      )
-    );
-  };
+    // Reset initializing flag after state update
+    setTimeout(() => {
+      isInitializingRef.current = false;
+    }, 0);
+  }, [initialSlots]);
 
-  const removeTimeRange = (dateString) => {
-    setTimeRanges(prev => prev.filter(range => range.date !== dateString));
-  };
+  // Notify parent component of changes
+  useEffect(() => {
+    // Skip notification during initialization to prevent infinite loop
+    if (isInitializingRef.current) {
+      console.log('🔍 TimeRangePicker: Skipping notification during initialization');
+      return;
+    }
 
-  const getTimeRangeForDate = (dateString) => {
-    return timeRanges.find(range => range.date === dateString);
+    const slots = Object.entries(editedSlots)
+      .filter(([, times]) => times.length > 0)
+      .map(([dateKey, times]) => ({
+        date: new Date(dateKey),
+        times: times
+      }));
+
+    console.log('🔍 TimeRangePicker: Converting to slots format', slots);
+
+    if (onSlotsChangeRef.current) {
+      console.log('🔍 TimeRangePicker: Calling onSlotsChange callback');
+      onSlotsChangeRef.current(slots);
+    }
+  }, [editedSlots]); // Removed onSlotsChange from dependencies to prevent infinite loop
+
+
+
+  const addTimeSlot = useCallback((dateKey) => {
+    setEditedSlots(prev => {
+      const currentTimes = prev[dateKey] || [];
+      if (currentTimes.length >= 2) {
+        alert('Maximum 2 time slots allowed per day');
+        return prev;
+      }
+      const newTime = currentTimes.length === 0 ? "09:00 AM" : "10:00 AM";
+      return {
+        ...prev,
+        [dateKey]: [...currentTimes, newTime]
+      };
+    });
+  }, []);
+
+  const removeTimeSlot = useCallback((dateKey) => {
+    setEditedSlots(prev => {
+      const newSlots = { ...prev };
+      delete newSlots[dateKey];
+      return newSlots;
+    });
+  }, []);
+
+  const updateTimeSlot = useCallback((dateKey, index, newTime) => {
+    console.log('🔍 TimeRangePicker: Updating time slot', { dateKey, index, newTime });
+    setEditedSlots(prev => {
+      const currentTimes = prev[dateKey] || [];
+      const newTimes = [...currentTimes];
+      newTimes[index] = newTime;
+      return {
+        ...prev,
+        [dateKey]: newTimes
+      };
+    });
+  }, []);
+
+  const getSlotsForDate = (dateString) => {
+    return editedSlots[dateString] || [];
   };
 
   return (
@@ -112,21 +150,21 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
           Available Time Ranges
         </label>
         <p className="text-xs text-gray-600 mb-4">
-          Set your consultation time ranges for the next 7 days. Each day can have one time range.
+          Set your consultation time slots for the next 7 days. Each day can have up to 2 time slots.
         </p>
       </div>
 
       {/* Weekly Days Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-3">
         {weekDays.map((day) => {
-          const timeRange = getTimeRangeForDate(day.dateString);
-          const hasRange = !!timeRange;
+          const displayTimes = getSlotsForDate(day.dateString);
+          const hasSlots = displayTimes.length > 0;
 
           return (
             <div
               key={day.dateString}
-              className={`border rounded-lg p-3 ${
-                day.isToday ? 'border-[#7551B2] bg-purple-50' : 'border-gray-200'
+              className={`border rounded-lg p-3 md:w-35 ${
+                day.isToday ? 'border-[#7551B2] bg-purple-50' : 'border-gray-200 '
               }`}
             >
               <div className="flex flex-col items-center mb-3">
@@ -139,10 +177,10 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
               </div>
 
               <div className="flex justify-center mb-2">
-                {hasRange ? (
+                {hasSlots ? (
                   <button
                     type="button"
-                    onClick={() => removeTimeRange(day.dateString)}
+                    onClick={() => removeTimeSlot(day.dateString)}
                     className="text-red-500 hover:text-red-700 text-xs px-2 py-1 rounded"
                   >
                     Remove
@@ -150,48 +188,68 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
                 ) : (
                   <button
                     type="button"
-                    onClick={() => addTimeRange(day.dateString)}
+                    onClick={() => addTimeSlot(day.dateString)}
                     className="text-[#7551B2] hover:text-[#6441a0] text-xs px-2 py-1 rounded border border-[#7551B2] hover:bg-purple-50"
                   >
-                    Add Range
+                    Add Slot
                   </button>
                 )}
               </div>
 
-              {hasRange && (
-                <div className="space-y-2">
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">Start Time</label>
-                    <select
-                      value={timeRange.startTime}
-                      onChange={(e) => updateTimeRange(day.dateString, 'startTime', e.target.value)}
-                      className="w-full text-xs border border-gray-200 rounded px-1 py-1 focus:border-[#7551B2] focus:outline-none"
-                    >
-                      {timeOptions.map(time => (
-                        <option key={time} value={time}>
-                          {time}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+              {hasSlots && (
+                <div className="space-y-2 md:w-30">
+                  {displayTimes.map((time, index) => (
+                    <div key={index}>
+                      <label className="block text-xs text-gray-600 mb-1">
+                        Time Slot {index + 1}
+                      </label>
+                      <div className="flex items-center  gap-1">
+                        <select
+                          value={time}
+                          onChange={(e) => {
+                            console.log('🔍 Time slot changed:', { date: day.dateString, index, value: e.target.value });
+                            updateTimeSlot(day.dateString, index, e.target.value);
+                          }}
+                          className="flex-1 text-xs border border-gray-200 rounded px-1 py-1 focus:border-[#7551B2] focus:outline-none"
+                        >
+                          {timeOptions.map(option => (
+                            <option key={option} value={option}>
+                              {option}
+                            </option>
+                          ))}
+                        </select>
+                        {displayTimes.length > 1 && (
+                          <button
+                            onClick={() => {
+                              setEditedSlots(prev => {
+                                const currentTimes = prev[day.dateString] || [];
+                                const newTimes = currentTimes.filter((_, i) => i !== index);
+                                return {
+                                  ...prev,
+                                  [day.dateString]: newTimes
+                                };
+                              });
+                            }}
+                            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
 
-                  <div>
-                    <label className="block text-xs text-gray-600 mb-1">End Time</label>
-                    <select
-                      value={timeRange.endTime}
-                      onChange={(e) => updateTimeRange(day.dateString, 'endTime', e.target.value)}
-                      className="w-full text-xs border border-gray-200 rounded px-1 py-1 focus:border-[#7551B2] focus:outline-none"
+                  {displayTimes.length < 2 && (
+                    <button
+                      onClick={() => addTimeSlot(day.dateString)}
+                      className="w-full py-1 px-2 bg-gray-100 text-gray-600 rounded text-xs hover:bg-gray-200 transition-colors"
                     >
-                      {timeOptions.map(time => (
-                        <option key={time} value={time}>
-                          {time}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
+                      + Add Another Slot
+                    </button>
+                  )}
 
                   <div className="text-center text-xs font-medium text-gray-700 bg-gray-50 px-2 py-1 rounded">
-                    {timeRange.startTime} to {timeRange.endTime}
+                    {displayTimes.join(' • ')}
                   </div>
                 </div>
               )}
@@ -200,15 +258,15 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
         })}
       </div>
 
-      {timeRanges.length > 0 && (
+      {Object.keys(editedSlots).length > 0 && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <p className="text-sm text-green-700 font-medium">
-            {timeRanges.length} day{timeRanges.length > 1 ? 's' : ''} configured with time ranges
+            {Object.keys(editedSlots).length} day{Object.keys(editedSlots).length > 1 ? 's' : ''} configured with time slots
           </p>
           <div className="mt-2 text-xs text-green-600">
-            {timeRanges.map(range => (
-              <div key={range.date}>
-                {new Date(range.date).toLocaleDateString('en-US', { weekday: 'short' })}: {range.startTime} to {range.endTime}
+            {Object.entries(editedSlots).map(([dateKey, times]) => (
+              <div key={dateKey}>
+                {new Date(dateKey).toLocaleDateString('en-US', { weekday: 'short' })}: {times.join(' • ')}
               </div>
             ))}
           </div>
