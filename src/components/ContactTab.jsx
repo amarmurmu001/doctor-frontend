@@ -254,7 +254,7 @@ const ContactTab = ({ doctor, onSlotsUpdated }) => {
         
         {/* Address Block */}
         <div className="bg-[#c3b8dc] rounded-2xl p-4 mb-4">
-          <p className="text-sm text-gray-700 leading-relaxed">
+          <p className="text-sm font-semibold text-black leading-relaxed">
             {doctor?.address ? (
               <>
                 {doctor.address.line1}
@@ -373,12 +373,7 @@ const ContactTab = ({ doctor, onSlotsUpdated }) => {
       
       {/* Doctor Section */}
       <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
-        <div className="mb-3">
-          <p className="text-sm text-gray-600">
-            Direct contact with {doctor?.user?.name || 'Dr. '} 
-            {doctor?.clinicName ? ` at ${doctor.clinicName}` : ''}
-          </p>
-        </div>
+        
         
         {/* Contact Options */}
         <div className="space-y-3">

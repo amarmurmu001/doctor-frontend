@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../../stores/useAuthStore';
 import ProgressBar from '../../components/auth/ProgressBar';
 import DynamicInputList from '../../components/DynamicInputList';
 import GeolocationPicker from '../../components/GeolocationPicker';
-import TimeSlotPicker from '../../components/TimeSlotPicker';
+import TimeRangePicker from '../../components/TimeRangePicker';
+import Captcha from '../../components/Captcha';
 import { submitDoctorApplication } from '../../services/authAPI';
 
 const DoctorOnboarding = () => {
@@ -59,7 +60,8 @@ const DoctorOnboarding = () => {
     
     // Terms
     acceptTerms: false,
-    acceptPrivacy: false
+    acceptPrivacy: false,
+    captchaValid: false
   });
 
   const progressSteps = ['Sign Up', 'Verify OTP', 'Role Selection', 'Complete Profile'];
@@ -90,6 +92,10 @@ const DoctorOnboarding = () => {
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
+
+  const handleCaptchaValidation = useCallback((isValid) => {
+    setFormData(prev => ({ ...prev, captchaValid: isValid }));
+  }, []);
 
   const handleImageUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -574,13 +580,13 @@ const DoctorOnboarding = () => {
   const renderScheduleDetails = () => (
     <div className="space-y-6">
       <div className="text-center">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Available Time Slots</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Available Time Ranges</h3>
         <p className="text-sm text-gray-600 mb-6">
-          Set your consultation availability for the next few weeks. You can customize this later from your profile.
+          Set your consultation time ranges for the next 7 days. Each day can have one time range (e.g., 9:00 AM to 5:00 PM).
         </p>
       </div>
 
-      <TimeSlotPicker
+      <TimeRangePicker
         onSlotsChange={(slots) => handleInputChange('slots', slots)}
         initialSlots={formData.slots}
       />
@@ -707,6 +713,11 @@ const DoctorOnboarding = () => {
         </label>
       </div>
 
+      {/* CAPTCHA Verification */}
+      <div className="space-y-4">
+        <Captcha onValidationChange={handleCaptchaValidation} />
+      </div>
+
       <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
         <div className="flex">
           <svg className="w-5 h-5 text-blue-500 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -754,7 +765,7 @@ const DoctorOnboarding = () => {
       case 5: // Clinic Images - optional, always valid
         return true;
       case 6:
-        return formData.acceptTerms && formData.acceptPrivacy;
+        return formData.acceptTerms && formData.acceptPrivacy && formData.captchaValid;
       default:
         return false;
     }

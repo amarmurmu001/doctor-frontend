@@ -117,6 +117,7 @@ const DoctorProfile = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalImages, setModalImages] = useState([]);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [galleryExpanded, setGalleryExpanded] = useState(false);
 
   // Helper functions for image modal
   const openImageModal = (images, startIndex = 0) => {
@@ -788,25 +789,57 @@ const DoctorProfile = () => {
                 <div className="space-y-8">
                   {/* Gallery */}
                   <div>
+                    {galleryExpanded && (
+                      <div className="mb-4 flex justify-end">
+                        <button
+                          onClick={() => setGalleryExpanded(false)}
+                          className="text-sm text-gray-600 hover:text-gray-800 underline"
+                        >
+                          Show Less
+                        </button>
+                      </div>
+                    )}
                     <div className="grid grid-cols-3 gap-4">
                       {doctor.gallery && doctor.gallery.length > 0
-                        ? doctor.gallery.map((image, index) => (
-                            <div
-                              key={index}
-                              className="aspect-video bg-gray-100 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300"
-                              onClick={() => openImageModal(doctor.gallery, index)}
-                            >
-                              <img
-                                src={image.url}
-                                alt={`Gallery ${index + 1}`}
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = "/banner.png";
-                                }}
-                              />
-                            </div>
-                          ))
+                        ? (galleryExpanded ? doctor.gallery : doctor.gallery.slice(0, 3)).map((image, index) => {
+                            const totalImages = doctor.gallery.length;
+                            const hasMoreImages = totalImages > 3 && !galleryExpanded;
+                            const isThirdImage = index === 2 && hasMoreImages;
+                            const remainingImages = totalImages - 3;
+
+                            return (
+                              <div
+                                key={index}
+                                className="aspect-video bg-gray-100 rounded-xl overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 relative"
+                                onClick={() => openImageModal(doctor.gallery, index)}
+                              >
+                                <img
+                                  src={image.url}
+                                  alt={`Gallery ${index + 1}`}
+                                  className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                                  onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = "/banner.png";
+                                  }}
+                                />
+
+                                {/* Overlay for 3rd image when there are more images */}
+                                {isThirdImage && (
+                                  <div
+                                    className="absolute inset-0 flex items-center justify-center"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setGalleryExpanded(true);
+                                    }}
+                                  >
+                                    <div className="text-white text-center px-4 py-2 rounded-lg">
+                                      <div className="text-2xl font-bold drop-shadow-lg">+{remainingImages}</div>
+                                      <div className="text-sm font-medium drop-shadow-md">more</div>                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          })
                         : Array.from({ length: 3 }).map((_, index) => (
                             <div
                               key={index}

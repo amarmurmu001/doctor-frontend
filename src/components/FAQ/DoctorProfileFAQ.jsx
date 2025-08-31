@@ -250,7 +250,7 @@ const DoctorProfileFAQ = ({ doctor, className = "" }) => {
     <div className={`mt-8 ${className}`}>
       <SimpleFAQ
         faqs={faqs}
-        title={`❓ FAQ – Dr. ${doctorName} (${specialty})`}
+        title={`FAQ – Dr. ${doctorName} (${specialty})`}
         className={`shadow-lg bg-transparent ${className}`}
       />
     </div>

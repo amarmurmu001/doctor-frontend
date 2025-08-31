@@ -42,11 +42,16 @@ const TimeSlotPicker = ({ onSlotsChange, initialSlots = [] }) => {
 
   const addSlotForDate = (dateString) => {
     const existingSlot = slots.find(slot => slot.date === dateString);
-    
+
     if (existingSlot) {
+      // Check if already has 2 slots
+      if (existingSlot.times.length >= 2) {
+        alert('Maximum 2 time slots allowed per day');
+        return;
+      }
       // Add a new time to existing slot
-      const updatedSlots = slots.map(slot => 
-        slot.date === dateString 
+      const updatedSlots = slots.map(slot =>
+        slot.date === dateString
           ? { ...slot, times: [...slot.times, '9:00 AM'] }
           : slot
       );
@@ -81,8 +86,15 @@ const TimeSlotPicker = ({ onSlotsChange, initialSlots = [] }) => {
   };
 
   const addTimeToSlot = (dateString) => {
-    const updatedSlots = slots.map(slot => 
-      slot.date === dateString 
+    const existingSlot = slots.find(slot => slot.date === dateString);
+
+    if (existingSlot && existingSlot.times.length >= 2) {
+      alert('Maximum 2 time slots allowed per day');
+      return;
+    }
+
+    const updatedSlots = slots.map(slot =>
+      slot.date === dateString
         ? { ...slot, times: [...slot.times, '9:00 AM'] }
         : slot
     );
@@ -220,13 +232,20 @@ const TimeSlotPicker = ({ onSlotsChange, initialSlots = [] }) => {
                     </div>
                   ))}
                   
-                  <button
-                    type="button"
-                    onClick={() => addTimeToSlot(day.dateString)}
-                    className="w-full text-[#7551B2] hover:text-[#6441a0] text-xs py-1 border border-dashed border-[#7551B2] rounded mt-1"
-                  >
-                    + Time
-                  </button>
+                  {slotForDay.times.length < 2 && (
+                    <button
+                      type="button"
+                      onClick={() => addTimeToSlot(day.dateString)}
+                      className="w-full text-[#7551B2] hover:text-[#6441a0] text-xs py-1 border border-dashed border-[#7551B2] rounded mt-1"
+                    >
+                      + Time ({2 - slotForDay.times.length} remaining)
+                    </button>
+                  )}
+                  {slotForDay.times.length >= 2 && (
+                    <p className="w-full py-1 px-2 text-center text-xs text-gray-400 bg-gray-50 rounded mt-1">
+                      Maximum 2 slots reached
+                    </p>
+                  )}
                 </div>
               )}
             </div>

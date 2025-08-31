@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { verifyOtp, resendOtp, sendOtp } from '../../services/authAPI'
 import useAuthStore from '../../stores/useAuthStore'
@@ -15,39 +15,54 @@ export default function Otp(){
   const [otpSentStatus, setOtpSentStatus] = useState('')
   const inputsRef = useRef([])
 
-  function startCooldown(){
+  const startCooldown = useCallback(() => {
     setCooldown(60)
-    const t = setInterval(()=>{
+    const t = setInterval(() => {
       setCooldown(c => {
-        if (c <= 1) { clearInterval(t); return 0 }
+        if (c <= 1) {
+          clearInterval(t)
+          return 0
+        }
         return c - 1
       })
     }, 1000)
-  }
+
+    // Return cleanup function
+    return () => clearInterval(t)
+  }, [])
 
   useEffect(() => {
     if (!email) return
-    
+
+    let cleanupInterval = null
+
     const key = `otpSent:${email}`
-    
+
     // If OTP was already sent from signup, just start cooldown
     if (otpSent || sessionStorage.getItem(key) === '1') {
       setOtpSentStatus('OTP sent successfully! Please check your email.')
-      startCooldown()
+      cleanupInterval = startCooldown()
       return
     }
-    
+
     // Otherwise, try to send OTP
     setOtpSentStatus('Sending OTP...')
     sendOtp({ email }).then(() => {
       sessionStorage.setItem(key, '1')
       setOtpSentStatus('OTP sent successfully! Please check your email.')
-      startCooldown()
+      cleanupInterval = startCooldown()
     }).catch((err) => {
       setOtpSentStatus('Failed to send OTP. Please try resending.')
       console.error('Failed to send OTP:', err)
     })
-  }, [email, otpSent])
+
+    // Cleanup interval on unmount or when dependencies change
+    return () => {
+      if (cleanupInterval) {
+        cleanupInterval()
+      }
+    }
+  }, [email, otpSent, startCooldown])
 
   function handleChange(index, value){
     const digit = value.replace(/\D/g,'').slice(0,1)
