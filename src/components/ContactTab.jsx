@@ -675,15 +675,15 @@ Best regards,
 
           {/* Doctor Section */}
           <div className="flex-1">
-            <h3 className="text-lg font-semibold mb-3">Doctor</h3>
-            <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm h-full">
+            <h3 className="text-lg font-semibold mb-3 mt-6">Doctor</h3>
+            <div className="bg-[#f2f1f9] rounded-[20px] p-3 shadow-sm">
               {/* Contact Options */}
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {/* Phone Numbers */}
                 {(doctor?.contactPhones?.length > 0 ? doctor.contactPhones.slice(0, 2) : ['+91 68753 4234']).map((phone, index) => (
                   <div
                     key={`desktop-doctor-phone-${index}`}
-                    className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
+                    className="bg-[#c3b8dc] rounded-2xl p-3 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
                     onClick={() => {
                       const cleanPhone = phone.replace(/\s+/g, '').replace(/[^\d+]/g, '');
                       window.location.href = `tel:${cleanPhone}`;
@@ -700,7 +700,7 @@ Best regards,
 
                 {/* WhatsApp */}
                 <div
-                  className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
+                  className="bg-[#c3b8dc] rounded-2xl p-3 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
                   onClick={() => {
                     const cleanPhone = (doctor?.contactPhones?.[0] || '+91 68753 4234')
                       .replace(/\s+/g, '')
@@ -719,7 +719,7 @@ Best regards,
 
                 {/* Email */}
                 <div
-                  className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
+                  className="bg-[#c3b8dc] rounded-2xl p-3 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
                   onClick={() => {
                     const email = doctor?.contactEmails?.[0] || 'support@doctor.com';
                     const subject = `Inquiry about Dr. ${doctor?.user?.name || 'Doctor'}`;
