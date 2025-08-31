@@ -88,7 +88,7 @@ export default function Home() {
       </div>
 
       {/* FAQ Section - New style for all devices */}
-      <div className="mt-10">
+      <div className="mt-20">
         <HomeFAQ />
       </div>
 
