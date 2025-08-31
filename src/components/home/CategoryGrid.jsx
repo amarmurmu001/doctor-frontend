@@ -50,7 +50,13 @@ export default function CategoryGrid() {
             <article
               key={category.id}
               onClick={() => handleCategoryClick(category)}
-              className="group relative bg-white rounded-2xl border border-gray-200 p-3 sm:p-4 cursor-pointer transform transition-all duration-300 hover:scale-[1.02] sm:hover:scale-105 hover:shadow-lg hover:border-purple-300 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 aspect-square flex flex-col justify-center items-center w-full max-w-full box-border"
+              className="group relative bg-[#f1f2f9] rounded-2xl border border-gray-200 p-3 sm:p-4 cursor-pointer transform transition-all duration-300 hover:scale-[1.02] sm:hover:scale-105 focus-within:ring-2 focus-within:ring-purple-500 focus-within:ring-offset-2 flex flex-col justify-center items-center w-full max-w-full box-border"
+              style={{
+                boxShadow: '0 4px 4px 0 #7551b3',
+                maxWidth: '180px',
+                maxHeight: '140px',
+                aspectRatio: '180/140'
+              }}
               role="button"
               tabIndex={0}
               aria-label={`Search for ${category.name}`}
@@ -82,7 +88,7 @@ export default function CategoryGrid() {
 
               {/* Category Content */}
               <div className="text-center flex-1 flex flex-col justify-center">
-                <h3 className="font-semibold text-gray-900 text-xs sm:text-sm md:text-base leading-tight group-hover:text-purple-700 transition-colors duration-300 px-1">
+                <h3 className="font-semibold text-gray-900 text-xs sm:text-sm md:text-base leading-tight transition-colors duration-300 px-1">
                   {category.name}
                 </h3>
                 {/* <p className="text-xs text-gray-500 leading-tight mt-1 hidden sm:block group-hover:text-gray-600 transition-colors duration-300 px-1">
@@ -90,11 +96,7 @@ export default function CategoryGrid() {
                 </p> */}
               </div>
 
-              {/* Hover Effect */}
-              <div 
-                className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"
-                style={{ backgroundColor: category.color }}
-              />
+
             </article>
           ))}
         </div>
