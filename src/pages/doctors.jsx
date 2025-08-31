@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import PageHeader from "../components/layout/PageHeader";
 import DoctorCard from "../components/doctor/DoctorCard";
+import { getLocationApiParams } from "../utils/locationUtils";
+import useLocationStore from "../stores/locationStore";
 
 // Utility function to extract rating from doctor data
 const extractRating = (doctor) => {
@@ -33,6 +35,11 @@ export default function Doctors() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  // Use location from store instead of URL params
+  const selectedLocation = useLocationStore((state) => state.selectedLocation);
+  const initializeLocation = useLocationStore((state) => state.initializeLocation);
+  const isInitialized = useLocationStore((state) => state.isInitialized);
+
   const fetchDoctors = useCallback(async () => {
     try {
       setLoading(true);
@@ -44,14 +51,23 @@ export default function Doctors() {
         throw new Error('Backend URL not configured');
       }
 
-      // Fetch doctors with pagination and approval filter
+      // Use location from store, default to India if not set
+      const currentLocation = selectedLocation || 'India';
+
+      // Fetch doctors with pagination, approval filter, and location filter
+      const locationParams = getLocationApiParams(currentLocation);
       const params = new URLSearchParams({
-        limit: '20', // Fetch more doctors for the grid
+        limit: '50', // Fetch more doctors for better location filtering
         status: 'approved' // Only show approved doctors
       });
 
+      // Add location parameters
+      for (let [key, value] of locationParams) {
+        params.set(key, value);
+      }
+
       const url = `${API_BASE_URL}/api/doctors?${params}`;
-      console.log('🏥 Fetching doctors from:', url);
+      console.log('🏥 Fetching doctors from:', url, 'for location:', currentLocation);
 
       const response = await fetch(url);
 
@@ -105,11 +121,21 @@ export default function Doctors() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedLocation]);
 
   useEffect(() => {
-    fetchDoctors();
-  }, [fetchDoctors]);
+    // Initialize location store if not already done
+    if (!isInitialized) {
+      initializeLocation();
+    }
+  }, [isInitialized, initializeLocation]);
+
+  useEffect(() => {
+    // Only fetch doctors when location is available
+    if (isInitialized) {
+      fetchDoctors();
+    }
+  }, [fetchDoctors, isInitialized, selectedLocation]);
 
   // Function to get location and specialty info
   function getHeaderInfo() {
@@ -127,20 +153,10 @@ export default function Doctors() {
       specialtyCounts[a] > specialtyCounts[b] ? a : b
     );
 
-    // Get the most common location
-    const locations = doctors.map(doctor => doctor.address?.city || 'India');
-    const locationCounts = locations.reduce((acc, location) => {
-      acc[location] = (acc[location] || 0) + 1;
-      return acc;
-    }, {});
-    const mostCommonLocation = Object.keys(locationCounts).reduce((a, b) =>
-      locationCounts[a] > locationCounts[b] ? a : b
-    );
-
     return {
       count: doctors.length,
       specialty: mostCommonSpecialty,
-      location: mostCommonLocation
+      location: selectedLocation || 'India'
     };
   }
 

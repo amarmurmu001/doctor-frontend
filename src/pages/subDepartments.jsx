@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import PageHeader from "../components/layout/PageHeader";
 import ResultCount from "../components/doctor/ResultCount";
 import DoctorTypeGrid from "../components/doctor/DoctorTypeGrid";
 import PageSeo from "../components/seo/PageSeo";
+import { formatLocationName } from "../utils/locationUtils";
+import useLocationStore from "../stores/locationStore";
 
 // Medical type configurations
 const medicalTypeConfigs = {
@@ -88,6 +90,11 @@ export default function SubDepartments() {
   const [pageDescription, setPageDescription] = useState("Find doctors by medical specialties and types.");
   const [pageKeywords, setPageKeywords] = useState("doctor types, medical specialties");
 
+  // Use location from store instead of URL params
+  const selectedLocation = useLocationStore((state) => state.selectedLocation);
+  const initializeLocation = useLocationStore((state) => state.initializeLocation);
+  const isInitialized = useLocationStore((state) => state.isInitialized);
+
   const medicalType = searchParams.get('type') || 'allopathic';
 
   // Handle card click - navigate to search page with filters
@@ -104,15 +111,32 @@ export default function SubDepartments() {
     navigate(`/search?${params.toString()}`);
   };
 
+  // Get user location from store
+  const getUserLocation = useCallback(() => {
+    // Use location from store, default to India if not set
+    const locationName = selectedLocation || 'India';
+    return locationName;
+  }, [selectedLocation]);
+
+  useEffect(() => {
+    // Initialize location store if not already done
+    if (!isInitialized) {
+      initializeLocation();
+    }
+  }, [isInitialized, initializeLocation]);
+
   useEffect(() => {
     const config = medicalTypeConfigs[medicalType] || medicalTypeConfigs.allopathic;
 
+    // Set location first
+    const userLocation = getUserLocation();
+
     // Use categories as-is without icons
     setDynamicCategories(config.defaultCategories);
-    setPageTitle(config.title);
-    setPageDescription(config.description);
-    setPageKeywords(config.keywords);
-  }, [medicalType]);
+    setPageTitle(`${config.title} in ${formatLocationName(userLocation)}`);
+    setPageDescription(`${config.description} Find the best healthcare professionals in ${formatLocationName(userLocation)}.`);
+    setPageKeywords(`${config.keywords}, ${formatLocationName(userLocation)} doctors, healthcare ${formatLocationName(userLocation)}`);
+  }, [medicalType, getUserLocation, isInitialized]);
   return (
     <>
       <PageSeo
@@ -130,7 +154,7 @@ export default function SubDepartments() {
         <div className="px-4 pt-4">
           <ResultCount
             count={dynamicCategories.reduce((total, cat) => total + cat.number, 0)}
-            location="India"
+            location={selectedLocation || 'India'}
           />
         </div>
 
