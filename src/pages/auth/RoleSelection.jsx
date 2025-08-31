@@ -47,8 +47,9 @@ const RoleSelection = () => {
       <div className="px-6">
         <div className="max-w-lg mx-auto bg-white rounded-xl shadow-sm p-6">
           <div className="text-center mb-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">Welcome to Doctar!</h1>
-            <p className="text-sm text-gray-600">Tell us how you'd like to use Doctar</p>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2"> About me</h1>
+            <p className="text-sm text-gray-600">Please let us know your purpose of visit,
+            select from the options below</p>
           </div>
           
           {/* Role Selection Cards */}
