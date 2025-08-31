@@ -16,6 +16,7 @@ function Nav() {
 
   const user = useAuthStore((s) => s.user);
   const token = useAuthStore((s) => s.token);
+  const logout = useAuthStore((s) => s.logout);
 
   const [open, setOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -267,7 +268,7 @@ function Nav() {
                   </div>
 
                   {/* Menu Items */}
-                  <div className="p-2">
+                  <div className="p-2 space-y-1">
                     <button
                       onClick={() => {
                         navigate(user.role === "doctor" ? "/Doctor-profile" : "/user-profile");
@@ -279,6 +280,20 @@ function Nav() {
                         <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                       </svg>
                       My Profile
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        logout();
+                        navigate("/login");
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left p-3 text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200 flex items-center gap-3"
+                    >
+                      <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                      </svg>
+                      Logout
                     </button>
                   </div>
                 </>

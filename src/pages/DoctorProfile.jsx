@@ -632,7 +632,7 @@ const DoctorProfile = () => {
           {activeTab === "Contact" && <ContactTab doctor={doctor} onSlotsUpdated={handleSlotsUpdated} />}
         </div>
 
-        {user && user.role === "doctor" && !doctorId && (
+        {user && user.role === "doctor" && doctor && user.id === doctor.user?._id && (
           <div className="p-4">
             <button
               onClick={() => {
@@ -978,7 +978,7 @@ const DoctorProfile = () => {
               {activeTab === "Contact" && <ContactTab doctor={doctor} onSlotsUpdated={handleSlotsUpdated} />}
             </div>
 
-            {user && user.role === "doctor" && !doctorId && (
+            {user && user.role === "doctor" && doctor && user.id === doctor.user?._id && (
               <div className="mt-6 p-4">
                 <button
                   onClick={() => {
