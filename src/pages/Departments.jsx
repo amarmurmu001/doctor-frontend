@@ -21,7 +21,7 @@ export default function Departments() {
 
       <div className="w-full min-h-screen bg-[#f4f4ff] lg:flex lg:flex-col">
         {/* Mobile Layout */}
-        <div className="lg:hidden flex flex-col min-h-screen">
+        <div className=" flex block md:hidden  flex-col min-h-screen">
           {/* Header Section */}
           <div className="bg-[#7551b3] px-4 py-6 pb-8 flex-shrink-0">
             <SearchBar />
@@ -46,7 +46,7 @@ export default function Departments() {
         </div>
 
         {/* Desktop Layout */}
-        <div className="hidden lg:flex min-h-screen">
+        <div className="hidden md:flex min-h-screen">
           {/* Left Section - Carousels */}
           <div className="w-1/2 bg-[#f4f4ff] p-8 flex flex-col justify-center items-center gap-8">
             {/* First Carousel */}
