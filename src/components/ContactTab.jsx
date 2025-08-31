@@ -227,30 +227,26 @@ const ContactTab = ({ doctor, onSlotsUpdated }) => {
 
   return (
     <div className="space-y-6">
-      {/* Mobile Layout */}
-      <div className="md:hidden space-y-6">
-        {/* Location Heading */}
-        <h3 className="text-lg font-semibold">Location</h3>
-        
-        {/* Location Section */}
-        <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
-          {/* Map Container */}
-          <div className="relative mb-4">
-            <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
-              {doctor?.address?.location?.coordinates ? (
-                <div 
-                  ref={mapRef}
-                  className="w-full h-full"
-                  style={{ minHeight: '192px' }}
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                  <div className="text-white text-center">
-                    <div className="text-2xl mb-2">🗺️</div>
-                    <p className="text-sm">Location not available</p>
-                  </div>
+      {/* Location Heading */}
+      <h3 className="text-lg font-semibold">Location</h3>
+      
+      {/* Location Section */}
+      <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
+        {/* Map Container */}
+        <div className="relative mb-4">
+          <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
+            {doctor?.address?.location?.coordinates ? (
+              <div 
+                ref={mapRef}
+                className="w-full h-full"
+                style={{ minHeight: '192px' }}
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                <div className="text-white text-center">
+                  <div className="text-2xl mb-2">🗺️</div>
+                  <p className="text-sm">Location not available</p>
                 </div>
-<<<<<<< HEAD
               </div>
             )}
           </div>
@@ -289,71 +285,67 @@ const ContactTab = ({ doctor, onSlotsUpdated }) => {
               <p className="text-sm font-semibold">
                 {doctor?.estimatedTime || '15 Mins'}
               </p>
-=======
-              )}
->>>>>>> 1ea71f2a307f39cee3434b5455bc1c2ed0698596
             </div>
           </div>
           
-          {/* Address Block */}
-          <div className="bg-[#c3b8dc] rounded-2xl p-4 mb-4">
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {doctor?.address ? (
-                <>
-                  {doctor.address.line1}
-                  {doctor.address.line2 && `, ${doctor.address.line2}`}
-                  {doctor.address.city && `, ${doctor.address.city}`}
-                  {doctor.address.state && `, ${doctor.address.state}`}
-                  {doctor.address.postalCode && ` ${doctor.address.postalCode}`}
-                  {doctor.address.country && `, ${doctor.address.country}`}
-                </>
-              ) : (
-                '2nd Floor, No. 1, Neeladri Rd, above Samsung Showroom, Karuna Nagar, Electronic City Phase I, Electronic City, Bengaluru, Karnataka 560100'
-              )}
-            </p>
-          </div>
-          
-          {/* Distance and Time with Directions */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-6">
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Distance</p>
-                <p className="text-sm font-semibold">
-                  {doctor?.distance || '8 Km'}
-                </p>
+          {/* Directions Button */}
+          <button
+            className="w-12 h-12 bg-[#7551B2] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#6B46C1] transition-colors"
+            onClick={() => {
+              if (doctor?.address?.location?.coordinates) {
+                const [lng, lat] = doctor.address.location.coordinates;
+                const address = doctor.address ? `${doctor.address.line1 || ''} ${doctor.address.city || ''} ${doctor.address.state || ''}`.trim() : '';
+                const destination = address || `${lat},${lng}`;
+                const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
+                window.open(url, '_blank');
+              } else {
+                // Fallback to a general search
+                const fallbackAddress = 'Electronic City Phase I, Bengaluru, Karnataka';
+                const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackAddress)}`;
+                window.open(url, '_blank');
+              }
+            }}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      {/* Reception Heading with Appointment */}
+      {/* <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Reception</h3>
+        <span className="text-sm text-gray-500">
+          (Appointment {doctor?.appointmentHours || '8 AM to 10 PM'})
+        </span>
+      </div> */}
+      
+      {/* Reception Section */}
+      {/* <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm"> */}
+        {/* Contact Options */}
+        {/* <div className="space-y-3"> */}
+          {/* Phone Numbers */}
+          {/* {(doctor?.contactPhones?.length > 0 ? doctor.contactPhones : ['+91 68753 4234']).map((phone, index) => (
+            <div key={`phone-${index}`} className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3">
+              <div className="w-10 h-10 bg-[#7551B2] rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.554.89l.833 4.223M3 5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2M3 5a2 2 0 012-2h3.28a1 1 0 01.554.89l.833 4.223M3 5a2 2 0 00-2 2v10a2 2 0 002 2h14a2 2 0 002-2V7a2 2 0 00-2-2" />
+                </svg>
               </div>
-              <div className="w-px h-8 bg-gray-300"></div>
-              <div className="text-center">
-                <p className="text-xs text-gray-500">Time</p>
-                <p className="text-sm font-semibold">
-                  {doctor?.estimatedTime || '15 Mins'}
-                </p>
-              </div>
+              <span className="text-lg font-bold text-black" style={{fontWeight: 700}}>
+                {phone}
+              </span>
             </div>
-            
-            {/* Directions Button */}
-            <button
-              className="w-12 h-12 bg-[#7551B2] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#6B46C1] transition-colors"
-              onClick={() => {
-                if (doctor?.address?.location?.coordinates) {
-                  const [lng, lat] = doctor.address.location.coordinates;
-                  const address = doctor.address ? `${doctor.address.line1 || ''} ${doctor.address.city || ''} ${doctor.address.state || ''}`.trim() : '';
-                  const destination = address || `${lat},${lng}`;
-                  const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-                  window.open(url, '_blank');
-                } else {
-                  // Fallback to a general search
-                  const fallbackAddress = 'Electronic City Phase I, Bengaluru, Karnataka';
-                  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackAddress)}`;
-                  window.open(url, '_blank');
-                }
-              }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          ))} */}
+
+          {/* WhatsApp - First phone number */}
+          {/* <div className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3">
+            <div className="w-10 h-10 bg-[#25D366] rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.87 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.488"/>
               </svg>
-<<<<<<< HEAD
             </div>
             <span className="text-lg font-bold text-black" style={{fontWeight: 700}}>
               {doctor?.contactPhones?.[0] || '+91 68753 4234'}
@@ -382,528 +374,206 @@ const ContactTab = ({ doctor, onSlotsUpdated }) => {
       {/* Doctor Section */}
       <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
         
-=======
-            </button>
-          </div>
-        </div>
-
-        {/* Doctor Heading */}
-        <h3 className="text-lg font-semibold">Doctor</h3>
->>>>>>> 1ea71f2a307f39cee3434b5455bc1c2ed0698596
         
-        {/* Doctor Section */}
-        <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
-          <div className="mb-3">
-            <p className="text-sm text-gray-600">
-              Direct contact with {doctor?.user?.name || 'Dr. '} 
-              {doctor?.clinicName ? ` at ${doctor.clinicName}` : ''}
-            </p>
-          </div>
-          
-          {/* Contact Options */}
-          <div className="space-y-3">
-            {/* Phone Numbers (same as reception for now) */}
-            {(doctor?.contactPhones?.length > 0 ? doctor.contactPhones.slice(0, 2) : ['+91 68753 4234']).map((phone, index) => (
-              <div
-                key={`doctor-phone-${index}`}
-                className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
-                onClick={() => {
-                  // Clean phone number for tel: protocol
-                  const cleanPhone = phone.replace(/\s+/g, '').replace(/[^\d+]/g, '');
-                  window.location.href = `tel:${cleanPhone}`;
-                }}
-              >
-                <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                  <FaPhone className="w-5 h-5 text-white" />
-                </div>
-                <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
-                  {phone}
-                </span>
-              </div>
-            ))}
-
-            {/* WhatsApp */}
+        {/* Contact Options */}
+        <div className="space-y-3">
+          {/* Phone Numbers (same as reception for now) */}
+          {(doctor?.contactPhones?.length > 0 ? doctor.contactPhones.slice(0, 2) : ['+91 68753 4234']).map((phone, index) => (
             <div
+              key={`doctor-phone-${index}`}
               className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
               onClick={() => {
-                // Clean phone number for WhatsApp
-                const cleanPhone = (doctor?.contactPhones?.[0] || '+91 68753 4234')
-                  .replace(/\s+/g, '')
-                  .replace(/[^\d+]/g, '');
-                // Remove + if present for WhatsApp
-                const whatsappNumber = cleanPhone.startsWith('+') ? cleanPhone.substring(1) : cleanPhone;
-                window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+                // Clean phone number for tel: protocol
+                const cleanPhone = phone.replace(/\s+/g, '').replace(/[^\d+]/g, '');
+                window.location.href = `tel:${cleanPhone}`;
               }}
             >
               <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                <FaWhatsapp className="w-5 h-5 text-white" />
+                <FaPhone className="w-5 h-5 text-white" />
               </div>
               <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
-                {doctor?.contactPhones?.[0] || '+91 68753 4234'}
+                {phone}
               </span>
             </div>
+          ))}
 
-            {/* Email */}
-            <div
-              className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
-              onClick={() => {
-                const email = doctor?.contactEmails?.[0] || 'support@doctor.com';
-                const subject = `Inquiry about Dr. ${doctor?.user?.name || 'Doctor'}`;
-                const body = `Hi Dr. ${doctor?.user?.name || 'Doctor'},
+          {/* WhatsApp */}
+          <div
+            className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
+            onClick={() => {
+              // Clean phone number for WhatsApp
+              const cleanPhone = (doctor?.contactPhones?.[0] || '+91 68753 4234')
+                .replace(/\s+/g, '')
+                .replace(/[^\d+]/g, '');
+              // Remove + if present for WhatsApp
+              const whatsappNumber = cleanPhone.startsWith('+') ? cleanPhone.substring(1) : cleanPhone;
+              window.open(`https://wa.me/${whatsappNumber}`, '_blank');
+            }}
+          >
+            <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+              <FaWhatsapp className="w-5 h-5 text-white" />
+            </div>
+            <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
+              {doctor?.contactPhones?.[0] || '+91 68753 4234'}
+            </span>
+          </div>
+
+          {/* Email */}
+          <div
+            className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
+            onClick={() => {
+              const email = doctor?.contactEmails?.[0] || 'support@doctor.com';
+              const subject = `Inquiry about Dr. ${doctor?.user?.name || 'Doctor'}`;
+              const body = `Hi Dr. ${doctor?.user?.name || 'Doctor'},
 
 I would like to inquire about your services.
 
 Best regards,
 [Your Name]`;
 
-                window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-              }}
-            >
-              <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                <FaEnvelope className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
-                {doctor?.contactEmails?.[0] || 'support@doctor.com'}
-              </span>
+              window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            }}
+          >
+            <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
+              <FaEnvelope className="w-5 h-5 text-white" />
             </div>
-          </div>
-        </div>
-
-        {/* Timing Heading */}
-        <div className="flex justify-between items-center">
-          <h3 className="text-lg font-semibold">Timing</h3>
-          {user && user.role === "doctor" && doctor && user.id === doctor.user?._id && !isEditing && (
-            <button
-              onClick={() => setIsEditing(true)}
-              className="px-4 py-2 bg-[#7551B2] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm font-medium"
-            >
-              Edit Slots
-            </button>
-          )}
-        </div>
-        
-        {/* Timing Section */}
-        <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
-          {/* Edit Controls */}
-          {isEditing && (
-            <div className="mb-4 flex gap-3">
-              <button
-                onClick={handleSaveSlots}
-                disabled={saving}
-                className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium disabled:opacity-50"
-              >
-                {saving ? 'Saving...' : 'Save Changes'}
-              </button>
-              <button
-                onClick={handleCancelEdit}
-                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
-              >
-                Cancel
-              </button>
-            </div>
-          )}
-
-          {/* Days List */}
-          <div className="space-y-3">
-            {displayDays.map((day, index) => {
-              const isToday = day.isToday;
-              const dateKey = day.date.toISOString().split('T')[0];
-              const hasSlots = doctor?.slots?.find(slot => {
-                if (!slot.date) return false;
-                const slotDate = new Date(slot.date).toISOString().split('T')[0];
-                return slotDate === dateKey;
-              });
-              const editedTimes = editedSlots[dateKey];
-              const displayTimes = editedTimes !== undefined ? editedTimes : (hasSlots?.times || []);
-              
-              return (
-                <div key={index} className="flex gap-3">
-                  <div className={`w-20 h-16 border border-black rounded-lg flex flex-col items-center justify-center ${
-                    isToday 
-                      ? 'bg-[#7551B2] text-white' 
-                      : 'bg-white text-gray-700'
-                  }`}>
-                    <span className="text-xs font-medium">{day.dayName}</span>
-                    <span className="text-lg font-bold">{day.dayNumber}</span>
-                  </div>
-                  <div className="flex-1 bg-white border border-black rounded-lg p-3">
-                    {isEditing ? (
-                      <div className="space-y-2">
-                        {displayTimes.map((time, timeIndex) => (
-                          <div key={timeIndex} className="flex items-center gap-2">
-                            <input
-                              type="text"
-                              value={time}
-                              onChange={(e) => updateTimeSlot(dateKey, timeIndex, e.target.value)}
-                              className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-[#7551B2]"
-                              placeholder="HH:MM AM/PM"
-                            />
-                            <button
-                              onClick={() => removeTimeSlot(dateKey, timeIndex)}
-                              className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
-                        {displayTimes.length < 2 && (
-                          <button
-                            onClick={() => addTimeSlot(dateKey)}
-                            className="w-full py-1 px-2 bg-gray-100 text-gray-600 rounded text-sm hover:bg-gray-200 transition-colors"
-                          >
-                            + Add Time Slot ({2 - displayTimes.length} remaining)
-                          </button>
-                        )}
-                        {displayTimes.length >= 2 && (
-                          <p className="w-full py-1 px-2 text-center text-xs text-gray-400 bg-gray-50 rounded">
-                            Maximum 2 slots reached
-                          </p>
-                        )}
-                      </div>
-                    ) : (
-                      displayTimes.length > 0 ? (
-                      <div className="space-y-1">
-                          {displayTimes.length === 1 ? (
-                            <p className={`text-sm font-medium ${
-                              isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                            }`}>
-                              {displayTimes[0]}
-                            </p>
-                          ) : displayTimes.length === 2 ? (
-                            <p className={`text-sm font-medium ${
-                              isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                            }`}>
-                              {displayTimes[0]} - {displayTimes[1]}
-                            </p>
-                          ) : (
-                            displayTimes.map((time, timeIndex) => (
-                          <p key={timeIndex} className={`text-sm font-medium ${
-                            isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                          } ${isToday && timeIndex === 0 ? 'underline' : ''}`}>
-                            {time}
-                          </p>
-                            ))
-                          )}
-                      </div>
-                    ) : (
-                      <p className="text-sm text-gray-500 font-medium">
-                        {isToday
-                          ? (doctor?.noSlotsMessage || 'No slots available today')
-                          : (doctor?.defaultTiming || '7:00 AM to 9:30 PM')
-                        }
-                      </p>
-                      )
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+            <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
+              {doctor?.contactEmails?.[0] || 'support@doctor.com'}
+            </span>
           </div>
         </div>
       </div>
 
-      {/* Desktop Layout - 2 columns */}
-      <div className="hidden md:grid md:grid-cols-2 md:gap-6 md:items-stretch">
-        {/* Left Column - Location and Doctor combined as flex column */}
-        <div className="space-y-6 flex flex-col flex-1">
-          {/* Location Section */}
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold mb-4">Location</h3>
-            <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm h-full">
-              {/* Map Container */}
-              <div className="relative mb-4">
-                <div className="w-full h-48 bg-gray-200 rounded-lg overflow-hidden">
-                  {doctor?.address?.location?.coordinates ? (
-                    <div 
-                      ref={mapRef}
-                      className="w-full h-full"
-                      style={{ minHeight: '192px' }}
-                    />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
-                      <div className="text-white text-center">
-                        <div className="text-2xl mb-2">🗺️</div>
-                        <p className="text-sm">Location not available</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Address Block */}
-              <div className="bg-[#c3b8dc] rounded-2xl p-4 mb-4">
-                <p className="text-sm text-gray-700 leading-relaxed">
-                  {doctor?.address ? (
-                    <>
-                      {doctor.address.line1}
-                      {doctor.address.line2 && `, ${doctor.address.line2}`}
-                      {doctor.address.city && `, ${doctor.address.city}`}
-                      {doctor.address.state && `, ${doctor.address.state}`}
-                      {doctor.address.postalCode && ` ${doctor.address.postalCode}`}
-                      {doctor.address.country && `, ${doctor.address.country}`}
-                    </>
-                  ) : (
-                    '2nd Floor, No. 1, Neeladri Rd, above Samsung Showroom, Karuna Nagar, Electronic City Phase I, Electronic City, Bengaluru, Karnataka 560100'
-                  )}
-                </p>
-              </div>
-              
-              {/* Distance and Time with Directions */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-6">
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500">Distance</p>
-                    <p className="text-sm font-semibold">
-                      {doctor?.distance || '8 Km'}
-                    </p>
-                  </div>
-                  <div className="w-px h-8 bg-gray-300"></div>
-                  <div className="text-center">
-                    <p className="text-xs text-gray-500">Time</p>
-                    <p className="text-sm font-semibold">
-                      {doctor?.estimatedTime || '15 Mins'}
-                    </p>
-                  </div>
-                </div>
-                
-                {/* Directions Button */}
-                <button
-                  className="w-12 h-12 bg-[#7551B2] rounded-full flex items-center justify-center text-white shadow-lg hover:bg-[#6B46C1] transition-colors"
-                  onClick={() => {
-                    if (doctor?.address?.location?.coordinates) {
-                      const [lng, lat] = doctor.address.location.coordinates;
-                      const address = doctor.address ? `${doctor.address.line1 || ''} ${doctor.address.city || ''} ${doctor.address.state || ''}`.trim() : '';
-                      const destination = address || `${lat},${lng}`;
-                      const url = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(destination)}`;
-                      window.open(url, '_blank');
-                    } else {
-                      const fallbackAddress = 'Electronic City Phase I, Bengaluru, Karnataka';
-                      const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(fallbackAddress)}`;
-                      window.open(url, '_blank');
-                    }
-                  }}
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </button>
-              </div>
-            </div>
+      {/* Timing Heading */}
+      <div className="flex justify-between items-center">
+      <h3 className="text-lg font-semibold">Timing</h3>
+        {user && user.role === "doctor" && doctor && user.id === doctor.user?._id && !isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="px-4 py-2 bg-[#7551B2] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm font-medium"
+          >
+            Edit Slots
+          </button>
+        )}
+
+      </div>
+      
+      {/* Timing Section */}
+      <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
+        {/* Edit Controls */}
+        {isEditing && (
+          <div className="mb-4 flex gap-3">
+            <button
+              onClick={handleSaveSlots}
+              disabled={saving}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+            <button
+              onClick={handleCancelEdit}
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
+            >
+              Cancel
+            </button>
           </div>
+        )}
 
-          {/* Doctor Section */}
-          <div className="flex-1">
-            <h3 className="text-lg font-semibold mb-4">Doctor</h3>
-            <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm h-full">
-              <div className="mb-3">
-                <p className="text-sm text-gray-600">
-                  Direct contact with {doctor?.user?.name || 'Dr. '} 
-                  {doctor?.clinicName ? ` at ${doctor.clinicName}` : ''}
-                </p>
-              </div>
-              
-              {/* Contact Options */}
-              <div className="space-y-3">
-                {/* Phone Numbers */}
-                {(doctor?.contactPhones?.length > 0 ? doctor.contactPhones.slice(0, 2) : ['+91 68753 4234']).map((phone, index) => (
-                  <div
-                    key={`doctor-phone-${index}`}
-                    className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
-                    onClick={() => {
-                      const cleanPhone = phone.replace(/\s+/g, '').replace(/[^\d+]/g, '');
-                      window.location.href = `tel:${cleanPhone}`;
-                    }}
-                  >
-                    <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                      <FaPhone className="w-5 h-5 text-white" />
-                    </div>
-                    <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
-                      {phone}
-                    </span>
-                  </div>
-                ))}
-
-                {/* WhatsApp */}
-                <div
-                  className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
-                  onClick={() => {
-                    const cleanPhone = (doctor?.contactPhones?.[0] || '+91 68753 4234')
-                      .replace(/\s+/g, '')
-                      .replace(/[^\d+]/g, '');
-                    const whatsappNumber = cleanPhone.startsWith('+') ? cleanPhone.substring(1) : cleanPhone;
-                    window.open(`https://wa.me/${whatsappNumber}`, '_blank');
-                  }}
-                >
-                  <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                    <FaWhatsapp className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
-                    {doctor?.contactPhones?.[0] || '+91 68753 4234'}
-                  </span>
+        {/* Days List */}
+        <div className="space-y-3">
+          {displayDays.map((day, index) => {
+            const isToday = day.isToday;
+            const dateKey = day.date.toISOString().split('T')[0];
+            const hasSlots = doctor?.slots?.find(slot => {
+              if (!slot.date) return false;
+              const slotDate = new Date(slot.date).toISOString().split('T')[0];
+              return slotDate === dateKey;
+            });
+            const editedTimes = editedSlots[dateKey];
+            const displayTimes = editedTimes !== undefined ? editedTimes : (hasSlots?.times || []);
+            
+            return (
+              <div key={index} className="flex gap-3">
+                <div className={`w-20 h-16 border border-black rounded-lg flex flex-col items-center justify-center ${
+                  isToday 
+                    ? 'bg-[#7551B2] text-white' 
+                    : 'bg-white text-gray-700'
+                }`}>
+                  <span className="text-xs font-medium">{day.dayName}</span>
+                  <span className="text-lg font-bold">{day.dayNumber}</span>
                 </div>
-
-                {/* Email */}
-                <div
-                  className="bg-[#c3b8dc] rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:bg-[#b8a8d4] transition-colors"
-                  onClick={() => {
-                    const email = doctor?.contactEmails?.[0] || 'support@doctor.com';
-                    const subject = `Inquiry about Dr. ${doctor?.user?.name || 'Doctor'}`;
-                    const body = `Hi Dr. ${doctor?.user?.name || 'Doctor'},
-
-I would like to inquire about your services.
-
-Best regards,
-[Your Name]`;
-
-                    window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-                  }}
-                >
-                  <div className="w-10 h-10 bg-black rounded-full flex items-center justify-center">
-                    <FaEnvelope className="w-5 h-5 text-white" />
-                  </div>
-                  <span className="text-lg font-bold text-black hover:text-black transition-colors" style={{fontWeight: 700}}>
-                    {doctor?.contactEmails?.[0] || 'support@doctor.com'}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Column - Timing */}
-        <div className="space-y-6">
-          {/* Timing Heading */}
-          <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">Timing</h3>
-            {user && user.role === "doctor" && doctor && user.id === doctor.user?._id && !isEditing && (
-              <button
-                onClick={() => setIsEditing(true)}
-                className="px-4 py-2 bg-[#7551B2] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm font-medium"
-              >
-                Edit Slots
-              </button>
-            )}
-          </div>
-          
-          {/* Timing Section */}
-          <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
-            {/* Edit Controls */}
-            {isEditing && (
-              <div className="mb-4 flex gap-3">
-                <button
-                  onClick={handleSaveSlots}
-                  disabled={saving}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium disabled:opacity-50"
-                >
-                  {saving ? 'Saving...' : 'Save Changes'}
-                </button>
-                <button
-                  onClick={handleCancelEdit}
-                  className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
-                >
-                  Cancel
-                </button>
-              </div>
-            )}
-
-            {/* Days List */}
-            <div className="space-y-3">
-              {displayDays.map((day, index) => {
-                const isToday = day.isToday;
-                const dateKey = day.date.toISOString().split('T')[0];
-                const hasSlots = doctor?.slots?.find(slot => {
-                  if (!slot.date) return false;
-                  const slotDate = new Date(slot.date).toISOString().split('T')[0];
-                  return slotDate === dateKey;
-                });
-                const editedTimes = editedSlots[dateKey];
-                const displayTimes = editedTimes !== undefined ? editedTimes : (hasSlots?.times || []);
-                
-                return (
-                  <div key={index} className="flex gap-3">
-                    <div className={`w-20 h-16 border border-black rounded-lg flex flex-col items-center justify-center ${
-                      isToday 
-                        ? 'bg-[#7551B2] text-white' 
-                        : 'bg-white text-gray-700'
-                    }`}>
-                      <span className="text-xs font-medium">{day.dayName}</span>
-                      <span className="text-lg font-bold">{day.dayNumber}</span>
-                    </div>
-                    <div className="flex-1 bg-white border border-black rounded-lg p-3">
-                      {isEditing ? (
-                        <div className="space-y-2">
-                          {displayTimes.map((time, timeIndex) => (
-                            <div key={timeIndex} className="flex items-center gap-2">
-                              <input
-                                type="text"
-                                value={time}
-                                onChange={(e) => updateTimeSlot(dateKey, timeIndex, e.target.value)}
-                                className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-[#7551B2]"
-                                placeholder="HH:MM AM/PM"
-                              />
-                              <button
-                                onClick={() => removeTimeSlot(dateKey, timeIndex)}
-                                className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
-                              >
-                                ×
-                              </button>
-                            </div>
-                          ))}
-                          {displayTimes.length < 2 && (
-                            <button
-                              onClick={() => addTimeSlot(dateKey)}
-                              className="w-full py-1 px-2 bg-gray-100 text-gray-600 rounded text-sm hover:bg-gray-200 transition-colors"
-                            >
-                              + Add Time Slot ({2 - displayTimes.length} remaining)
-                            </button>
-                          )}
-                          {displayTimes.length >= 2 && (
-                            <p className="w-full py-1 px-2 text-center text-xs text-gray-400 bg-gray-50 rounded">
-                              Maximum 2 slots reached
-                            </p>
-                          )}
+                <div className="flex-1 bg-white border border-black rounded-lg p-3">
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      {displayTimes.map((time, timeIndex) => (
+                        <div key={timeIndex} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={time}
+                            onChange={(e) => updateTimeSlot(dateKey, timeIndex, e.target.value)}
+                            className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-[#7551B2]"
+                            placeholder="HH:MM AM/PM"
+                          />
+                          <button
+                            onClick={() => removeTimeSlot(dateKey, timeIndex)}
+                            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ×
+                          </button>
                         </div>
-                      ) : (
-                        displayTimes.length > 0 ? (
-                        <div className="space-y-1">
-                            {displayTimes.length === 1 ? (
-                              <p className={`text-sm font-medium ${
-                                isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                              }`}>
-                                {displayTimes[0]}
-                              </p>
-                            ) : displayTimes.length === 2 ? (
-                              <p className={`text-sm font-medium ${
-                                isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                              }`}>
-                                {displayTimes[0]} - {displayTimes[1]}
-                              </p>
-                            ) : (
-                              displayTimes.map((time, timeIndex) => (
-                            <p key={timeIndex} className={`text-sm font-medium ${
-                              isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                            } ${isToday && timeIndex === 0 ? 'underline' : ''}`}>
-                              {time}
-                            </p>
-                              ))
-                            )}
-                        </div>
-                      ) : (
-                        <p className="text-sm text-gray-500 font-medium">
-                          {isToday
-                            ? (doctor?.noSlotsMessage || 'No slots available today')
-                            : (doctor?.defaultTiming || '7:00 AM to 9:30 PM')
-                          }
+                      ))}
+                      {displayTimes.length < 2 && (
+                        <button
+                          onClick={() => addTimeSlot(dateKey)}
+                          className="w-full py-1 px-2 bg-gray-100 text-gray-600 rounded text-sm hover:bg-gray-200 transition-colors"
+                        >
+                          + Add Time Slot ({2 - displayTimes.length} remaining)
+                        </button>
+                      )}
+                      {displayTimes.length >= 2 && (
+                        <p className="w-full py-1 px-2 text-center text-xs text-gray-400 bg-gray-50 rounded">
+                          Maximum 2 slots reached
                         </p>
-                        )
                       )}
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+                  ) : (
+                    displayTimes.length > 0 ? (
+                    <div className="space-y-1">
+                        {displayTimes.length === 1 ? (
+                          <p className={`text-sm font-medium ${
+                            isToday ? 'text-[#7551B2]' : 'text-gray-700'
+                          }`}>
+                            {displayTimes[0]}
+                          </p>
+                        ) : displayTimes.length === 2 ? (
+                          <p className={`text-sm font-medium ${
+                            isToday ? 'text-[#7551B2]' : 'text-gray-700'
+                          }`}>
+                            {displayTimes[0]} - {displayTimes[1]}
+                          </p>
+                        ) : (
+                          displayTimes.map((time, timeIndex) => (
+                        <p key={timeIndex} className={`text-sm font-medium ${
+                          isToday ? 'text-[#7551B2]' : 'text-gray-700'
+                        } ${isToday && timeIndex === 0 ? 'underline' : ''}`}>
+                          {time}
+                        </p>
+                          ))
+                        )}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-500 font-medium">
+                      {isToday
+                        ? (doctor?.noSlotsMessage || 'No slots available today')
+                        : (doctor?.defaultTiming || '7:00 AM to 9:30 PM')
+                      }
+                    </p>
+                    )
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

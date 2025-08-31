@@ -21,7 +21,7 @@ export default function Departments() {
 
       <div className="w-full min-h-screen bg-[#f4f4ff] lg:flex lg:flex-col">
         {/* Mobile Layout */}
-        <div className=" flex md:hidden  flex-col min-h-screen">
+        <div className=" flex block md:hidden  flex-col min-h-screen">
           {/* Header Section */}
           <div className="bg-[#7551b3] px-4 py-6 pb-8 flex-shrink-0">
             <SearchBar />
