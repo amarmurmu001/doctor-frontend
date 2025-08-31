@@ -71,10 +71,12 @@ const RoleSelection = () => {
                   </p>
                 </div>
                 <div className="ml-4 flex-shrink-0">
-                  <div className="w-20 h-20 bg-blue-100 rounded-xl flex items-center justify-center">
-                    <svg className="w-10 h-10 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
+                  <div className="w-20 h-20 rounded-xl overflow-hidden">
+                    <img 
+                      src="/icons/patient .png" 
+                      alt="Patient" 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
@@ -98,10 +100,12 @@ const RoleSelection = () => {
                   </p>
                 </div>
                 <div className="ml-4 flex-shrink-0">
-                  <div className="w-20 h-20 bg-green-100 rounded-xl flex items-center justify-center">
-                    <svg className="w-10 h-10 text-green-600" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M19 8h-2v3h-3v2h3v3h2v-3h3v-2h-3V8zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12z"/>
-                    </svg>
+                  <div className="w-20 h-20 rounded-xl overflow-hidden">
+                    <img 
+                      src="/icons/Doctor-role.png" 
+                      alt="Doctor" 
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
               </div>
