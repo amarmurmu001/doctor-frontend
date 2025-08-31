@@ -23,31 +23,6 @@ function TalkWithExpert() {
           <button className="bg-black rounded-lg text-white py-3 px-6 text-lg font-medium  hover:bg-gray-800 transition-colors">
             Ask a question
           </button>
-
-          <h3 className="text-gray-800 text-lg font-medium ">
-            Trending categories
-          </h3>
-
-          <div className="flex flex-wrap gap-4 mx-auto text-sm">
-            <a href="#" className="text-[#7551b3] hover:underline">
-              New cars &gt;
-            </a>
-            <a href="#" className="text-[#7551b3] hover:underline">
-              New Bikes &gt;
-            </a>
-            <a href="#" className="text-[#7551b3] hover:underline">
-              property for sale &gt;
-            </a>
-            <a href="#" className="text-[#7551b3] hover:underline">
-              Used car &gt;
-            </a>
-            <a href="#" className="text-[#7551b3] hover:underline">
-              Used Bikes &gt;
-            </a>
-            <a href="#" className="text-[#7551b3] hover:underline">
-              property for rent &gt;
-            </a>
-          </div>
         </div>
       </div>
   )

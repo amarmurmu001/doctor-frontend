@@ -1,7 +1,28 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, useState } from 'react';
+import useAuthStore from '../stores/useAuthStore';
 
-const ContactTab = ({ doctor }) => {
+const ContactTab = ({ doctor, onSlotsUpdated }) => {
   const mapRef = useRef(null);
+  const user = useAuthStore((s) => s.user);
+
+  // Editing state
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedSlots, setEditedSlots] = useState({});
+  const [saving, setSaving] = useState(false);
+
+  // Initialize edited slots when entering edit mode
+  useEffect(() => {
+    if (isEditing && doctor?.slots) {
+      const initialSlots = {};
+      doctor.slots.forEach(slot => {
+        const dateKey = slot.date ? new Date(slot.date).toISOString().split('T')[0] : null;
+        if (dateKey && slot.times && slot.times.length > 0) {
+          initialSlots[dateKey] = [...slot.times];
+        }
+      });
+      setEditedSlots(initialSlots);
+    }
+  }, [isEditing, doctor?.slots]);
 
   const initializeMap = useCallback(() => {
     if (!mapRef.current || !doctor?.address?.location?.coordinates || !window.google) return;
@@ -72,7 +93,7 @@ const ContactTab = ({ doctor }) => {
   const getNext7Days = () => {
     const days = [];
     const today = new Date();
-    
+
     for (let i = 0; i < 7; i++) {
       const date = new Date(today);
       date.setDate(today.getDate() + i);
@@ -86,7 +107,123 @@ const ContactTab = ({ doctor }) => {
     return days;
   };
 
-  const next7Days = getNext7Days();
+  // Get all 7 days of the current week (Sunday to Saturday) for editing
+  const getCurrentWeekDays = () => {
+    const days = [];
+    const today = new Date();
+    const currentDay = today.getDay(); // 0 = Sunday, 1 = Monday, etc.
+
+    // Get the Sunday of the current week
+    const sunday = new Date(today);
+    sunday.setDate(today.getDate() - currentDay);
+
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(sunday);
+      date.setDate(sunday.getDate() + i);
+      days.push({
+        date: date,
+        dayName: date.toLocaleDateString('en-US', { weekday: 'long' }).toUpperCase(),
+        dayNumber: date.getDate(),
+        isToday: date.toDateString() === today.toDateString()
+      });
+    }
+    return days;
+  };
+
+  const displayDays = isEditing ? getCurrentWeekDays() : getNext7Days();
+
+  // Helper functions for editing slots
+  const handleSlotChange = (dateKey, times) => {
+    setEditedSlots(prev => ({
+      ...prev,
+      [dateKey]: times
+    }));
+  };
+
+  const addTimeSlot = (dateKey) => {
+    const currentTimes = editedSlots[dateKey] || [];
+    if (currentTimes.length >= 2) {
+      alert('Maximum 2 time slots allowed per day');
+      return;
+    }
+    const newTime = currentTimes.length === 0 ? "09:00 AM" : "10:00 AM";
+    handleSlotChange(dateKey, [...currentTimes, newTime]);
+  };
+
+  const removeTimeSlot = (dateKey, index) => {
+    const currentTimes = editedSlots[dateKey] || [];
+    const newTimes = currentTimes.filter((_, i) => i !== index);
+    handleSlotChange(dateKey, newTimes);
+  };
+
+  const updateTimeSlot = (dateKey, index, newTime) => {
+    const currentTimes = editedSlots[dateKey] || [];
+    const newTimes = [...currentTimes];
+    newTimes[index] = newTime;
+    handleSlotChange(dateKey, newTimes);
+  };
+
+  const handleSaveSlots = async () => {
+    setSaving(true);
+    try {
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+      const token = localStorage.getItem("token");
+
+      // Convert edited slots to the format expected by the backend
+      const slotsToUpdate = Object.entries(editedSlots)
+        .filter(([, times]) => times.length > 0) // Only include dates with times
+        .map(([dateKey, times]) => ({
+          date: new Date(dateKey), // Convert string to Date object
+          times: times
+        }));
+
+      // If no slots to update, clear all slots
+      if (slotsToUpdate.length === 0) {
+        slotsToUpdate.push({ date: new Date(), times: [] });
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/doctors/me/slots`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ slots: slotsToUpdate })
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      }
+
+      await response.json();
+
+      // Update the doctor data to reflect changes
+      alert('Time slots updated successfully!');
+      setIsEditing(false);
+      setEditedSlots({});
+
+      // Notify parent component to refresh doctor data
+      if (onSlotsUpdated) {
+        onSlotsUpdated();
+      } else {
+        // Fallback to page reload if no callback provided
+        window.location.reload();
+      }
+
+    } catch (error) {
+      console.error('Error updating slots:', error);
+      alert(`Failed to update time slots: ${error.message}`);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedSlots({});
+  };
+
   return (
     <div className="space-y-6">
       {/* Location Heading */}
@@ -318,46 +455,151 @@ Best regards,
       </div>
 
       {/* Timing Heading */}
-      <h3 className="text-lg font-semibold">Timing</h3>
-      
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-semibold">Timing</h3>
+        {user && user.role === "doctor" && doctor && user.id === doctor.user?._id && !isEditing && (
+          <button
+            onClick={() => setIsEditing(true)}
+            className="px-4 py-2 bg-[#7551B2] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm font-medium"
+          >
+            Edit Slots
+          </button>
+        )}
+        {user && user.role === "doctor" && doctor && user.id !== doctor.user?._id && !isEditing && (
+          <button
+            onClick={() => {
+              if (navigator.share) {
+                navigator.share({
+                  title: `Dr. ${doctor?.user?.name} - Time Slots`,
+                  text: `Check out Dr. ${doctor?.user?.name}'s available time slots`,
+                  url: window.location.href,
+                });
+              } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert('Profile link copied to clipboard!');
+              }
+            }}
+            className="px-4 py-2 bg-[#7551B2] text-white rounded-lg hover:bg-[#6B46C1] transition-colors text-sm font-medium"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+            </svg>
+            Share
+          </button>
+        )}
+      </div>
+
       {/* Timing Section */}
       <div className="bg-[#f2f1f9] rounded-[20px] p-4 shadow-sm">
+        {/* Edit Controls */}
+        {isEditing && (
+          <div className="mb-4 flex gap-3">
+            <button
+              onClick={handleSaveSlots}
+              disabled={saving}
+              className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm font-medium disabled:opacity-50"
+            >
+              {saving ? 'Saving...' : 'Save Changes'}
+            </button>
+            <button
+              onClick={handleCancelEdit}
+              className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm font-medium"
+            >
+              Cancel
+            </button>
+          </div>
+        )}
+
         {/* Days List */}
         <div className="space-y-3">
-          {next7Days.map((day, index) => {
+          {displayDays.map((day, index) => {
             const isToday = day.isToday;
-            const hasSlots = doctor?.slots?.find(slot => 
-              new Date(slot.date).toDateString() === day.date.toDateString()
-            );
-            
+            const dateKey = day.date.toISOString().split('T')[0];
+            const hasSlots = doctor?.slots?.find(slot => {
+              if (!slot.date) return false;
+              const slotDate = new Date(slot.date).toISOString().split('T')[0];
+              return slotDate === dateKey;
+            });
+            const editedTimes = editedSlots[dateKey];
+            const displayTimes = editedTimes !== undefined ? editedTimes : (hasSlots?.times || []);
+
             return (
               <div key={index} className="flex gap-3">
                 <div className={`w-20 h-16 border border-black rounded-lg flex flex-col items-center justify-center ${
-                  isToday 
-                    ? 'bg-[#7551B2] text-white' 
+                  isToday
+                    ? 'bg-[#7551B2] text-white'
                     : 'bg-white text-gray-700'
                 }`}>
                   <span className="text-xs font-medium">{day.dayName}</span>
                   <span className="text-lg font-bold">{day.dayNumber}</span>
                 </div>
                 <div className="flex-1 bg-white border border-black rounded-lg p-3">
-                  {hasSlots && hasSlots.times?.length > 0 ? (
-                    <div className="space-y-1">
-                      {hasSlots.times.map((time, timeIndex) => (
-                        <p key={timeIndex} className={`text-sm font-medium ${
-                          isToday ? 'text-[#7551B2]' : 'text-gray-700'
-                        } ${isToday && timeIndex === 0 ? 'underline' : ''}`}>
-                          {time}
-                        </p>
+                  {isEditing ? (
+                    <div className="space-y-2">
+                      {displayTimes.map((time, timeIndex) => (
+                        <div key={timeIndex} className="flex items-center gap-2">
+                          <input
+                            type="text"
+                            value={time}
+                            onChange={(e) => updateTimeSlot(dateKey, timeIndex, e.target.value)}
+                            className="flex-1 px-2 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-[#7551B2]"
+                            placeholder="HH:MM AM/PM"
+                          />
+                          <button
+                            onClick={() => removeTimeSlot(dateKey, timeIndex)}
+                            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs hover:bg-red-600"
+                          >
+                            ×
+                          </button>
+                        </div>
                       ))}
+                      {displayTimes.length < 2 && (
+                        <button
+                          onClick={() => addTimeSlot(dateKey)}
+                          className="w-full py-1 px-2 bg-gray-100 text-gray-600 rounded text-sm hover:bg-gray-200 transition-colors"
+                        >
+                          + Add Time Slot ({2 - displayTimes.length} remaining)
+                        </button>
+                      )}
+                      {displayTimes.length >= 2 && (
+                        <p className="w-full py-1 px-2 text-center text-xs text-gray-400 bg-gray-50 rounded">
+                          Maximum 2 slots reached
+                        </p>
+                      )}
                     </div>
                   ) : (
-                    <p className="text-sm text-gray-500 font-medium">
-                      {isToday
-                        ? (doctor?.noSlotsMessage || 'No slots available today')
-                        : (doctor?.defaultTiming || '7:00 AM to 9:30 PM')
-                      }
-                    </p>
+                    displayTimes.length > 0 ? (
+                      <div className="space-y-1">
+                        {displayTimes.length === 1 ? (
+                          <p className={`text-sm font-medium ${
+                            isToday ? 'text-[#7551B2]' : 'text-gray-700'
+                          }`}>
+                            {displayTimes[0]}
+                          </p>
+                        ) : displayTimes.length === 2 ? (
+                          <p className={`text-sm font-medium ${
+                            isToday ? 'text-[#7551B2]' : 'text-gray-700'
+                          }`}>
+                            {displayTimes[0]} - {displayTimes[1]}
+                          </p>
+                        ) : (
+                          displayTimes.map((time, timeIndex) => (
+                            <p key={timeIndex} className={`text-sm font-medium ${
+                              isToday ? 'text-[#7551B2]' : 'text-gray-700'
+                            } ${isToday && timeIndex === 0 ? 'underline' : ''}`}>
+                              {time}
+                            </p>
+                          ))
+                        )}
+                      </div>
+                    ) : (
+                      <p className="text-sm text-gray-500 font-medium">
+                        {isToday
+                          ? (doctor?.noSlotsMessage || 'No slots available today')
+                          : (doctor?.defaultTiming || '7:00 AM to 9:30 PM')
+                        }
+                      </p>
+                    )
                   )}
                 </div>
               </div>

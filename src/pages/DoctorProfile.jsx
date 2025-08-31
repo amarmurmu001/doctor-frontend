@@ -131,6 +131,44 @@ const DoctorProfile = () => {
     setCurrentImageIndex(0);
   };
 
+  const handleSlotsUpdated = useCallback(async () => {
+    // Reload doctor data after slots are updated
+    try {
+      const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+      if (doctorId || doctorSlug) {
+        let res;
+        if (doctorSlug && !doctorId) {
+          res = await fetch(`${API_BASE_URL}/api/doctors/slug/${doctorSlug}`);
+        } else {
+          res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`);
+        }
+
+        if (!res.ok) throw new Error("Failed to reload doctor data");
+        const response = await res.json();
+        const doctorData = response.success ? response.data : response;
+        setDoctor(doctorData);
+      } else if (user && user.role === "doctor") {
+        const token = localStorage.getItem("token");
+        const res = await fetch(`${API_BASE_URL}/api/doctors/me/doctor-profile`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!res.ok) throw new Error("Failed to reload doctor profile");
+        const response = await res.json();
+        const doctorData = response.success ? response.data : response;
+        setDoctor(doctorData);
+      }
+    } catch (error) {
+      console.error('Error reloading doctor data:', error);
+      // Fallback to page reload if API call fails
+      window.location.reload();
+    }
+  }, [doctorId, doctorSlug, user]);
+
   useEffect(() => {
     async function loadDoctor() {
       try {
@@ -316,7 +354,7 @@ const DoctorProfile = () => {
               ←
             </button>
             <h1 className="text-white text-lg font-semibold">Doctor Profile</h1>
-            {user && user.role === "doctor" && !doctorId ? (
+            {user && user.role === "doctor" && doctor && user.id === doctor.user?._id ? (
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate("/doctor/edit")}
@@ -324,6 +362,29 @@ const DoctorProfile = () => {
                   title="Edit Profile"
                 >
                   ✎
+                </button>
+              </div>
+            ) : user && user.role === "doctor" && doctor && user.id !== doctor.user?._id ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: `Dr. ${doctor?.user?.name}`,
+                        text: `Check out Dr. ${doctor?.user?.name} - ${doctor?.specialty}`,
+                        url: window.location.href,
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('Profile link copied to clipboard!');
+                    }
+                  }}
+                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-sm font-semibold"
+                  title="Share Profile"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
                 </button>
               </div>
             ) : (
@@ -568,7 +629,7 @@ const DoctorProfile = () => {
 
           {activeTab === "Review" && <ReviewTab doctorId={actualDoctorId} />}
 
-          {activeTab === "Contact" && <ContactTab doctor={doctor} />}
+          {activeTab === "Contact" && <ContactTab doctor={doctor} onSlotsUpdated={handleSlotsUpdated} />}
         </div>
 
         {user && user.role === "doctor" && !doctorId && (
@@ -594,7 +655,7 @@ const DoctorProfile = () => {
           {/* Left Sidebar - Profile Card */}
           <div className="w-80 flex-shrink-0">
             <div className="bg-[#7551B2] rounded-2xl  p-6 sticky top-25">
-            {user && user.role === "doctor" && !doctorId ? (
+            {user && user.role === "doctor" && doctor && user.id === doctor.user?._id ? (
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => navigate("/doctor/edit")}
@@ -602,6 +663,29 @@ const DoctorProfile = () => {
                   title="Edit Profile"
                 >
                   ✎
+                </button>
+              </div>
+            ) : user && user.role === "doctor" && doctor && user.id !== doctor.user?._id ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    if (navigator.share) {
+                      navigator.share({
+                        title: `Dr. ${doctor?.user?.name}`,
+                        text: `Check out Dr. ${doctor?.user?.name} - ${doctor?.specialty}`,
+                        url: window.location.href,
+                      });
+                    } else {
+                      navigator.clipboard.writeText(window.location.href);
+                      alert('Profile link copied to clipboard!');
+                    }
+                  }}
+                  className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-black text-sm font-semibold"
+                  title="Share Profile"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z" />
+                  </svg>
                 </button>
               </div>
             ) : (
@@ -891,7 +975,7 @@ const DoctorProfile = () => {
                 <ReviewTab doctorId={actualDoctorId} />
               )}
 
-              {activeTab === "Contact" && <ContactTab doctor={doctor} />}
+              {activeTab === "Contact" && <ContactTab doctor={doctor} onSlotsUpdated={handleSlotsUpdated} />}
             </div>
 
             {user && user.role === "doctor" && !doctorId && (

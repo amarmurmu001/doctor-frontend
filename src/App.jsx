@@ -65,6 +65,7 @@ function AppShell() {
   const hideNav =
     location.pathname.toLowerCase().includes("profile") ||
     location.pathname.toLowerCase().includes("doctor/edit") ||
+    location.pathname.toLowerCase().includes("doctor/") ||
     location.pathname.toLowerCase().includes("auth") ||
     location.pathname.toLowerCase().includes("login") ||
     location.pathname.toLowerCase().includes("admin");
