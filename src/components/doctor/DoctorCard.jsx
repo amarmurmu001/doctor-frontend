@@ -12,6 +12,36 @@ export default function DoctorCard({
 }) {
   const navigate = useNavigate();
 
+  // Specialty icon mapping
+  const getSpecialtyIcon = (specialty) => {
+    const specialtyLower = specialty.toLowerCase();
+    
+    if (specialtyLower.includes('cardio') || specialtyLower.includes('heart')) {
+      return '/icons/cardiologist.PNG';
+    } else if (specialtyLower.includes('neuro')) {
+      return '/icons/neurologist.PNG';
+    } else if (specialtyLower.includes('ortho') || specialtyLower.includes('bone')) {
+      return '/icons/orthopaedist.PNG';
+    } else if (specialtyLower.includes('gynae') || specialtyLower.includes('obstetric')) {
+      return '/icons/gynaecologist.PNG';
+    } else if (specialtyLower.includes('dentistry') || specialtyLower.includes('dentist')) {
+      return '/icons/dentist.PNG';
+    } else if (specialtyLower.includes('endo') || specialtyLower.includes('diabetes')) {
+      return '/icons/endocrinologist.PNG';
+    } else if (specialtyLower.includes('onco') || specialtyLower.includes('cancer')) {
+      return '/icons/oncologist.PNG';
+    } else if (specialtyLower.includes('ayur')) {
+      return '/icons/ayurveda.PNG';
+    } else if (specialtyLower.includes('homeo')) {
+      return '/icons/homeopathic.PNG';
+    } else if (specialtyLower.includes('allopathic')) {
+      return '/icons/allopathic.PNG';
+    } else {
+      // Default icon for other specialties
+      return '/icons/doctor.PNG';
+    }
+  };
+
   // Debug: Log rating data when component renders
   console.log('🔍 DoctorCard rating data:', {
     name,
@@ -53,12 +83,12 @@ export default function DoctorCard({
       <div className="flex-1 ">
         <h3 className="font-semibold text-gray-800 text-lg">{name}</h3>
         <div className="flex items-center gap-2 mt-1">
-          <img src="/icons/real-icon.png" alt="heart" className="w-4 h-4" />
+          <img src={getSpecialtyIcon(specialty)} alt={specialty} className="w-4 h-4" />
           <span className="text-sm text-gray-700">{specialty}</span>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-600 ">
-          <span>🗣️</span>
-          <span >{languages?.join(', ')}</span>
+          <img src="/icons/language.png" alt="language" className="w-4 h-4" />
+          <span>{languages?.join(', ')}</span>
         </div>
         <div className="flex items-center gap-2 mt-3">
           <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-md text-xs font-semibold">
