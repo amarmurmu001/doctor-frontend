@@ -1,11 +1,12 @@
-import useAuthStore from '../../stores/useAuthStore'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { setOnboarding } from '../../stores/authSlice'
 import ProgressBar from '../../components/auth/ProgressBar'
 
 export default function AboutPersona(){
   const navigate = useNavigate()
-  const { persona } = useAuthStore(s=>s.onboarding)
-  const setOnboarding = useAuthStore(s=>s.setOnboarding)
+  const dispatch = useDispatch()
+  const { persona } = useSelector((state) => state.auth.onboarding)
 
   const steps = ['About', 'Registration', 'Location', 'Personal']
 
@@ -39,11 +40,11 @@ export default function AboutPersona(){
           {/* Persona Selection Cards */}
           <div className="space-y-4 mb-8">
             {/* Patient Card */}
-            <button 
-              onClick={()=>setOnboarding({ persona:'patient' })} 
+            <button
+              onClick={()=>dispatch(setOnboarding({ persona:'patient' }))}
               className={`w-full p-6 rounded-2xl border-2 text-left transition-all ${
-                persona==='patient' 
-                  ? 'border-purple-500 bg-purple-50' 
+                persona==='patient'
+                  ? 'border-purple-500 bg-purple-50'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
@@ -66,11 +67,11 @@ export default function AboutPersona(){
             </button>
 
             {/* Doctor Card */}
-            <button 
-              onClick={()=>setOnboarding({ persona:'doctor' })} 
+            <button
+              onClick={()=>dispatch(setOnboarding({ persona:'doctor' }))}
               className={`w-full p-6 rounded-2xl border-2 text-left transition-all ${
-                persona==='doctor' 
-                  ? 'border-purple-500 bg-purple-50' 
+                persona==='doctor'
+                  ? 'border-purple-500 bg-purple-50'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >

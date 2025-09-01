@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 
 const AdminBlogs = () => {
-  const { token } = useAuthStore();
+  const { token } = useSelector((state) => state.auth);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

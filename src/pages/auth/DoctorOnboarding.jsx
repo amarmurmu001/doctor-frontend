@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
-import useAuthStore from '../../stores/useAuthStore';
+import PageSeo from '../../components/seo/PageSeo.jsx';
+import { useSelector, useDispatch } from 'react-redux';
+import { setOnboarding, setAuth } from '../../stores/authSlice';
 import ProgressBar from '../../components/auth/ProgressBar';
 import DynamicInputList from '../../components/DynamicInputList';
 import GeolocationPicker from '../../components/GeolocationPicker';
@@ -11,9 +12,8 @@ import { submitDoctorApplication } from '../../services/authAPI';
 
 const DoctorOnboarding = () => {
   const navigate = useNavigate();
-  const setOnboarding = useAuthStore(s => s.setOnboarding);
-  const setAuth = useAuthStore(s => s.setAuth);
-  const onboarding = useAuthStore(s => s.onboarding);
+  const dispatch = useDispatch();
+  const onboarding = useSelector((state) => state.auth.onboarding);
   
   const [currentStep, setCurrentStep] = useState(1);
   const [submitting, setSubmitting] = useState(false);
@@ -244,15 +244,15 @@ const DoctorOnboarding = () => {
       }
       
       // Store detailed doctor information for verification process
-      setOnboarding({ 
+      dispatch(setOnboarding({
         ...onboarding,
         doctorDetails: formData,
         persona: 'doctor',
         token: result.token
-      });
-      
+      }));
+
       // Set authentication state
-      setAuth(result.user, result.token);
+      dispatch(setAuth({ user: result.user, token: result.token }));
       
       console.log('Doctor application submitted for verification');
       
@@ -840,18 +840,12 @@ const DoctorOnboarding = () => {
 
   return (
     <>
-      <Helmet defer={false}>
-        <title>Doctor Registration | Join Doctar Platform</title>
-        <meta name="description" content="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations." />
-        <meta name="keywords" content="doctor registration, join doctar, doctor sign up, register as a doctor, online consultation doctor registration, healthcare platform registration, doctor profile create, doctar doctor portal, doctor account signup" />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.doctar.in/auth/doctor-onboarding" />
-        <meta property="og:title" content="Doctor Registration | Join Doctar Platform" />
-        <meta property="og:description" content="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations." />
-        <meta property="og:url" content="https://www.doctar.in/auth/doctor-onboarding" />
-        <meta name="twitter:title" content="Doctor Registration | Join Doctar Platform" />
-        <meta name="twitter:description" content="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations." />
-      </Helmet>
+      <PageSeo
+        title="Doctor Registration | Join Doctar Platform"
+        description="Register as a doctor on Doctar to connect with patients, manage appointments, and grow your online presence. Join our trusted healthcare platform to provide expert consultations."
+        keywords="doctor registration, join doctar, doctor sign up, register as a doctor, online consultation doctor registration, healthcare platform registration, doctor profile create, doctar doctor portal, doctor account signup"
+        canonicalUrl="https://www.doctar.in/auth/doctor-onboarding"
+      />
 
       <div className="min-h-screen bg-gray-50">
       {/* Progress Bar */}

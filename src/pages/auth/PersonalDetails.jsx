@@ -1,12 +1,12 @@
-import useAuthStore from '../../stores/useAuthStore'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
 import { useState } from 'react'
+import { setOnboarding } from '../../stores/authSlice'
 
 export default function PersonalDetails(){
   const navigate = useNavigate()
-  const onboarding = useAuthStore(s=>s.onboarding)
-  const setOnboarding = useAuthStore(s=>s.setOnboarding)
-  // const setAuth = useAuthStore(s=>s.setAuth)
+  const dispatch = useDispatch()
+  const onboarding = useSelector((state) => state.auth.onboarding)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -53,11 +53,11 @@ export default function PersonalDetails(){
             <label className="block text-sm font-medium text-gray-900 mb-4">Sex</label>
             <div className="flex gap-6 justify-center">
               {/* Male */}
-              <button 
-                onClick={()=>setOnboarding({ gender:'male' })} 
+              <button
+                onClick={()=>dispatch(setOnboarding({ gender:'male' }))}
                 className={`flex flex-col items-center p-4 rounded-xl transition-all ${
-                  onboarding.gender === 'male' 
-                    ? 'bg-blue-50 text-blue-600' 
+                  onboarding.gender === 'male'
+                    ? 'bg-blue-50 text-blue-600'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
@@ -72,11 +72,11 @@ export default function PersonalDetails(){
               </button>
 
               {/* Female */}
-              <button 
-                onClick={()=>setOnboarding({ gender:'female' })} 
+              <button
+                onClick={()=>dispatch(setOnboarding({ gender:'female' }))}
                 className={`flex flex-col items-center p-4 rounded-xl transition-all ${
-                  onboarding.gender === 'female' 
-                    ? 'bg-pink-50 text-pink-600' 
+                  onboarding.gender === 'female'
+                    ? 'bg-pink-50 text-pink-600'
                     : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
@@ -95,11 +95,11 @@ export default function PersonalDetails(){
           {/* Age field */}
           <div className="mb-8">
             <label className="block text-sm font-medium text-gray-900 mb-3">Age</label>
-            <input 
-              value={onboarding.dob || ''} 
-              onChange={e=>setOnboarding({ dob: e.target.value })} 
-              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white" 
-              placeholder="DD/MM/YYYY" 
+            <input
+              value={onboarding.dob || ''}
+              onChange={e=>dispatch(setOnboarding({ dob: e.target.value }))}
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white"
+              placeholder="DD/MM/YYYY"
             />
           </div>
 

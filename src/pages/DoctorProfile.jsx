@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import useAuthStore from "../stores/useAuthStore";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../stores/authSlice";
 import ReviewTab from "../components/ReviewTab";
 import ContactTab from "../components/ContactTab";
 import SeoDoctorProfile from "../components/seo/SeoDoctorProfile";
@@ -104,9 +105,9 @@ const ImageModal = ({ isOpen, onClose, images, currentIndex, setCurrentIndex }) 
 
 const DoctorProfile = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { doctorId, location, doctorSlug } = useParams();
-  const user = useAuthStore((s) => s.user);
-  const logout = useAuthStore((s) => s.logout);
+  const user = useSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState("About");
   const [doctor, setDoctor] = useState(null);
   const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug);
@@ -637,7 +638,7 @@ const DoctorProfile = () => {
           <div className="p-4">
             <button
               onClick={() => {
-                logout();
+                dispatch(logout());
                 navigate("/login");
               }}
               className="w-full bg-red-500 text-white py-2 rounded-md"
@@ -1015,7 +1016,7 @@ const DoctorProfile = () => {
               <div className="mt-6 p-4">
                 <button
                   onClick={() => {
-                    logout();
+                    dispatch(logout());
                     navigate("/login");
                   }}
                   className="w-full bg-red-500 hover:bg-red-600 text-white py-3  rounded-xl font-medium transition-colors"

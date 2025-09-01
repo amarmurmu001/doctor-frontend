@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { getDashboardStats } from '../../services/adminAPI';
-import useAuthStore from '../../stores/useAuthStore';
-import useAdminStore from '../../stores/adminStore';
+import { updateStats } from '../../stores/adminSlice';
 
 const AdminHome = () => {
-  const { token } = useAuthStore();
-  const { stats, updateStats } = useAdminStore();
+  const dispatch = useDispatch();
+  const { token } = useSelector((state) => state.auth);
+  const { stats } = useSelector((state) => state.admin);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [refreshTime, setRefreshTime] = useState(new Date());
@@ -16,7 +17,7 @@ const AdminHome = () => {
         setIsLoading(true);
         setError('');
         const data = await getDashboardStats(token);
-        updateStats(data);
+        dispatch(updateStats(data));
         setRefreshTime(new Date());
       } catch (error) {
         console.error('Error fetching admin stats:', error);
@@ -33,7 +34,7 @@ const AdminHome = () => {
       const interval = setInterval(fetchStats, 5 * 60 * 1000);
       return () => clearInterval(interval);
     }
-  }, [token, updateStats]);
+  }, [token, dispatch]);
 
   const StatCard = ({ title, value, icon, color, change, description }) => (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow duration-200">

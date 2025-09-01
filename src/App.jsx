@@ -9,7 +9,8 @@ import {
 import Loader from "./components/layout/Loader";
 import ErrorBoundary from "./components/layout/ErrorBoundary";
 const Home = lazy(() => import("./pages/Home"));
-import useLocationStore from "./stores/locationStore";
+import { useDispatch } from 'react-redux';
+import { initializeLocation } from './stores/locationSlice';
 import Nav from "./components/layout/Nav";
 import SubDepartments from "./pages/subDepartments";
 import Doctors from "./pages/doctors";
@@ -63,6 +64,7 @@ import ScrollToTop from "./utils/scrollOnTop";
 
 function AppShell() {
   const location = useLocation();
+  const dispatch = useDispatch();
   const hideNav =
     location.pathname.toLowerCase().includes("profile") ||
     location.pathname.toLowerCase().includes("doctor/edit") ||
@@ -71,14 +73,10 @@ function AppShell() {
     location.pathname.toLowerCase().includes("login") ||
     location.pathname.toLowerCase().includes("admin");
 
-  const initializeLocation = useLocationStore(
-    (state) => state.initializeLocation
-  );
-
   useEffect(() => {
     console.log("🚀 App started - initializing location...");
-    initializeLocation();
-  }, [initializeLocation]);
+    dispatch(initializeLocation());
+  }, [dispatch]);
 
   return (
     <ErrorBoundary>

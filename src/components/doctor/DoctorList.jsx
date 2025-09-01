@@ -1,10 +1,36 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
 import DoctorCard from "./DoctorCard";
-import useLocationStore from "../../stores/locationStore";
 import { useNavigate } from "react-router-dom";
 
 export default function DoctorsList() {
-  const { selectedLocation, expandLocationToCities } = useLocationStore();
+  const { selectedLocation } = useSelector((state) => state.location);
+
+  // Utility function for expanding location to cities
+  const expandLocationToCities = useCallback((location) => {
+    const stateMapping = {
+      'Jharkhand': ['Dhanbad', 'Deoghar', 'Ranchi', 'Jamshedpur', 'Bokaro', 'Hazaribagh', 'Giridih'],
+      'West Bengal': ['Kolkata', 'Howrah', 'Durgapur', 'Siliguri'],
+      'Uttar Pradesh': ['Sahjahanpur', 'Lucknow', 'Kanpur', 'Agra', 'Varanasi'],
+      'Bihar': ['Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur'],
+      'Eastern India': ['Dhanbad', 'Deoghar', 'Kolkata', 'Howrah', 'Patna'],
+      'Northern India': ['Delhi', 'Sahjahanpur', 'Lucknow', 'Patna']
+    };
+
+    const locationLower = location.toLowerCase();
+
+    // Check if it's a state name
+    for (const [state, cities] of Object.entries(stateMapping)) {
+      if (state.toLowerCase() === locationLower ||
+          state.toLowerCase().includes(locationLower) ||
+          locationLower.includes(state.toLowerCase())) {
+        return cities;
+      }
+    }
+
+    // If not a state, return the original location
+    return [location];
+  }, []);
   const navigate = useNavigate();
   const [doctors, setDoctors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -94,7 +120,8 @@ export default function DoctorsList() {
 
   useEffect(() => {
     fetchDoctors();
-  }, [fetchDoctors]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedLocation]);
 
   function mapDoctorToCardProps(doctor) {
     // Handle different possible data structures
@@ -221,17 +248,6 @@ export default function DoctorsList() {
           ))}
         </div>
       )}
-      
-      {/* Add scrollbar hiding styles */}
-      <style jsx>{`
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-      `}</style>
 
       {/* Empty state (when no error but no doctors) */}
       {!error && !loading && doctors.length === 0 && selectedLocation && (

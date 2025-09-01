@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import useAuthStore from "../../../stores/useAuthStore";
+import { useSelector } from "react-redux";
 import FeaturesList from "./FeaturesList";
 
 const WhyChooseUs = ({
@@ -13,8 +13,8 @@ const WhyChooseUs = ({
   onButtonClick = () => {},
 }) => {
   const navigate = useNavigate();
-  const user = useAuthStore((s) => s.user);
-  const token = useAuthStore((s) => s.token);
+  const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
 
   // Check if user is signed in
   const isSignedIn = user && token;

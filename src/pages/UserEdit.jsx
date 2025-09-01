@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../stores/useAuthStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { setAuth, updateProfileImage } from '../stores/authSlice';
 import { updateUserProfile, uploadProfileImage } from '../services/authAPI';
 
 const initialForm = {
@@ -15,10 +16,9 @@ const initialForm = {
 
 function UserEdit() {
   const navigate = useNavigate();
-  const token = useAuthStore(s => s.token);
-  const user = useAuthStore(s => s.user);
-  const setAuth = useAuthStore(s => s.setAuth);
-  const updateUserImage = useAuthStore(s => s.updateUserImage);
+  const dispatch = useDispatch();
+  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(true);
@@ -98,7 +98,7 @@ function UserEdit() {
       const result = await uploadProfileImage(imageFile, token);
       
       if (result.success) {
-        updateUserImage(result.data.image);
+        dispatch(updateProfileImage(result.data.image));
         setSuccess('Profile image updated successfully!');
         return result.data.image;
       }
@@ -141,7 +141,7 @@ function UserEdit() {
       
       // Update the auth store with new user data
       const updatedUser = { ...user, ...profileData };
-      setAuth(updatedUser, token);
+      dispatch(setAuth({ user: updatedUser, token }));
       
       setSuccess('Profile updated successfully!');
       

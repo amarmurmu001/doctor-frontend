@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 import { getAllNews, createNews, updateNews, deleteNews } from '../../services/adminAPI';
 
 const AdminNews = () => {
-  const { token } = useAuthStore();
+  const { token } = useSelector((state) => state.auth);
   const [news, setNews] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

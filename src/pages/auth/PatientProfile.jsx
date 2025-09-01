@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { setOnboarding, setAuth, completeOnboarding } from '../../stores/authSlice';
 import ProgressBar from '../../components/auth/ProgressBar';
 import { completePatientProfile } from '../../services/authAPI';
 
 const PatientProfile = () => {
   const navigate = useNavigate();
-  const setOnboarding = useAuthStore(s => s.setOnboarding);
-  const setAuth = useAuthStore(s => s.setAuth);
-  const completeOnboarding = useAuthStore(s => s.completeOnboarding);
-  const onboarding = useAuthStore(s => s.onboarding);
+  const dispatch = useDispatch();
+  const onboarding = useSelector((state) => state.auth.onboarding);
   
   const [profileData, setProfileData] = useState({
     dateOfBirth: '',
@@ -49,10 +48,10 @@ const PatientProfile = () => {
       );
       
       // Set authentication state
-      setAuth(result.user, result.token);
-      
+      dispatch(setAuth({ user: result.user, token: result.token }));
+
       // Clear onboarding data
-      completeOnboarding();
+      dispatch(completeOnboarding());
       
       console.log('Patient profile completed successfully');
       

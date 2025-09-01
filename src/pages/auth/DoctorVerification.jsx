@@ -1,10 +1,10 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 
 const DoctorVerification = () => {
   const navigate = useNavigate();
-  const onboarding = useAuthStore(s => s.onboarding);
+  const onboarding = useSelector((state) => state.auth.onboarding);
 
   return (
     <div className="min-h-screen bg-gray-50">

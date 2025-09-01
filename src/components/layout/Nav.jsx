@@ -1,22 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useLocationStore from "../../stores/locationStore";
-import useAuthStore from "../../stores/useAuthStore";
+import { useSelector, useDispatch } from 'react-redux';
+import { updateLocation } from '../../stores/locationSlice';
+import { getCurrentLocation } from '../../stores/locationSlice';
+import { logout } from '../../stores/authSlice';
 import SearchBar from "../search/SearchBar";
 
 function Nav() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  // Location store state
   const {
     selectedLocation,
     availableLocations,
-    updateLocation,
-    refreshLocation,
     locationLoading,
-  } = useLocationStore();
+  } = useSelector((state) => state.location);
 
-  const user = useAuthStore((s) => s.user);
-  const token = useAuthStore((s) => s.token);
-  const logout = useAuthStore((s) => s.logout);
+  // Auth store state
+  const user = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
 
   const [open, setOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -107,7 +110,7 @@ function Nav() {
             <div className="absolute transition-all duration-300 left-0 md:left-4 top-full mt-2 w-72 sm:w-80 max-h-[70vh] overflow-auto bg-white shadow-xl rounded-2xl z-50 p-3">
               <button
                 onClick={() => {
-                  if (!locationLoading) refreshLocation();
+                  if (!locationLoading) dispatch(getCurrentLocation());
                   setOpen(false);
                 }}
                 className="w-full flex items-center gap-2 text-[#7551B2] hover:bg-[#f4f4ff] px-3 py-2 rounded-lg"
@@ -135,7 +138,7 @@ function Nav() {
                     <button
                       key={name}
                       onClick={() => {
-                        updateLocation(name);
+                        dispatch(updateLocation(name));
                         setOpen(false);
                       }}
                       className="rounded-lg overflow-hidden border hover:shadow-sm transition"
@@ -163,7 +166,7 @@ function Nav() {
                     <button
                       key={loc}
                       onClick={() => {
-                        updateLocation(loc);
+                        dispatch(updateLocation(loc));
                         setOpen(false);
                       }}
                       className="w-full flex items-center justify-between text-left text-sm py-2 hover:bg-gray-50 px-2"
@@ -284,7 +287,7 @@ function Nav() {
 
                     <button
                       onClick={() => {
-                        logout();
+                        dispatch(logout());
                         navigate("/login");
                         setMobileMenuOpen(false);
                       }}

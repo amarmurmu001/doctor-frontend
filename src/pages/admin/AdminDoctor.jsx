@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 import DynamicInputList from '../../components/DynamicInputList';
 import GeolocationPicker from '../../components/GeolocationPicker';
 import TimeSlotPicker from '../../components/TimeSlotPicker';
 
 const AdminDoctors = () => {
-  const { token, user } = useAuthStore();
+  const { token, user } = useSelector((state) => state.auth);
   
   // ✅ State Management - Initialize as empty arrays
   const [doctors, setDoctors] = useState([]);

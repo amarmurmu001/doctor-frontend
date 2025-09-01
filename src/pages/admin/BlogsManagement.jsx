@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 import { getAllBlogs, createBlog, updateBlog, deleteBlog } from '../../services/adminAPI';
 
 const BlogsManagement = () => {
   // State management
-  const { token, user } = useAuthStore();
+  const { token, user } = useSelector((state) => state.auth);
   const [blogs, setBlogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

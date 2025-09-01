@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 
 const AdminAppointments = () => {
-  const { token } = useAuthStore();
+  const { token } = useSelector((state) => state.auth);
   // ✅ Initialize as empty array to prevent filter error
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);

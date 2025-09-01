@@ -6,17 +6,21 @@ const PageSeo = ({
   description,
   keywords,
   canonicalUrl,
-  imageUrl = "https://www.doctar.in/banner.png",
+  imageUrl,
   pageType = "website",
   noIndex = false
 }) => {
   // Fallback to default values if not provided
   const defaultTitle = "Doctar | Direct Consultation with Doctors in India";
   const defaultDescription = "Connect to India's Top Doctors for consultation. Get direct connect with Doctors & Clinics, book doctor appointments, and find premier multispecialty doctors near you.";
+  const defaultKeywords = "Doctar, Cardiologist Doctors, Oncologist Doctors, Obstetrician Doctors,Neurologist Doctors, Gynaecologist Doctors, Orthopaedist Doctors, Endocrinologist Doctors,Diabetologist Doctors, Psychiatrist Doctors, General Physician Doctors, ENT Specialist Doctors, Ophthalmologist Doctors, Dermatologist Doctors, Gastroenterologist Doctors, Pediatrician Doctors, Urologist Doctors, General Surgeons Doctors, General Medicine Doctors, Allopathic Doctors, Ayurveda Doctors, Homeopathic Doctors, Dentist Doctors";
+
   
   const finalTitle = title || defaultTitle;
   const finalDescription = description || defaultDescription;
+  const finalKeywords = keywords || defaultKeywords;
   const finalCanonicalUrl = canonicalUrl || "https://www.doctar.in";
+
 
   return (
     <Helmet defer={false}>
@@ -24,7 +28,7 @@ const PageSeo = ({
       <title>{finalTitle}</title>
       <meta name="title" content={finalTitle} />
       <meta name="description" content={finalDescription} />
-      {keywords && <meta name="keywords" content={keywords} />}
+      <meta name="keywords" content={finalKeywords} />
       <link rel="canonical" href={finalCanonicalUrl} />
       
       {/* Open Graph / Facebook */}

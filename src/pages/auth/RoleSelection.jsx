@@ -1,15 +1,16 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { setOnboarding } from '../../stores/authSlice';
 import ProgressBar from '../../components/auth/ProgressBar';
 
 const RoleSelection = () => {
   const navigate = useNavigate();
-  const { persona } = useAuthStore(s => s.onboarding);
-  const setOnboarding = useAuthStore(s => s.setOnboarding);
+  const dispatch = useDispatch();
+  const { persona } = useSelector((state) => state.auth.onboarding);
 
   const handleRoleSelection = (selectedRole) => {
-    setOnboarding({ persona: selectedRole });
+    dispatch(setOnboarding({ persona: selectedRole }));
     
     if (selectedRole === 'doctor') {
       // Redirect to comprehensive doctor onboarding

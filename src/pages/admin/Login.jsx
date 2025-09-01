@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { loginUser } from '../../services/authAPI';
-import useAuthStore from '../../stores/useAuthStore';
+import { setAuth } from '../../stores/authSlice';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const setAuth = useAuthStore(state => state.setAuth);
+  const dispatch = useDispatch();
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -33,7 +34,7 @@ const AdminLogin = () => {
       }
       
       // Set auth state first - make this synchronous if possible
-      setAuth(response.user, response.token);
+      dispatch(setAuth({ user: response.user, token: response.token }));
       
       // Add a small delay to ensure state updates
       setTimeout(() => {

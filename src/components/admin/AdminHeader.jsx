@@ -1,15 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import useAuthStore from '../../stores/useAuthStore';
-import useAdminStore from '../../stores/adminStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../stores/authSlice';
+import { markNotificationAsRead } from '../../stores/adminSlice';
 
 const AdminHeader = ({ mobileOpen, setMobileOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const dispatch = useDispatch();
   const dropdownRef = useRef(null);
-  
-  const { user, logout } = useAuthStore();
-  const { notifications, markNotificationAsRead } = useAdminStore();
+
+  const { user } = useSelector((state) => state.auth);
+  const { notifications } = useSelector((state) => state.admin);
   
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -28,7 +30,7 @@ const AdminHeader = ({ mobileOpen, setMobileOpen }) => {
   }, []);
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate('/admin/login', { replace: true });
   };
 
@@ -114,7 +116,7 @@ const AdminHeader = ({ mobileOpen, setMobileOpen }) => {
                       <div 
                         key={index}
                         className={`px-4 py-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0 ${!notification.read ? 'bg-blue-50' : ''}`}
-                        onClick={() => markNotificationAsRead(notification.id)}
+                        onClick={() => dispatch(markNotificationAsRead(notification.id))}
                       >
                         <p className="text-sm text-gray-900">{notification.title}</p>
                         <p className="text-xs text-gray-500 mt-1">{notification.message}</p>

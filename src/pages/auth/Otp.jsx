@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
 import { verifyOtp, resendOtp, sendOtp } from '../../services/authAPI'
-import useAuthStore from '../../stores/useAuthStore'
+import { setOnboarding } from '../../stores/authSlice'
 import ProgressBar from '../../components/auth/ProgressBar'
 
 export default function Otp(){
   const navigate = useNavigate()
-  const { email, otpSent } = useAuthStore(s => s.onboarding)
-  const setOnboarding = useAuthStore(s => s.setOnboarding)
+  const dispatch = useDispatch()
+  const { email, otpSent } = useSelector((state) => state.auth.onboarding)
   const [code, setCode] = useState(['', '', '', ''])
   const [error, setError] = useState('')
   const [submitting, setSubmitting] = useState(false)
@@ -104,7 +105,7 @@ export default function Otp(){
     setSubmitting(true)
     try{
       await verifyOtp({ email, otp: code.join(''), role: 'pending' })
-      setOnboarding({ otpVerified: true })
+      dispatch(setOnboarding({ otpVerified: true }))
       navigate('/auth/role-selection')
     }catch(err){
       setError(err.message || 'Invalid OTP')

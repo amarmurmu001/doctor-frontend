@@ -1,9 +1,9 @@
 import React from 'react';
 import DynamicFAQ from '../FAQ/DynamicFAQ';
-import useLocationStore from '../../stores/locationStore';
+import { useSelector } from 'react-redux';
 
 const HomeFAQ = () => {
-  const { selectedLocation } = useLocationStore();
+  const { selectedLocation } = useSelector((state) => state.location);
 
   return (
     <div className="bg-gradient-to-b from-[#7551B2] to-[#5a3d8a] w-full py-12">

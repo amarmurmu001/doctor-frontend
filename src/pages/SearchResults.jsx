@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import DoctorCard from '../components/doctor/DoctorCard';
 
-import useLocationStore from '../stores/locationStore';
 import PageSeo from '../components/seo/PageSeo';
 import DynamicFAQ from '../components/FAQ/DynamicFAQ';
 
@@ -402,7 +402,7 @@ const normalizeMedicalTerm = (term) => {
 const SearchResults = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { selectedLocation } = useLocationStore();
+  const { selectedLocation } = useSelector((state) => state.location);
   
   const searchTerm = searchParams.get('q') || '';
   const searchType = searchParams.get('type') || '';

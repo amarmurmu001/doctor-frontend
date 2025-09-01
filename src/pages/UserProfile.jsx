@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import useAuthStore from '../stores/useAuthStore';
+import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { logout, setAuth } from '../stores/authSlice';
 import { getCurrentUser } from '../services/authAPI';
 
 function UserProfile() {
   const navigate = useNavigate();
-  const storedUser = useAuthStore(s => s.user);
-  const token = useAuthStore(s => s.token);
-  const logout = useAuthStore(s => s.logout);
-  const setAuth = useAuthStore(s => s.setAuth);
+  const dispatch = useDispatch();
+  const storedUser = useSelector((state) => state.auth.user);
+  const token = useSelector((state) => state.auth.token);
   const [user, setUser] = useState(storedUser);
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -34,7 +34,7 @@ function UserProfile() {
         
         // Update local state and auth store with fresh data
         setUser(freshUserData);
-        setAuth(freshUserData, token);
+        dispatch(setAuth({ user: freshUserData, token }));
         setHasLoadedUserData(true);
         
       } catch (e) {
@@ -375,7 +375,7 @@ function UserProfile() {
           <div className="bg-white rounded-2xl shadow p-6">
             <button
               onClick={() => {
-                logout();
+                dispatch(logout());
                 navigate('/login');
               }}
               className="w-full bg-red-600 hover:bg-red-700 text-white py-3 rounded-lg font-medium transition-colors"

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAuthStore from '../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 import { addDoctorAward, uploadProfileImage } from '../services/authAPI';
 
 const initialForm = {
@@ -28,8 +28,8 @@ const initialForm = {
 
 function DoctorEdit() {
   const navigate = useNavigate();
-  const token = useAuthStore(s => s.token);
-  const user = useAuthStore(s => s.user);
+  const token = useSelector((state) => state.auth.token);
+  const user = useSelector((state) => state.auth.user);
   
   const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(true);

@@ -1,10 +1,11 @@
-import useAuthStore from '../../stores/useAuthStore'
+import { useSelector, useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
+import { setOnboarding } from '../../stores/authSlice'
 
 export default function LocationInfo(){
   const navigate = useNavigate()
-  const { city, language } = useAuthStore(s=>s.onboarding)
-  const setOnboarding = useAuthStore(s=>s.setOnboarding)
+  const dispatch = useDispatch()
+  const { city, language } = useSelector((state) => state.auth.onboarding)
 
   return (
     <div className="min-h-screen bg-white" style={{
@@ -39,11 +40,11 @@ export default function LocationInfo(){
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-3">Select your location</label>
               <div className="relative">
-                <input 
-                  value={city} 
-                  onChange={e=>setOnboarding({ city: e.target.value })} 
-                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white" 
-                  placeholder="e.g., Mumbai, Delhi, Kolkata" 
+                <input
+                  value={city}
+                  onChange={e=>dispatch(setOnboarding({ city: e.target.value }))}
+                  className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white"
+                  placeholder="e.g., Mumbai, Delhi, Kolkata"
                   list="city-suggestions"
                 />
                 <datalist id="city-suggestions">
@@ -75,11 +76,11 @@ export default function LocationInfo(){
             {/* App Language field */}
             <div>
               <label className="block text-sm font-medium text-gray-900 mb-3">App Language</label>
-              <input 
-                value={language} 
-                onChange={e=>setOnboarding({ language: e.target.value })} 
-                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white" 
-                placeholder="English" 
+              <input
+                value={language}
+                onChange={e=>dispatch(setOnboarding({ language: e.target.value }))}
+                className="w-full border border-gray-200 rounded-lg px-4 py-3 text-gray-900 placeholder-gray-400 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 focus:outline-none bg-white"
+                placeholder="English"
               />
             </div>
 

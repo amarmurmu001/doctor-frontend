@@ -19,7 +19,7 @@ import HomeFAQ from "../components/home/HomeFAQ.jsx";
 import Footer from "../components/layout/Footer.jsx";
 import QueryGrid from "../components/home/QueryGrid.jsx";
 
-import DefaultSeo from "../components/seo/DefaultSeo.jsx";
+import PageSeo from "../components/seo/PageSeo.jsx";
 
 
 export default function Home() {
@@ -28,8 +28,8 @@ export default function Home() {
   
   return (
     <>
-      {/* Default SEO for Home page - resets any doctor profile meta tags */}
-      <DefaultSeo />
+      {/* Dynamic SEO for Home page - resets any doctor profile meta tags */}
+      <PageSeo />
       
       <div className="min-h-screen relative">
       {/* Purple Header Background - Full Width */}

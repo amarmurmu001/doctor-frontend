@@ -1,19 +1,24 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 import UserEdit from '../pages/UserEdit';
 import { updateUserProfile } from '../services/authAPI';
-import useAuthStore from '../stores/authStore';
+import authSlice from '../stores/authSlice';
 
 // Mock the API service
 jest.mock('../services/authAPI', () => ({
   updateUserProfile: jest.fn(),
 }));
 
-// Mock the auth store
-jest.mock('../stores/authStore', () => ({
-  __esModule: true,
-  default: jest.fn(),
-}));
+// Create a test store
+const createTestStore = () => {
+  return configureStore({
+    reducer: {
+      auth: authSlice,
+    },
+  });
+};
 
 // Mock the navigate function
 const mockNavigate = jest.fn();
@@ -37,19 +42,6 @@ describe('UserEdit Component', () => {
   beforeEach(() => {
     // Reset mocks
     jest.clearAllMocks();
-    
-    // Setup auth store mock
-    useAuthStore.mockImplementation((selector) => {
-      if (selector === expect.any(Function)) {
-        const state = {
-          user: mockUser,
-          token: mockToken,
-          setAuth: mockSetAuth,
-        };
-        return selector(state);
-      }
-      return undefined;
-    });
 
     // Setup API mock
     updateUserProfile.mockResolvedValue({
@@ -61,10 +53,15 @@ describe('UserEdit Component', () => {
   });
 
   test('renders the form with user data', () => {
+    const store = createTestStore();
+    store.dispatch({ type: 'auth/setAuth', payload: { user: mockUser, token: mockToken } });
+
     render(
-      <BrowserRouter>
-        <UserEdit />
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <UserEdit />
+        </BrowserRouter>
+      </Provider>
     );
 
     // Check if form fields are populated with user data
@@ -74,10 +71,15 @@ describe('UserEdit Component', () => {
   });
 
   test('updates user profile on form submission', async () => {
+    const store = createTestStore();
+    store.dispatch({ type: 'auth/setAuth', payload: { user: mockUser, token: mockToken } });
+
     render(
-      <BrowserRouter>
-        <UserEdit />
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <UserEdit />
+        </BrowserRouter>
+      </Provider>
     );
 
     // Update form fields
@@ -129,10 +131,15 @@ describe('UserEdit Component', () => {
     // Setup API to fail
     updateUserProfile.mockRejectedValue(new Error('Update failed'));
 
+    const store = createTestStore();
+    store.dispatch({ type: 'auth/setAuth', payload: { user: mockUser, token: mockToken } });
+
     render(
-      <BrowserRouter>
-        <UserEdit />
-      </BrowserRouter>
+      <Provider store={store}>
+        <BrowserRouter>
+          <UserEdit />
+        </BrowserRouter>
+      </Provider>
     );
 
     // Submit the form

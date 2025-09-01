@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Navigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import AdminHeader from '../../components/admin/AdminHeader';
-import useAuthStore from '../../stores/useAuthStore';
-import useAdminStore from '../../stores/adminStore';
+import { fetchDashboardData } from '../../stores/adminSlice';
 
 const AdminDashboard = () => {
+  const dispatch = useDispatch();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const user = useAuthStore(state => state.user);
-  const isAuthenticated = useAuthStore(state => state.isAuthenticated);
-  
-  // Admin store for dashboard state
-  const { sidebarCollapsed, notifications, dashboardData, fetchDashboardData } = useAdminStore();
+
+  // Auth state
+  const user = useSelector((state) => state.auth.user);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  // Admin state
+  const { sidebarCollapsed, notifications, dashboardData } = useSelector((state) => state.admin);
 
   // Check authentication and role
   useEffect(() => {
@@ -22,8 +25,8 @@ const AdminDashboard = () => {
     }
     
     // Load dashboard data
-    fetchDashboardData().finally(() => setLoading(true));
-  }, [user, isAuthenticated, fetchDashboardData]);
+    dispatch(fetchDashboardData()).finally(() => setLoading(true));
+  }, [user, isAuthenticated, dispatch]);
 
   // Auto-close mobile sidebar when resizing to desktop
   useEffect(() => {

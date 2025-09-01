@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
-import useAuthStore from '../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 import { FaPhone, FaWhatsapp, FaEnvelope } from 'react-icons/fa';
 
 const ContactTab = ({ doctor, onSlotsUpdated }) => {
   const mapRef = useRef(null);
-  const user = useAuthStore((s) => s.user);
+  const user = useSelector((state) => state.auth.user);
 
   // Editing state
   const [isEditing, setIsEditing] = useState(false);

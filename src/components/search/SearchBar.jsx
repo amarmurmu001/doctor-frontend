@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useLocationStore from '../../stores/locationStore';
+import { useSelector } from 'react-redux';
 
-export default function SearchBar({ 
-  placeholder = "Search doctors, specialties, locations...", 
-  onSearch 
+export default function SearchBar({
+  placeholder = "Search doctors, specialties, locations...",
+  onSearch
 }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [suggestions, setSuggestions] = useState([]);
@@ -12,7 +12,7 @@ export default function SearchBar({
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
   const [loading, setLoading] = useState(false);
 
-  const { selectedLocation } = useLocationStore();
+  const { selectedLocation } = useSelector((state) => state.location);
   const inputRef = useRef(null);
   const navigate = useNavigate();
 

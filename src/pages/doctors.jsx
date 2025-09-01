@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import PageHeader from "../components/layout/PageHeader";
 import DoctorCard from "../components/doctor/DoctorCard";
 import { getLocationApiParams } from "../utils/locationUtils";
-import useLocationStore from "../stores/locationStore";
+import { initializeLocation } from "../stores/locationSlice";
 
 // Utility function to extract rating from doctor data
 const extractRating = (doctor) => {
@@ -36,9 +37,8 @@ export default function Doctors() {
   const [error, setError] = useState(null);
 
   // Use location from store instead of URL params
-  const selectedLocation = useLocationStore((state) => state.selectedLocation);
-  const initializeLocation = useLocationStore((state) => state.initializeLocation);
-  const isInitialized = useLocationStore((state) => state.isInitialized);
+  const dispatch = useDispatch();
+  const { selectedLocation, isInitialized } = useSelector((state) => state.location);
 
   const fetchDoctors = useCallback(async () => {
     try {
@@ -126,9 +126,9 @@ export default function Doctors() {
   useEffect(() => {
     // Initialize location store if not already done
     if (!isInitialized) {
-      initializeLocation();
+      dispatch(initializeLocation());
     }
-  }, [isInitialized, initializeLocation]);
+  }, [isInitialized, dispatch]);
 
   useEffect(() => {
     // Only fetch doctors when location is available

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import PageSeo from '../components/seo/PageSeo.jsx';
 import { generateSEOUrl, SEO_ROUTES } from '../routes';
 
 const LocationHome = () => {
@@ -144,43 +144,37 @@ const LocationHome = () => {
 
   return (
     <>
-      <Helmet defer={false}>
-        <title>{locationTitle}</title>
-        <meta name="description" content={locationDescription} />
-        <meta name="keywords" content={`doctors in ${location}, best doctors ${location}, book appointment ${location}, healthcare ${location}`} />
-        <link rel="canonical" href={`${window.location.origin}/${location}`} />
-        
-        {/* Open Graph */}
-        <meta property="og:title" content={locationTitle} />
-        <meta property="og:description" content={locationDescription} />
-        <meta property="og:url" content={`${window.location.origin}/${location}`} />
-        <meta property="og:type" content="website" />
-        
-        {/* JSON-LD Schema */}
-        <script type="application/ld+json">
-          {JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "MedicalOrganization",
-            "name": `Doctar - ${locationData.name}`,
-            "description": locationDescription,
-            "url": `${window.location.origin}/${location}`,
-            "areaServed": {
-              "@type": "City",
-              "name": locationData.name
+      <PageSeo
+        title={locationTitle}
+        description={locationDescription}
+        keywords={`doctors in ${location}, best doctors ${location}, book appointment ${location}, healthcare ${location}`}
+        canonicalUrl={`${window.location.origin}/${location}`}
+      />
+
+      {/* Custom JSON-LD Schema for Location Pages */}
+      <script type="application/ld+json">
+        {JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "MedicalOrganization",
+          "name": `Doctar - ${locationData.name}`,
+          "description": locationDescription,
+          "url": `${window.location.origin}/${location}`,
+          "areaServed": {
+            "@type": "City",
+            "name": locationData.name
+          },
+          "availableService": [
+            {
+              "@type": "MedicalProcedure",
+              "name": "Doctor Consultation"
             },
-            "availableService": [
-              {
-                "@type": "MedicalProcedure",
-                "name": "Doctor Consultation"
-              },
-              {
-                "@type": "MedicalProcedure", 
-                "name": "Online Appointment Booking"
-              }
-            ]
-          })}
-        </script>
-      </Helmet>
+            {
+              "@type": "MedicalProcedure",
+              "name": "Online Appointment Booking"
+            }
+          ]
+        })}
+      </script>
 
       <div className="min-h-screen relative">
         {/* Purple Header Background - Matching your design */}

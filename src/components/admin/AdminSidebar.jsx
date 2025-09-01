@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
-import useAdminStore from '../../stores/adminStore';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../../stores/authSlice';
+import { setSidebarCollapsed } from '../../stores/adminSlice';
 
 const AdminSidebar = ({ mobileOpen, setMobileOpen }) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { logout } = useAuthStore();
-  
+  const dispatch = useDispatch();
+
+  // Auth store state
+  const { logout } = useSelector((state) => state.auth);
+
   // Admin store state
-  const { sidebarCollapsed, setSidebarCollapsed, stats } = useAdminStore();
+  const { sidebarCollapsed, stats } = useSelector((state) => state.admin);
 
   const navItems = [
     { 
@@ -90,11 +94,11 @@ const AdminSidebar = ({ mobileOpen, setMobileOpen }) => {
   ];
 
   const toggleCollapse = () => {
-    setSidebarCollapsed(!sidebarCollapsed);
+    dispatch(setSidebarCollapsed(!sidebarCollapsed));
   };
 
   const handleLogout = () => {
-    logout();
+    dispatch(logout());
     navigate('/admin/login', { replace: true });
   };
   

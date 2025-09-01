@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 import AdminHeader from './AdminHeader';
 import AdminSidebar from './AdminSidebar';
 
 const AdminRoute = () => {
-  const { user, token } = useAuthStore();
+  const { user, token } = useSelector((state) => state.auth);
   const [mobileOpen, setMobileOpen] = useState(false);
   
   // Check if user is authenticated and has admin role

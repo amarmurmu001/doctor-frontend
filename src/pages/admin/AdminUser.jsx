@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import useAuthStore from '../../stores/useAuthStore';
+import { useSelector } from 'react-redux';
 
 const AdminUsers = () => {
-  const { token } = useAuthStore();
+  const { token } = useSelector((state) => state.auth);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

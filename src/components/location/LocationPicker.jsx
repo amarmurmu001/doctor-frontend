@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import useLocationStore from "../../stores/locationStore";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateLocation } from "../../stores/locationSlice";
+import { getCurrentLocation } from "../../stores/locationSlice";
 
 const LocationPicker = ({
   className = "",
@@ -7,15 +9,27 @@ const LocationPicker = ({
   placeholder = "Select location",
   onLocationChange,
 }) => {
+  const dispatch = useDispatch();
   const {
     selectedLocation,
     availableLocations,
-    updateLocation,
-    refreshLocation,
     locationLoading,
-    searchLocations,
-    isValidLocation,
-  } = useLocationStore();
+  } = useSelector((state) => state.location);
+
+  // Utility functions that aren't in Redux state
+  const searchLocations = useCallback((query) => {
+    if (!query || query.length < 2) return [];
+    const searchTerm = query.toLowerCase();
+    return availableLocations
+      .filter(location => location.toLowerCase().includes(searchTerm))
+      .slice(0, 8); // Limit to 8 results
+  }, [availableLocations]);
+
+  const isValidLocation = useCallback((location) => {
+    return availableLocations.some(loc =>
+      loc.toLowerCase() === location.toLowerCase()
+    );
+  }, [availableLocations]);
 
   const [open, setOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,9 +67,9 @@ const LocationPicker = ({
       location === "Use current location" ||
       location === "Current Location"
     ) {
-      refreshLocation();
+      dispatch(getCurrentLocation());
     } else if (isValidLocation(location) || location === "Near me") {
-      updateLocation(location);
+      dispatch(updateLocation(location));
       if (onLocationChange) {
         onLocationChange(location);
       }
@@ -63,7 +77,7 @@ const LocationPicker = ({
       console.warn("⚠️ Invalid location selected:", location);
       // Fall back to first available location
       if (availableLocations.length > 0) {
-        updateLocation(availableLocations[0]);
+        dispatch(updateLocation(availableLocations[0]));
         if (onLocationChange) {
           onLocationChange(availableLocations[0]);
         }

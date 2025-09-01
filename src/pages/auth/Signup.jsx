@@ -1,13 +1,14 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Helmet } from 'react-helmet'
+import PageSeo from '../../components/seo/PageSeo.jsx'
+import { useDispatch } from 'react-redux'
 import { registerUser, sendOtp } from '../../services/authAPI'
-import useAuthStore from '../../stores/useAuthStore'
+import { setOnboarding } from '../../stores/authSlice'
 import ProgressBar from '../../components/auth/ProgressBar'
 
 export default function Signup() {
   const navigate = useNavigate()
-  const setOnboarding = useAuthStore(s => s.setOnboarding)
+  const dispatch = useDispatch()
   const [form, setForm] = useState({ fullName: '', email: '', phone: '', password: '' })
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
@@ -33,12 +34,12 @@ export default function Signup() {
       console.log('OTP sent successfully')
       
       // Store basic info for post-OTP flow and mark that OTP was sent
-      setOnboarding({ 
-        email: form.email, 
+      dispatch(setOnboarding({
+        email: form.email,
         phone: form.phone,
         basicInfo: form,
         otpSent: true
-      })
+      }))
       
       // Set session storage to prevent duplicate OTP sends
       const key = `otpSent:${form.email}`
@@ -56,18 +57,12 @@ export default function Signup() {
 
   return (
     <>
-      <Helmet defer={false}>
-        <title>Patient Sign Up | Create Your Doctar Account</title>
-        <meta name="description" content="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration." />
-        <meta name="keywords" content="patient sign up, doctar sign up, healthcare registration, create patient account, book doctor online, online doctor consultation signup, patient registration portal, doctar account create, join doctar" />
-        <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.doctar.in/auth/signup" />
-        <meta property="og:title" content="Patient Sign Up | Create Your Doctar Account" />
-        <meta property="og:description" content="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration." />
-        <meta property="og:url" content="https://www.doctar.in/auth/signup" />
-        <meta name="twitter:title" content="Patient Sign Up | Create Your Doctar Account" />
-        <meta name="twitter:description" content="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration." />
-      </Helmet>
+      <PageSeo
+        title="Patient Sign Up | Create Your Doctar Account"
+        description="Sign up on Doctar to book doctor appointments online, consult with specialists, manage health records, and access personalized healthcare services. Quick and easy patient registration."
+        keywords="patient sign up, doctar sign up, healthcare registration, create patient account, book doctor online, online doctor consultation signup, patient registration portal, doctar account create, join doctar"
+        canonicalUrl="https://www.doctar.in/auth/signup"
+      />
 
       <div className="min-h-screen bg-gray-50">
       {/* Progress Bar */}
