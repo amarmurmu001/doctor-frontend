@@ -42,8 +42,8 @@ const Footer = () => {
         { text: "Facebook", path: "https://facebook.com", external: true },
         { text: "Twitter", path: "https://twitter.com", external: true },
         { text: "LinkedIn", path: "https://linkedin.com", external: true },
-        { text: "Youtube", path: "https://youtube.com", external: true },
-        { text: "Github", path: "https://github.com", external: true }
+        { text: "Youtube", path: "https://youtube.com", external: true }
+       
       ]
     }
   ];
