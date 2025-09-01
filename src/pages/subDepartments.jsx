@@ -6,6 +6,7 @@ import DoctorTypeGrid from "../components/doctor/DoctorTypeGrid";
 import PageSeo from "../components/seo/PageSeo";
 import { formatLocationName } from "../utils/locationUtils";
 import useLocationStore from "../stores/locationStore";
+import { fetchDoctorCountsBySpecialty } from "../services/doctorAPI";
 
 // Medical type configurations
 const medicalTypeConfigs = {
@@ -86,6 +87,8 @@ export default function SubDepartments() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [dynamicCategories, setDynamicCategories] = useState([]);
+  const [totalDoctorCount, setTotalDoctorCount] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [pageTitle, setPageTitle] = useState("Medical Specialists");
   const [pageDescription, setPageDescription] = useState("Find doctors by medical specialties and types.");
   const [pageKeywords, setPageKeywords] = useState("doctor types, medical specialties");
@@ -118,6 +121,27 @@ export default function SubDepartments() {
     return locationName;
   }, [selectedLocation]);
 
+  // Fetch doctor counts dynamically
+  const fetchDoctorCounts = useCallback(async (location, type) => {
+    try {
+      setLoading(true);
+      console.log(`Fetching doctor counts for ${type} in ${location}`);
+      const result = await fetchDoctorCountsBySpecialty(location, type);
+      console.log(`Results for ${type}:`, result);
+      setDynamicCategories(result.categories);
+      setTotalDoctorCount(result.totalCount); // This now contains only department doctors count
+    } catch (error) {
+      console.error('Error fetching doctor counts:', error);
+      // Fallback to hardcoded categories if API fails
+      const config = medicalTypeConfigs[type] || medicalTypeConfigs.allopathic;
+      setDynamicCategories(config.defaultCategories);
+      // Calculate only the sum of department categories, not all doctors
+      setTotalDoctorCount(config.defaultCategories.reduce((total, cat) => total + cat.number, 0));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     // Initialize location store if not already done
     if (!isInitialized) {
@@ -131,12 +155,20 @@ export default function SubDepartments() {
     // Set location first
     const userLocation = getUserLocation();
 
-    // Use categories as-is without icons
-    setDynamicCategories(config.defaultCategories);
+    // Fetch dynamic doctor counts
+    fetchDoctorCounts(userLocation, medicalType);
+
     setPageTitle(`${config.title} in ${formatLocationName(userLocation)}`);
     setPageDescription(`${config.description} Find the best healthcare professionals in ${formatLocationName(userLocation)}.`);
     setPageKeywords(`${config.keywords}, ${formatLocationName(userLocation)} doctors, healthcare ${formatLocationName(userLocation)}`);
-  }, [medicalType, getUserLocation, isInitialized]);
+  }, [medicalType, getUserLocation, isInitialized, fetchDoctorCounts]);
+
+  // Re-fetch data when location changes
+  useEffect(() => {
+    if (isInitialized && selectedLocation) {
+      fetchDoctorCounts(selectedLocation, medicalType);
+    }
+  }, [selectedLocation, medicalType, isInitialized, fetchDoctorCounts]);
   return (
     <>
       <PageSeo
@@ -153,14 +185,20 @@ export default function SubDepartments() {
         {/* Result count */}
         <div className="px-4 pt-4">
           <ResultCount
-            count={dynamicCategories.reduce((total, cat) => total + cat.number, 0)}
+            count={totalDoctorCount}
+            department={medicalType}
             location={selectedLocation || 'India'}
           />
         </div>
 
         {/* Dynamic categories grid */}
         <div className="pt-4">
-          {dynamicCategories.length > 0 ? (
+          {loading ? (
+            <div className="px-4 py-8 text-center">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#7551B2] mx-auto mb-4"></div>
+              <div className="text-gray-500">Loading {medicalType} specialists...</div>
+            </div>
+          ) : dynamicCategories.length > 0 ? (
             <DoctorTypeGrid
               categories={dynamicCategories}
               showTopRow={false}
@@ -168,7 +206,7 @@ export default function SubDepartments() {
             />
           ) : (
             <div className="px-4 py-8 text-center">
-              <div className="text-gray-500">Loading {medicalType} specialists...</div>
+              <div className="text-gray-500">No specialists found in this location.</div>
             </div>
           )}
         </div>
