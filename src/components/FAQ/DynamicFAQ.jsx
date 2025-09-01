@@ -261,14 +261,7 @@ const DynamicFAQ = ({
           ))}
         </div>
 
-        {/* Show more message if there are more FAQs */}
-        {dynamicFAQs.length > maxItems && !searchTerm && (
-          <div className="mt-6 text-center">
-            <p className={`text-sm ${className ? 'text-white/70' : 'text-gray-600'}`}>
-              Showing {Math.min(maxItems, filteredFAQs.length)} of {dynamicFAQs.length} FAQs
-            </p>
-          </div>
-        )}
+        
 
         {/* No results message */}
         {searchTerm && filteredFAQs.length === 0 && (
