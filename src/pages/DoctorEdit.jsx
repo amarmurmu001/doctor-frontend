@@ -15,6 +15,9 @@ const initialForm = {
   languages: [''],
   contactPhones: [''],
   contactEmails: [''],
+  receptionPhone: '',
+  receptionWhatsapp: '',
+  receptionEmail: '',
   address: { line1: '', line2: '', city: '', state: '', postalCode: '', country: 'India' },
   gallery: [],
   consultationFee: 0,
@@ -92,6 +95,9 @@ function DoctorEdit() {
             languages: (doctorData.languages && doctorData.languages.length > 0) ? doctorData.languages : [''],
             contactPhones: (doctorData.contactPhones && doctorData.contactPhones.length > 0) ? doctorData.contactPhones : [''],
             contactEmails: (doctorData.contactEmails && doctorData.contactEmails.length > 0) ? doctorData.contactEmails : [''],
+            receptionPhone: doctorData.receptionPhone || '',
+            receptionWhatsapp: doctorData.receptionWhatsapp || '',
+            receptionEmail: doctorData.receptionEmail || '',
             address: doctorData.address || { line1: '', line2: '', city: '', state: '', postalCode: '', country: 'India' },
             gallery: doctorData.gallery || [],
             consultationFee: doctorData.consultationFee || 0,
@@ -233,6 +239,9 @@ async function handleAddAward() {
         languages: form.languages.filter(item => item.trim()),
         contactPhones: form.contactPhones.filter(item => item.trim()),
         contactEmails: form.contactEmails.filter(item => item.trim()),
+        receptionPhone: form.receptionPhone.trim(),
+        receptionWhatsapp: form.receptionWhatsapp.trim(),
+        receptionEmail: form.receptionEmail.trim(),
         keySpecialization: form.keySpecialization.filter(item => item.trim())
       };
 
@@ -570,6 +579,48 @@ async function handleAddAward() {
                   </button>
                 </div>
               </div>
+            </section>
+
+            {/* Reception Contact Information */}
+            <section>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4 border-b pb-2">Reception Contact Information</h2>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Reception Phone</label>
+                  <input
+                    type="tel"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7551B2] focus:border-transparent transition-all"
+                    value={form.receptionPhone}
+                    onChange={e => updateField('receptionPhone', e.target.value)}
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Reception WhatsApp</label>
+                  <input
+                    type="tel"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7551B2] focus:border-transparent transition-all"
+                    value={form.receptionWhatsapp}
+                    onChange={e => updateField('receptionWhatsapp', e.target.value)}
+                    placeholder="+91 98765 43210"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Reception Email</label>
+                  <input
+                    type="email"
+                    className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#7551B2] focus:border-transparent transition-all"
+                    value={form.receptionEmail}
+                    onChange={e => updateField('receptionEmail', e.target.value)}
+                    placeholder="reception@clinic.com"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                These contact details will be displayed on your profile for patients to reach your clinic reception.
+              </p>
             </section>
 
             {/* Gallery Section */}

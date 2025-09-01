@@ -218,6 +218,9 @@ export async function submitDoctorApplication(doctorData, email, password) {
       languages: doctorData.languages || [],
       contactPhones: (doctorData.contactPhones || []).filter(p => p && p.trim()),
       contactEmails: (doctorData.contactEmails || []).filter(e => e && e.trim()),
+      receptionPhone: doctorData.receptionPhone || '',
+      receptionWhatsapp: doctorData.receptionWhatsapp || '',
+      receptionEmail: doctorData.receptionEmail || '',
       address: {
         line1: doctorData.addressLine1,
         line2: doctorData.addressLine2,

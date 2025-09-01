@@ -40,6 +40,9 @@ const DoctorOnboarding = () => {
     languages: [], // Maps to Doctor.languages
     contactPhones: [], // Maps to Doctor.contactPhones
     contactEmails: [], // Maps to Doctor.contactEmails
+    receptionPhone: '', // Maps to Doctor.receptionPhone
+    receptionWhatsapp: '', // Maps to Doctor.receptionWhatsapp
+    receptionEmail: '', // Maps to Doctor.receptionEmail
     
     // Address (for Doctor.address)
     addressLine1: '',
@@ -595,6 +598,48 @@ const DoctorOnboarding = () => {
           inputType="email"
           maxItems={3}
         />
+      </div>
+
+      {/* Reception Contact Information */}
+      <div className="border-t pt-6">
+        <h4 className="text-md font-semibold text-gray-900 mb-4">Reception Contact Information</h4>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Reception Phone</label>
+            <input
+              type="tel"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none"
+              placeholder="+91 98765 43210"
+              value={formData.receptionPhone}
+              onChange={(e) => handleInputChange('receptionPhone', e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Reception WhatsApp</label>
+            <input
+              type="tel"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none"
+              placeholder="+91 98765 43210"
+              value={formData.receptionWhatsapp}
+              onChange={(e) => handleInputChange('receptionWhatsapp', e.target.value)}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">Reception Email</label>
+            <input
+              type="email"
+              className="w-full border border-gray-200 rounded-lg px-4 py-3 focus:border-[#7551B2] focus:ring-1 focus:ring-[#7551B2] focus:outline-none"
+              placeholder="reception@clinic.com"
+              value={formData.receptionEmail}
+              onChange={(e) => handleInputChange('receptionEmail', e.target.value)}
+            />
+          </div>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          These contact details will be displayed on your profile for patients to reach your clinic reception.
+        </p>
       </div>
     </div>
   );
