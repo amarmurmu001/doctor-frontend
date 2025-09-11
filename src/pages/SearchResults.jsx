@@ -5,6 +5,7 @@ import DoctorCard from '../components/doctor/DoctorCard';
 
 import PageSeo from '../components/seo/PageSeo';
 import DynamicFAQ from '../components/FAQ/DynamicFAQ';
+import ClearYourDoubts from '../components/FAQ/ClearYourDoubts';
 
 // ✅ Enhanced strict keyword filtering function with improved accuracy
 const strictKeywordFilter = (doctors, searchTerm, searchType) => {
@@ -614,6 +615,11 @@ const SearchResults = () => {
               </div>
             )}
           </>
+        )}
+
+        {/* Clear your Doubts Section */}
+        {!loading && !error && doctors.length > 0 && (
+          <ClearYourDoubts />
         )}
 
         {/* FAQ Section */}
