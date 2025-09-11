@@ -16,6 +16,7 @@ import SubDepartments from "./pages/subDepartments";
 import Doctors from "./pages/doctors";
 import Departments from "./pages/Departments";
 import DoctorProfile from "./pages/DoctorProfile";
+import LocationDoctors from "./pages/LocationDoctors";
 import UserProfile from "./pages/UserProfile";
 import DoctorEdit from "./pages/DoctorEdit";
 import UserEdit from "./pages/UserEdit";
@@ -89,6 +90,8 @@ function AppShell() {
             <Route path="/sub-departments" element={<SubDepartments />} />
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/departments" element={<Departments />} />
+            {/* Location-specific doctors route */}
+            <Route path="/:location" element={<LocationDoctors />} />
             <Route path="/Doctor-profile" element={<DoctorProfile />} />
             <Route path="/Doctor-profile/:doctorId" element={<DoctorProfile />}/>
             {/* SEO Optimized Doctor Profile Route */}
