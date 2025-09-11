@@ -91,7 +91,7 @@ function AppShell() {
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/departments" element={<Departments />} />
             {/* Location-specific doctors route */}
-            <Route path="/:location" element={<LocationDoctors />} />
+            <Route path="/doctors/:location" element={<LocationDoctors />} />
             <Route path="/Doctor-profile" element={<DoctorProfile />} />
             <Route path="/Doctor-profile/:doctorId" element={<DoctorProfile />}/>
             {/* SEO Optimized Doctor Profile Route */}
