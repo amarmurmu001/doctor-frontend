@@ -40,7 +40,6 @@ https://www.doctar.in/{location}/doctor/{doctor-name-specialization}
 
 ### 4. Technical SEO
 - **Robots.txt**: Proper crawling instructions
-- **Sitemap Generation**: XML sitemaps for search engines
 - **URL Canonicalization**: Prevents duplicate content
 - **Location-based URLs**: Optimized for local search
 
@@ -118,9 +117,8 @@ const profileUrl = generateDoctorProfileUrl(doctorData);
 ## 🔍 Search Engine Optimization
 
 ### Google Search Console Setup
-1. **Submit Sitemap**: `https://www.doctar.in/sitemap.xml`
-2. **Verify Ownership**: Add verification meta tag or file
-3. **Monitor Performance**: Track doctor profile page rankings
+1. **Verify Ownership**: Add verification meta tag or file
+2. **Monitor Performance**: Track doctor profile page rankings
 
 ### Local SEO Optimization
 - **Location-based URLs**: `/mumbai/doctor/...`
@@ -159,7 +157,6 @@ const profileUrl = generateDoctorProfileUrl(doctorData);
 - Ensure fast page load times
 - Use proper heading hierarchy (H1, H2, H3)
 - Implement structured data markup
-- Create XML sitemaps
 
 ### 3. Local SEO
 - Include city and state information

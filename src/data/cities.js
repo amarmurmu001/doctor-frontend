@@ -1,4 +1,4 @@
-// Cities data for sitemap generation and other frontend use
+// Cities data for frontend use
 // This data is derived from the backend's Six City 1260.csv file
 export const CITIES = [
   'Calcutta',
