@@ -45,7 +45,7 @@ export default function QueryGrid() {
             Query
           </h2>
           <button
-            onClick={() => navigate('/departments')}
+            onClick={() => navigate('/specialists')}
             className="text-sm text-purple-600 font-medium hover:text-purple-700 transition-colors"
           >
             All

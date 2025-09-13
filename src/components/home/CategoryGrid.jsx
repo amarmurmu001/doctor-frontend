@@ -37,7 +37,8 @@ export default function CategoryGrid() {
   const navigate = useNavigate();
 
   const handleCategoryClick = (category) => {
-    navigate(`/search?q=${encodeURIComponent(category.name)}&type=specialty`);
+    // Navigate to specialists hierarchy
+    navigate(`/specialists/${category.name.toLowerCase().replace(/\s+/g, '-')}`);
   };
 
   return (

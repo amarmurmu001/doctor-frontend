@@ -132,10 +132,11 @@ export default function SpecialtyCityDoctors() {
             'pediatric': ['pediatrics', 'child', 'children'],
             'child': ['pediatrics', 'pediatric', 'children'],
             'children': ['pediatrics', 'pediatric', 'child'],
-            'orthopedics': ['orthopedic', 'bone', 'joint'],
-            'orthopedic': ['orthopedics', 'bone', 'joint'],
-            'bone': ['orthopedics', 'orthopedic', 'joint'],
-            'joint': ['orthopedics', 'orthopedic', 'bone'],
+            'orthopedics': ['orthopedic', 'orthopedist', 'bone', 'joint'],
+            'orthopedic': ['orthopedics', 'orthopedist', 'bone', 'joint'],
+            'orthopedist': ['orthopedics', 'orthopedic', 'bone', 'joint'],
+            'bone': ['orthopedics', 'orthopedic', 'orthopedist', 'joint'],
+            'joint': ['orthopedics', 'orthopedic', 'orthopedist', 'bone'],
             'neurology': ['neurological', 'brain', 'nerve'],
             'neurological': ['neurology', 'brain', 'nerve'],
             'brain': ['neurology', 'neurological', 'nerve'],
@@ -147,7 +148,13 @@ export default function SpecialtyCityDoctors() {
             'psychiatry': ['psychiatrist', 'mental', 'psychology'],
             'psychiatrist': ['psychiatry', 'mental', 'psychology'],
             'mental': ['psychiatry', 'psychiatrist', 'psychology'],
-            'psychology': ['psychiatry', 'psychiatrist', 'mental']
+            'psychology': ['psychiatry', 'psychiatrist', 'mental'],
+            // Allopathic medicine variations - includes most conventional specialties
+            'allopathic': ['general physician', 'internal medicine', 'family medicine', 'cardiology', 'dermatology', 'neurology', 'orthopedics', 'orthopedic', 'orthopedist', 'pediatrics', 'gynecology', 'psychiatry', 'ent', 'ophthalmology', 'urology', 'surgery', 'medicine'],
+            'general physician': ['allopathic', 'general medicine', 'family physician', 'gp'],
+            'general medicine': ['allopathic', 'general physician', 'internal medicine'],
+            'internal medicine': ['allopathic', 'general medicine', 'general physician'],
+            'family medicine': ['allopathic', 'family physician', 'general physician']
           };
 
           const fieldVariations = variations[fieldStr] || [];
@@ -314,26 +321,7 @@ export default function SpecialtyCityDoctors() {
 
       {/* Doctors grid with title */}
       <div className="flex-1 px-3 sm:px-4 py-4 sm:py-6">
-        {/* Breadcrumb Navigation */}
-        <div className="max-w-7xl mx-auto mb-6">
-          <nav className="flex items-center space-x-2 text-sm text-gray-600">
-            <button
-              onClick={() => navigate('/specialists')}
-              className="hover:text-blue-600 transition-colors"
-            >
-              Specialists
-            </button>
-            <span>/</span>
-            <button
-              onClick={() => navigate(`/specialists/${specialty}`)}
-              className="hover:text-blue-600 transition-colors"
-            >
-              {formattedSpecialty}
-            </button>
-            <span>/</span>
-            <span className="font-medium text-gray-900">{formattedCity}</span>
-          </nav>
-        </div>
+       
 
         <div className="max-w-7xl mx-auto">
           <h2 className="text-base sm:text-lg font-bold mb-4 sm:mb-6 text-center">
@@ -343,41 +331,7 @@ export default function SpecialtyCityDoctors() {
             }
           </h2>
 
-          {/* Navigation Buttons */}
-          <div className="mb-6 text-center">
-            <div className="flex flex-wrap justify-center gap-2">
-              <button
-                onClick={() => navigate(`/specialists/${specialty}`)}
-                className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-sm hover:bg-gray-300 transition-colors"
-              >
-                All Cities
-              </button>
-              <button
-                onClick={() => navigate(`/specialists/${specialty}/mumbai`)}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  formattedCity.toLowerCase() === 'mumbai' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Mumbai
-              </button>
-              <button
-                onClick={() => navigate(`/specialists/${specialty}/delhi`)}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  formattedCity.toLowerCase() === 'delhi' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Delhi
-              </button>
-              <button
-                onClick={() => navigate(`/specialists/${specialty}/bangalore`)}
-                className={`px-4 py-2 rounded-lg text-sm transition-colors ${
-                  formattedCity.toLowerCase() === 'bangalore' ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                Bangalore
-              </button>
-            </div>
-          </div>
+          
 
           {/* Empty state */}
           {doctors.length === 0 && !loading && (

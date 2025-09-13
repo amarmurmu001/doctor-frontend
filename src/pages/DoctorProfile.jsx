@@ -187,6 +187,16 @@ const DoctorProfile = () => {
       ?.toLowerCase()
       .replace(/\s+/g, "-")}`;
 
+    // Check if we're currently on a specialists URL - if so, maintain that format
+    if (window.location.pathname.startsWith('/specialists/')) {
+      const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+      if (pathSegments.length >= 3 && pathSegments[0] === 'specialists') {
+        const currentSpecialty = pathSegments[1];
+        const currentCity = pathSegments[2];
+        return `https://www.doctar.in/specialists/${currentSpecialty}/${currentCity}/${slug}`;
+      }
+    }
+
     // Use new format for canonical URL if current route is new format
     if (isNewFormat) {
       return `https://www.doctar.in/doctors/${doctorLocation

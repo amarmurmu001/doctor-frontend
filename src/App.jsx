@@ -74,7 +74,6 @@ function AppShell() {
   const hideNav =
     location.pathname.toLowerCase().includes("profile") ||
     location.pathname.toLowerCase().includes("doctor/edit") ||
-    location.pathname.toLowerCase().includes("doctor/") ||
     location.pathname.toLowerCase().includes("auth") ||
     location.pathname.toLowerCase().includes("login") ||
     location.pathname.toLowerCase().includes("admin");
@@ -105,7 +104,7 @@ function AppShell() {
             <Route path="/specialists/:specialty/:city/:doctorName" element={<SpecialtyDoctorProfile />} />
             <Route path="/specialists/:specialty/:city" element={<SpecialtyCityDoctors />} />
             <Route path="/specialists/:specialty" element={<SpecialtyDoctors />} />
-            <Route path="/specialists" element={<Specialists />} />
+            <Route path="/specialists" element={<Departments />} />
 
             <Route path="/Doctor-profile" element={<DoctorProfile />} />
             <Route path="/Doctor-profile/:doctorId" element={<DoctorProfile />}/>
