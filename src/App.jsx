@@ -17,6 +17,12 @@ import Doctors from "./pages/doctors";
 import Departments from "./pages/Departments";
 import DoctorProfile from "./pages/DoctorProfile";
 import LocationDoctors from "./pages/LocationDoctors";
+import CitySpecialtyDoctors from "./pages/CitySpecialtyDoctors";
+import DoctorSpecialtyProfile from "./pages/DoctorSpecialtyProfile";
+import Specialists from "./pages/Specialists";
+import SpecialtyDoctors from "./pages/SpecialtyDoctors";
+import SpecialtyCityDoctors from "./pages/SpecialtyCityDoctors";
+import SpecialtyDoctorProfile from "./pages/SpecialtyDoctorProfile";
 import UserProfile from "./pages/UserProfile";
 import DoctorEdit from "./pages/DoctorEdit";
 import UserEdit from "./pages/UserEdit";
@@ -58,7 +64,6 @@ import AdminDoctors from "./pages/admin/AdminDoctor";
 import AdminAppointments from "./pages/admin/AdminAppointments";
 import AdminNews from "./pages/admin/AdminNews";
 import AdminBlogs from "./pages/admin/AdminBlogs";
-import SitemapGenerator from "./components/admin/SitemapGenerator";
 import ScrollToTop from "./utils/scrollOnTop";
 // import NewsManagement from './pages/admin/NewsManagement'
 // import BlogsManagement from './pages/admin/BlogsManagement'
@@ -90,8 +95,18 @@ function AppShell() {
             <Route path="/sub-departments" element={<SubDepartments />} />
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/departments" element={<Departments />} />
-            {/* Location-specific doctors route */}
+
+            {/* Doctors Hierarchy Routes - Most specific first */}
+            <Route path="/doctors/:city/:specialty/:doctorName" element={<DoctorProfile />} />
+            <Route path="/doctors/:city/:specialty" element={<CitySpecialtyDoctors />} />
             <Route path="/doctors/:location" element={<LocationDoctors />} />
+
+            {/* Specialists Hierarchy Routes - Most specific first */}
+            <Route path="/specialists/:specialty/:city/:doctorName" element={<SpecialtyDoctorProfile />} />
+            <Route path="/specialists/:specialty/:city" element={<SpecialtyCityDoctors />} />
+            <Route path="/specialists/:specialty" element={<SpecialtyDoctors />} />
+            <Route path="/specialists" element={<Specialists />} />
+
             <Route path="/Doctor-profile" element={<DoctorProfile />} />
             <Route path="/Doctor-profile/:doctorId" element={<DoctorProfile />}/>
             {/* SEO Optimized Doctor Profile Route */}
@@ -136,7 +151,6 @@ function AppShell() {
               <Route path="appointments" element={<AdminAppointments />} />
               <Route path="news" element={<AdminNews />} />
               <Route path="blogs" element={<AdminBlogs />} />
-              <Route path="sitemap" element={<SitemapGenerator />} />
             </Route>
           </Routes>
         </Suspense>

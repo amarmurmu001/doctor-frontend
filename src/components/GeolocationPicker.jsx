@@ -218,7 +218,14 @@ const GeolocationPicker = ({
       {address && (
         <div className="mb-4 p-3 bg-gray-50 border border-gray-200 rounded-lg">
           <h4 className="text-xs font-semibold text-gray-700 mb-1">Address</h4>
-          <p className="text-sm text-gray-600">{address}</p>
+          <p className="text-sm text-gray-600">
+            {typeof address === 'object'
+              ? [address.line1, address.line2, address.city, address.state, address.postalCode, address.country]
+                  .filter(Boolean)
+                  .join(', ')
+              : address
+            }
+          </p>
         </div>
       )}
 

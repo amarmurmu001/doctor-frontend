@@ -7,12 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "sitemap": "node scripts/generate-sitemap.cjs",
-    "sitemap:static": "node scripts/generate-sitemap.cjs static",
-    "sitemap:help": "node scripts/generate-sitemap.cjs help",
-    "sitemap:test": "node scripts/test-sitemap.cjs",
-    "sitemap:index": "node scripts/generate-sitemap-index.cjs"
+    "preview": "vite preview"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
