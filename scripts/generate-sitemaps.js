@@ -51,8 +51,8 @@ function loadEnvFile() {
 const envVars = loadEnvFile();
 
 // Configuration
-const API_BASE_URL = envVars.VITE_BACKEND_URL || process.env.VITE_API_BASE_URL || 'http://localhost:4000/api';
-const FRONTEND_URL = envVars.VITE_FRONTEND_URL || process.env.VITE_FRONTEND_URL || 'http://localhost:3000';
+const API_BASE_URL = envVars.VITE_BACKEND_URL || process.env.VITE_API_BASE_URL ;
+const FRONTEND_URL = envVars.VITE_FRONTEND_URL || process.env.VITE_FRONTEND_URL ;
 
 console.log('🔧 Sitemap Configuration:');
 console.log(`📡 API Base URL: ${API_BASE_URL}`);
