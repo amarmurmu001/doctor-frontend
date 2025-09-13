@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { logout } from '../../stores/authSlice';
 import { setSidebarCollapsed } from '../../stores/adminSlice';
 
 const AdminSidebar = ({ mobileOpen, setMobileOpen }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const dispatch = useDispatch();
 
   // Auth store state

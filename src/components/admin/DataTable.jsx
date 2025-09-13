@@ -6,7 +6,6 @@ const DataTable = ({
   loading = false,
   searchable = true,
   sortable = true,
-  filterable = false,
   pagination = true,
   pageSize = 10,
   onRowClick = null,
@@ -245,7 +244,7 @@ const DataTable = ({
             </tbody>
           ) : (
             <tbody className="bg-white divide-y divide-gray-200">
-              {paginatedData.map((item, index) => {
+              {paginatedData.map((item) => {
                 const itemId = item.id || item._id;
                 return (
                   <tr

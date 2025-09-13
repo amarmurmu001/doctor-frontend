@@ -2,12 +2,18 @@
   "name": "doctor-frontend",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
+  "type": "commonJS",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run sitemaps:generate",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "sitemaps:generate": "node scripts/generate-sitemaps.js",
+    "sitemaps:static": "node scripts/generate-sitemap-static.js",
+    "sitemaps:doctors": "node scripts/generate-sitemap-doctors.js",
+    "sitemaps:specialists": "node scripts/generate-sitemap-specialists.js",
+    "sitemaps:location": "node scripts/generate-sitemap-location.js",
+    "sitemaps:all": "npm run sitemaps:generate"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>http://localhost:3000/doctors</loc>
+    <lastmod>2025-09-13T11:21:02.222Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-doctors-dhanbad.xml</loc>
+    <lastmod>2025-09-13T11:21:02.223Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-doctors-deoghar.xml</loc>
+    <lastmod>2025-09-13T11:21:02.223Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-doctors-kolkata-.xml</loc>
+    <lastmod>2025-09-13T11:21:02.223Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-doctors-dhanbad-.xml</loc>
+    <lastmod>2025-09-13T11:21:02.223Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-doctors-kolkata.xml</loc>
+    <lastmod>2025-09-13T11:21:02.223Z</lastmod>
+  </sitemap>
+</sitemapindex>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>http://localhost:3000/specialists/cardiology</loc>
+    <lastmod>2025-09-13T11:21:02.888Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-cardiology-dhanbad.xml</loc>
+    <lastmod>2025-09-13T11:21:02.888Z</lastmod>
+  </sitemap>
+</sitemapindex>

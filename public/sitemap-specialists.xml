@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>http://localhost:3000/specialists</loc>
+    <lastmod>2025-09-13T11:21:02.832Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-general-physician.xml</loc>
+    <lastmod>2025-09-13T11:21:02.833Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-dentistry.xml</loc>
+    <lastmod>2025-09-13T11:21:02.834Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-cardiology.xml</loc>
+    <lastmod>2025-09-13T11:21:02.834Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-gynecology.xml</loc>
+    <lastmod>2025-09-13T11:21:02.834Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-homeopathy.xml</loc>
+    <lastmod>2025-09-13T11:21:02.834Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-general-medicine.xml</loc>
+    <lastmod>2025-09-13T11:21:02.834Z</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>http://localhost:3000/sitemap-specialists-ent-specialist.xml</loc>
+    <lastmod>2025-09-13T11:21:02.834Z</lastmod>
+  </sitemap>
+</sitemapindex>
