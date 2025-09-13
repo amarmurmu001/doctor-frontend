@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <sitemap>
-    <loc>https://doctor-frontend-two.vercel.app//sitemap-static.xml</loc>
-    <lastmod>2025-09-13T12:10:54.712Z</lastmod>
+    <loc>https://doctor-frontend-two.vercel.app/sitemap-static.xml</loc>
+    <lastmod>2025-09-13T12:25:11.594Z</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://doctor-frontend-two.vercel.app//sitemap-doctors.xml</loc>
-    <lastmod>2025-09-13T12:10:54.712Z</lastmod>
+    <loc>https://doctor-frontend-two.vercel.app/sitemap-doctors.xml</loc>
+    <lastmod>2025-09-13T12:25:11.594Z</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://doctor-frontend-two.vercel.app//sitemap-cities.xml</loc>
-    <lastmod>2025-09-13T12:10:54.712Z</lastmod>
+    <loc>https://doctor-frontend-two.vercel.app/sitemap-cities.xml</loc>
+    <lastmod>2025-09-13T12:25:11.594Z</lastmod>
   </sitemap>
   <sitemap>
-    <loc>https://doctor-frontend-two.vercel.app//sitemap-specialties.xml</loc>
-    <lastmod>2025-09-13T12:10:54.712Z</lastmod>
+    <loc>https://doctor-frontend-two.vercel.app/sitemap-specialties.xml</loc>
+    <lastmod>2025-09-13T12:25:11.594Z</lastmod>
   </sitemap>
 </sitemapindex>
