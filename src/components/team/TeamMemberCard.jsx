@@ -5,8 +5,8 @@ const TeamMemberCard = ({ member, onClick, isSelected = false }) => {
     <div 
       className={`aspect-square rounded-lg cursor-pointer transition-all duration-200 transform ${
         isSelected 
-          ? 'scale-95 shadow-inner' 
-          : 'hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl'
+          ? 'scale-95 shadow-inner opacity-100' 
+          : 'hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl opacity-70'
       } group`}
       onClick={onClick}
       style={{

@@ -3,7 +3,7 @@ import { ArrowLeft } from 'lucide-react';
 
 const TeamMemberDetail = ({ member, onBack, showBackButton = true }) => {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+    <div className="bg-white rounded-xl overflow-hidden ">
       {/* Back Button - Only show if showBackButton is true */}
       {showBackButton && onBack && (
         <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
@@ -25,12 +25,12 @@ const TeamMemberDetail = ({ member, onBack, showBackButton = true }) => {
         </h1>
         
         {/* Title */}
-        <p className="text-xl text-gray-700 font-medium mb-6">
+        <p className="text-lg text-gray-700 font-medium mb-6">
           {member.title}
         </p>
         
         {/* Divider line */}
-        <div className="w-16 h-0.5 bg-gray-300 mb-6"></div>
+        <div className="w-48 h-0.5 bg-gray-300 mb-6"></div>
         
         {/* Description - Simple paragraph */}
         <p className="text-gray-700 leading-relaxed text-base">
