@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 export default function DoctorCard({
   name,
@@ -11,6 +11,7 @@ export default function DoctorCard({
   city = 'india'
 }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Specialty icon mapping
   const getSpecialtyIcon = (specialty) => {
@@ -64,12 +65,28 @@ export default function DoctorCard({
     isValid: ratingAverage && ratingAverage > 0
   });
 
-  // Generate SEO-friendly URL
+  // Generate SEO-friendly URL - Use appropriate format based on current route
   const generateSeoUrl = () => {
     if (!doctorId) return '/';
-    const location = city.toLowerCase().replace(/\s+/g, '-');
-    const doctorSlug = `${name.toLowerCase().replace(/\s+/g, '-')}-${specialty.toLowerCase().replace(/\s+/g, '-')}`;
-    return `/${location}/doctor/${doctorSlug}`;
+
+    const formattedCity = city.toLowerCase().replace(/\s+/g, '-');
+    const formattedSpecialty = specialty.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
+    const doctorName = `${name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}-${formattedSpecialty}`;
+
+    // Check if we're on a specialists page
+    if (location.pathname.startsWith('/specialists/')) {
+      // Extract specialty and city from current URL path
+      const pathSegments = location.pathname.split('/').filter(segment => segment);
+      if (pathSegments.length >= 3 && pathSegments[0] === 'specialists') {
+        const currentSpecialty = pathSegments[1];
+        const currentCity = pathSegments[2];
+        // Use specialists format: /specialists/specialty/city/doctorName
+        return `/specialists/${currentSpecialty}/${currentCity}/${doctorName}`;
+      }
+    }
+
+    // Default to doctors format: /doctors/city/specialty/doctorName
+    return `/doctors/${formattedCity}/${formattedSpecialty}/${doctorName}`;
   };
 
   function handleClick() {

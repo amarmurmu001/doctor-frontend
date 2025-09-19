@@ -6,7 +6,6 @@ import ReviewTab from "../components/ReviewTab";
 import ContactTab from "../components/ContactTab";
 import SeoDoctorProfile from "../components/seo/SeoDoctorProfile";
 import DoctorProfileFAQ from "../components/FAQ/DoctorProfileFAQ";
-import Nav from "../components/layout/Nav";
 
 // Image Modal Component
 const ImageModal = ({ isOpen, onClose, images, currentIndex, setCurrentIndex }) => {
@@ -106,11 +105,19 @@ const ImageModal = ({ isOpen, onClose, images, currentIndex, setCurrentIndex }) 
 const DoctorProfile = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { doctorId, location, doctorSlug } = useParams();
+  // Handle both old format (/location/doctor/doctorSlug) and new format (/doctors/city/specialty/doctorName)
+  const params = useParams();
+  const { doctorId, location, doctorSlug, city, specialty, doctorName } = params;
+
+  // Determine which route format is being used
+  const isNewFormat = city && specialty && doctorName;
+  const actualLocation = location || city;
+  const actualDoctorSlug = doctorSlug || doctorName;
+
   const user = useSelector((state) => state.auth.user);
   const [activeTab, setActiveTab] = useState("About");
   const [doctor, setDoctor] = useState(null);
-  const [actualDoctorId, setActualDoctorId] = useState(doctorId || doctorSlug);
+  const [actualDoctorId, setActualDoctorId] = useState(doctorId || actualDoctorSlug);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -138,12 +145,12 @@ const DoctorProfile = () => {
     try {
       const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-      if (doctorId || doctorSlug) {
+      if (doctorId || actualDoctorSlug) {
         let res;
-        if (doctorSlug && !doctorId) {
-          res = await fetch(`${API_BASE_URL}/api/doctors/slug/${doctorSlug}`);
+        if (actualDoctorSlug && !doctorId) {
+          res = await fetch(`${API_BASE_URL}/api/doctors/slug/${actualDoctorSlug}`);
         } else {
-          res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`);
+          res = await fetch(`${API_BASE_URL}/api/doctors/${doctorId || actualDoctorSlug}`);
         }
 
         if (!res.ok) throw new Error("Failed to reload doctor data");
@@ -169,7 +176,41 @@ const DoctorProfile = () => {
       // Fallback to page reload if API call fails
       window.location.reload();
     }
-  }, [doctorId, doctorSlug, user]);
+  }, [doctorId, actualDoctorSlug, user]);
+
+  const getCanonicalUrl = useCallback((doctor) => {
+    const doctorLocation = doctor.city || "india";
+    const specialty = doctor.specialty || doctor.keySpecialization?.[0] || 'general-physician';
+    const slug = `${doctor.user?.name
+      ?.toLowerCase()
+      .replace(/\s+/g, "-")}-${doctor.specialty
+      ?.toLowerCase()
+      .replace(/\s+/g, "-")}`;
+
+    // Check if we're currently on a specialists URL - if so, maintain that format
+    if (window.location.pathname.startsWith('/specialists/')) {
+      const pathSegments = window.location.pathname.split('/').filter(segment => segment);
+      if (pathSegments.length >= 3 && pathSegments[0] === 'specialists') {
+        const currentSpecialty = pathSegments[1];
+        const currentCity = pathSegments[2];
+        return `https://www.doctar.in/specialists/${currentSpecialty}/${currentCity}/${slug}`;
+      }
+    }
+
+    // Use new format for canonical URL if current route is new format
+    if (isNewFormat) {
+      return `https://www.doctar.in/doctors/${doctorLocation
+        .toLowerCase()
+        .replace(/\s+/g, "-")}/${specialty
+        .toLowerCase()
+        .replace(/\s+/g, "-")}/${slug}`;
+    } else {
+      // Keep legacy format for backward compatibility
+      return `https://www.doctar.in/${doctorLocation
+        .toLowerCase()
+        .replace(/\s+/g, "-")}/doctor/${slug}`;
+    }
+  }, [isNewFormat]);
 
   useEffect(() => {
     async function loadDoctor() {
@@ -177,15 +218,15 @@ const DoctorProfile = () => {
         setLoading(true);
         const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
 
-        if (doctorId || doctorSlug) {
-          console.log("Loading other doctor profile:", doctorId || doctorSlug);
+        if (doctorId || actualDoctorSlug) {
+          console.log("Loading doctor profile:", doctorId || actualDoctorSlug, "format:", isNewFormat ? "new (/doctors/city/specialty/doctor)" : "legacy (/location/doctor/slug)");
 
           let res;
-          if (doctorSlug && !doctorId) {
-            res = await fetch(`${API_BASE_URL}/api/doctors/slug/${doctorSlug}`);
+          if (actualDoctorSlug && !doctorId) {
+            res = await fetch(`${API_BASE_URL}/api/doctors/slug/${actualDoctorSlug}`);
           } else {
             res = await fetch(
-              `${API_BASE_URL}/api/doctors/${doctorId || doctorSlug}`
+              `${API_BASE_URL}/api/doctors/${doctorId || actualDoctorSlug}`
             );
           }
 
@@ -193,7 +234,7 @@ const DoctorProfile = () => {
           const response = await res.json();
           const doctorData = response.success ? response.data : response;
           setDoctor(doctorData);
-          setActualDoctorId(doctorData._id || doctorId || doctorSlug);
+          setActualDoctorId(doctorData._id || doctorId || actualDoctorSlug);
 
           const canonicalUrl = getCanonicalUrl(doctorData);
           if (
@@ -208,10 +249,10 @@ const DoctorProfile = () => {
             );
           }
 
-          if (location && doctorData.city !== location) {
+          if (actualLocation && doctorData.city !== actualLocation) {
             console.log(
               "Location mismatch - URL:",
-              location,
+              actualLocation,
               "Doctor city:",
               doctorData.city
             );
@@ -255,7 +296,7 @@ const DoctorProfile = () => {
     }
 
     loadDoctor();
-  }, [user, doctorId, doctorSlug, location]);
+  }, [user, doctorId, actualDoctorSlug, actualLocation, doctorSlug, isNewFormat, location, getCanonicalUrl]);
 
   const generateDiseaseKeywords = (doctor) => {
     const specialtyKeywords = {
@@ -285,18 +326,6 @@ const DoctorProfile = () => {
       specialtyKeywords[doctor?.specialty] ||
       `${doctor?.specialty?.toLowerCase()} treatment, consultation, medical care`
     );
-  };
-
-  const getCanonicalUrl = (doctor) => {
-    const doctorLocation = doctor.city || "india";
-    const slug = `${doctor.user?.name
-      ?.toLowerCase()
-      .replace(/\s+/g, "-")}-${doctor.specialty
-      ?.toLowerCase()
-      .replace(/\s+/g, "-")}`;
-    return `https://www.doctar.in/${doctorLocation
-      .toLowerCase()
-      .replace(/\s+/g, "-")}/doctor/${slug}`;
   };
 
   console.log("Doctor Profile State:", {
@@ -651,7 +680,6 @@ const DoctorProfile = () => {
 
       {/* Desktop Layout (md and up) */}
       <div className="hidden md:block bg-purple-50 min-h-screen ">
-        <Nav />
         {/* Main Content Container */}
         <div className="max-w-7xl mx-auto px-4 py-10 flex gap-8">
           {/* Left Sidebar - Profile Card */}

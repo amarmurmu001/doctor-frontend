@@ -24,13 +24,14 @@ const Captcha = ({ onValidationChange }) => {
         answer = num1 + num2;
         problem = `${num1} + ${num2}`;
         break;
-      case '-':
+      case '-': {
         // Ensure positive result
         const larger = Math.max(num1, num2);
         const smaller = Math.min(num1, num2);
         answer = larger - smaller;
         problem = `${larger} - ${smaller}`;
         break;
+      }
       case '*':
         answer = num1 * num2;
         problem = `${num1} × ${num2}`;

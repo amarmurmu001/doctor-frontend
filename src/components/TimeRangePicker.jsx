@@ -78,6 +78,9 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
     }, 0);
   }, [initialSlots]);
 
+  // Track callback changes without causing re-renders
+  const prevOnSlotsChangeRef = useRef();
+
   // Notify parent component of changes
   useEffect(() => {
     // Skip notification during initialization to prevent infinite loop
@@ -99,7 +102,10 @@ const TimeRangePicker = ({ onSlotsChange, initialSlots = [] }) => {
       console.log('🔍 TimeRangePicker: Calling onSlotsChange callback');
       onSlotsChangeRef.current(slots);
     }
-  }, [editedSlots]); // Removed onSlotsChange from dependencies to prevent infinite loop
+
+    // Store the current callback for comparison
+    prevOnSlotsChangeRef.current = onSlotsChangeRef.current;
+  }, [editedSlots]); // Only depend on editedSlots to prevent infinite loop
 
 
 

@@ -1,22 +1,23 @@
 import React, { useState, useMemo } from 'react';
 import { faqCategories, generateLocationFAQ, generateSpecialtyFAQ } from '../../data/faqData';
 
-const DynamicFAQ = ({ 
-  categories = ['general', 'patients'], 
-  location = null, 
+const DynamicFAQ = ({
+  categories = ['general', 'patients'],
+  location = null,
   specialty = null,
   searchContext = null,
+  searchTerm: propSearchTerm = null,
   maxItems = 10,
-  title = "Frequently Asked Questions",
-  className = "",
-  searchable = true 
+  className = ""
 }) => {
   const [activeIndex, setActiveIndex] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
+
+  // Extract searchTerm from props or searchContext
+  const searchTerm = propSearchTerm || (searchContext?.searchTerm) || '';
 
   // Generate FAQs based on search context
   const generateSearchContextFAQs = (context) => {
-    const { searchTerm, searchType, totalResults, hasResults, isDoctorName, isSpecialty } = context;
+    const { searchTerm, hasResults, isDoctorName, isSpecialty } = context;
     const faqs = [];
 
     if (!hasResults && searchTerm) {
@@ -183,9 +184,9 @@ const DynamicFAQ = ({
 
   // Filter FAQs based on search term
   const filteredFAQs = useMemo(() => {
-    if (!searchTerm) return dynamicFAQs.slice(0, maxItems);
-    
-    return dynamicFAQs.filter(faq => 
+    if (!searchTerm || searchTerm.trim() === '') return dynamicFAQs.slice(0, maxItems);
+
+    return dynamicFAQs.filter(faq =>
       faq.question.toLowerCase().includes(searchTerm.toLowerCase()) ||
       faq.answer.toLowerCase().includes(searchTerm.toLowerCase()) ||
       faq.keywords?.some(keyword => keyword.toLowerCase().includes(searchTerm.toLowerCase()))
@@ -196,10 +197,6 @@ const DynamicFAQ = ({
     setActiveIndex(activeIndex === index ? null : index);
   };
 
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setActiveIndex(null); // Close any open FAQ when searching
-  };
 
   if (filteredFAQs.length === 0) return null;
 

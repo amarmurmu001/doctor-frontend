@@ -13,10 +13,10 @@ export default function Departments() {
   return (
     <>
       <PageSeo
-        title="Medical Specialties | Find Doctors by Category | Doctar"
+        title="Medical Specialists | Find Doctors by Specialty | Doctar"
         description="Browse doctors by medical specialties. Find cardiologists, dermatologists, pediatricians, and other specialists near you. Book appointments with verified doctors."
-        keywords="medical specialties, doctor categories, cardiologist, dermatologist, pediatrician, orthopedic doctor, neurologist, gynecologist"
-        canonicalUrl="https://www.doctar.in/categories"
+        keywords="medical specialists, doctor specialties, cardiologist, dermatologist, pediatrician, orthopedic doctor, neurologist, gynecologist"
+        canonicalUrl="https://www.doctar.in/specialists"
       />
 
       <div className="w-full min-h-screen bg-[#f4f4ff] lg:flex lg:flex-col">

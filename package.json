@@ -5,14 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run sitemaps:generate",
+    "build:full": "vite build && npm run sitemaps:generate",
     "lint": "eslint .",
     "preview": "vite preview",
-    "sitemap": "node scripts/generate-sitemap.cjs",
-    "sitemap:static": "node scripts/generate-sitemap.cjs static",
-    "sitemap:help": "node scripts/generate-sitemap.cjs help",
-    "sitemap:test": "node scripts/test-sitemap.cjs",
-    "sitemap:index": "node scripts/generate-sitemap-index.cjs"
+    "sitemaps:generate": "node scripts/generate-sitemaps.js",
+    "sitemaps:all": "npm run sitemaps:generate"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",

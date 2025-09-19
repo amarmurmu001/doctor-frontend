@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
-const TimeSlotPicker = ({ onSlotsChange, initialSlots = [] }) => {
+const TimeSlotPicker = ({ onSlotsChange, initialSlots = [], className = '' }) => {
   const [slots, setSlots] = useState(initialSlots);
+  const isInternalUpdate = useRef(false);
 
   // Generate next 7 days (one week)
   const getNextWeek = () => {
@@ -34,8 +35,18 @@ const TimeSlotPicker = ({ onSlotsChange, initialSlots = [] }) => {
     '7:00 PM', '7:30 PM', '8:00 PM', '8:30 PM', '9:00 PM'
   ];
 
+  // Sync internal state with initialSlots prop when it changes externally
+  useEffect(() => {
+    if (!isInternalUpdate.current) {
+      setSlots(initialSlots);
+    }
+    isInternalUpdate.current = false;
+  }, [initialSlots]);
+
+  // Notify parent component when slots change internally
   useEffect(() => {
     if (onSlotsChange) {
+      isInternalUpdate.current = true;
       onSlotsChange(slots);
     }
   }, [slots, onSlotsChange]);
@@ -136,7 +147,7 @@ const TimeSlotPicker = ({ onSlotsChange, initialSlots = [] }) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className={`space-y-6 ${className}`}>
       <div>
         <label className="block text-sm font-medium text-gray-900 mb-2">
           Available Time Slots
