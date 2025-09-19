@@ -47,6 +47,7 @@ import Developers from "./pages/Developers";
 import Privacy from "./pages/Privacy";
 import PCITerms from "./pages/PCITerms";
 import Directory from "./pages/Directory";
+import OurTeam from "./pages/OurTeam";
 
 // Admin imports
 import AdminRoute from "./components/admin/AdminRoute";
@@ -126,6 +127,7 @@ function AppShell() {
             <Route path="/privacy" element={<Privacy />} />
             <Route path="/pci-terms" element={<PCITerms />} />
             <Route path="/directory" element={<Directory />} />
+            <Route path="/our-team" element={<OurTeam />} />
 
             {/* Admin Routes */}
             <Route path="/admin/login" element={<AdminLogin />} />

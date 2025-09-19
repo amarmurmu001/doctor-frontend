@@ -14,6 +14,13 @@ const ClearYourDoubts = () => {
   const [questionWordCount, setQuestionWordCount] = useState(0);
   const [answerWordCount, setAnswerWordCount] = useState(0);
 
+  // Helper function to generate dynamic dates
+  const generateDate = (daysAgo) => {
+    const date = new Date();
+    date.setDate(date.getDate() - daysAgo);
+    return date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  };
+
   // Sample FAQ data - you can replace this with actual data from your API
   const faqData = [
     {
@@ -21,9 +28,9 @@ const ClearYourDoubts = () => {
       question: "What is Lorem Ipsum?",
       answer: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
       questioner: "Arnav",
-      questionDate: "Nov, 2024",
+      questionDate: generateDate(5),
       answerer: "Arya",
-      answerDate: "Nov, 2024",
+      answerDate: generateDate(4),
       helpfulYes: 21,
       helpfulNo: 21
     },
@@ -32,9 +39,9 @@ const ClearYourDoubts = () => {
       question: "How do I book an appointment with a doctor?",
       answer: "You can book an appointment by searching for doctors on our platform, selecting your preferred doctor, and choosing an available time slot. You'll receive a confirmation email with all the details.",
       questioner: "Priya",
-      questionDate: "Dec, 2024",
+      questionDate: generateDate(12),
       answerer: "Dr. Smith",
-      answerDate: "Dec, 2024",
+      answerDate: generateDate(11),
       helpfulYes: 45,
       helpfulNo: 3
     },
@@ -43,9 +50,9 @@ const ClearYourDoubts = () => {
       question: "What are the consultation fees?",
       answer: "Consultation fees vary depending on the doctor's specialty and experience. You can see the fees displayed on each doctor's profile before booking an appointment.",
       questioner: "Rahul",
-      questionDate: "Dec, 2024",
+      questionDate: generateDate(18),
       answerer: "Dr. Johnson",
-      answerDate: "Dec, 2024",
+      answerDate: generateDate(17),
       helpfulYes: 38,
       helpfulNo: 7
     },
@@ -54,9 +61,9 @@ const ClearYourDoubts = () => {
       question: "How do I cancel my appointment?",
       answer: "You can cancel your appointment by going to your profile, selecting the appointment, and clicking the cancel button. Please note that cancellation policies may vary by doctor.",
       questioner: "Sneha",
-      questionDate: "Dec, 2024",
+      questionDate: generateDate(25),
       answerer: "Dr. Patel",
-      answerDate: "Dec, 2024",
+      answerDate: generateDate(24),
       helpfulYes: 42,
       helpfulNo: 5
     },
@@ -65,9 +72,9 @@ const ClearYourDoubts = () => {
       question: "Are online consultations available?",
       answer: "Yes, many doctors offer online consultations through video calls. You can filter doctors by consultation type when searching to find those who offer online appointments.",
       questioner: "Vikram",
-      questionDate: "Dec, 2024",
+      questionDate: generateDate(32),
       answerer: "Dr. Kumar",
-      answerDate: "Dec, 2024",
+      answerDate: generateDate(31),
       helpfulYes: 55,
       helpfulNo: 2
     },
@@ -76,9 +83,9 @@ const ClearYourDoubts = () => {
       question: "What if I need to reschedule my appointment?",
       answer: "You can reschedule your appointment by contacting the doctor directly or using the reschedule option in your appointment details. Most doctors allow rescheduling up to 24 hours before the appointment.",
       questioner: "Anita",
-      questionDate: "Dec, 2024",
+      questionDate: generateDate(40),
       answerer: "Dr. Sharma",
-      answerDate: "Dec, 2024",
+      answerDate: generateDate(39),
       helpfulYes: 33,
       helpfulNo: 8
     }
@@ -189,7 +196,7 @@ const ClearYourDoubts = () => {
   };
 
   return (
-    <div className="bg-white py-8 sm:py-12 px-4">
+    <div className="py-8 sm:py-12 px-4" style={{ backgroundColor: '#f2f1f9' }}>
       <div className="max-w-4xl mx-auto">
         {/* Title */}
         <div className="text-center mb-6 sm:mb-8">
@@ -208,7 +215,7 @@ const ClearYourDoubts = () => {
             </div>
             <input
               type="text"
-              className="block w-full pl-10 pr-3 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              className="block w-full pl-10 pr-3 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
               placeholder="Have any Question"
               value={searchQuery}
               onChange={(e) => handleSearch(e.target.value)}
@@ -282,7 +289,7 @@ const ClearYourDoubts = () => {
                       value={newAnswer}
                       onChange={handleAnswerChange}
                       placeholder="Write your answer here..."
-                      className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"
+                      className="w-full p-2 sm:p-3 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none"
                       rows={3}
                       autoFocus={false}
                     />
@@ -340,17 +347,9 @@ const ClearYourDoubts = () => {
               </svg>
             </button>
 
-            {/* Page Info and View All Button */}
-            <div className="flex flex-col items-center space-y-2 sm:space-y-0">
-              <div className="text-xs sm:text-sm text-gray-600">
-                Page {currentPage} of {totalPages}
-              </div>
-              <button
-                onClick={handleViewAll}
-                className="text-purple-600 hover:text-purple-700 transition-colors text-xs sm:text-sm underline"
-              >
-                View All
-              </button>
+            {/* Page Info */}
+            <div className="text-xs sm:text-sm text-gray-600">
+              Page {currentPage} of {totalPages}
             </div>
 
             {/* Next Button */}
@@ -399,7 +398,7 @@ const ClearYourDoubts = () => {
                   value={newQuestion}
                   onChange={handleQuestionChange}
                   placeholder="What would you like to know? Ask your question here..."
-                  className="w-full p-3 sm:p-4 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none mb-2"
+                  className="w-full p-3 sm:p-4 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500 resize-none mb-2"
                   rows={3}
                   autoFocus={false}
                 />

@@ -18,6 +18,7 @@ const Footer = () => {
       title: "Doctar",
       links: [
         { text: "About", path: "/about" },
+        { text: "Our Team", path: "/our-team" },
         { text: "Blog", path: "/blog" },
         { text: "Careers", path: "/careers" },
         { text: "Press", path: "/press" },
